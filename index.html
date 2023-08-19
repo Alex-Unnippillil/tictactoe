@@ -73,10 +73,10 @@
       document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
       
       if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' wins!';
+        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It\'s a draw!';
+        document.querySelector('.message').textContent = 'It's a draw!';
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
