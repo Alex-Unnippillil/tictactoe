@@ -11,6 +11,90 @@
   const INVALID_MESSAGE =
     "Use letters, numbers, spaces, apostrophes, periods or hyphens only.";
 
+  const APPEARANCE_STORAGE_KEY = "tictactoe:appearance";
+  const THEME_OPTIONS = new Set(["system", "light", "dark"]);
+  const ACCENT_OPTIONS = new Set(["sky", "violet", "emerald", "amber", "rose"]);
+  const DEFAULT_APPEARANCE = { theme: "system", accent: "sky" };
+
+  const normaliseAppearance = (appearance = {}) => {
+    const themeValue = THEME_OPTIONS.has(appearance.theme)
+      ? appearance.theme
+      : DEFAULT_APPEARANCE.theme;
+    const accentValue = ACCENT_OPTIONS.has(appearance.accent)
+      ? appearance.accent
+      : DEFAULT_APPEARANCE.accent;
+    return { theme: themeValue, accent: accentValue };
+  };
+
+  const readPersistedAppearance = () => {
+    try {
+      const raw = window.localStorage.getItem(APPEARANCE_STORAGE_KEY);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") {
+        return null;
+      }
+      return normaliseAppearance(parsed);
+    } catch (error) {
+      console.warn("Unable to load saved appearance", error);
+      return null;
+    }
+  };
+
+  const writePersistedAppearance = (appearance) => {
+    try {
+      window.localStorage.setItem(
+        APPEARANCE_STORAGE_KEY,
+        JSON.stringify(appearance)
+      );
+    } catch (error) {
+      console.warn("Unable to persist appearance", error);
+    }
+  };
+
+  const dispatchAppearanceUpdate = (appearance, source = "settings") => {
+    if (typeof document === "undefined" || typeof CustomEvent !== "function") {
+      return;
+    }
+    document.dispatchEvent(
+      new CustomEvent("settings:appearance-updated", {
+        detail: { appearance: { ...appearance }, source },
+      })
+    );
+  };
+
+  const applyDocumentAppearance = (appearance) => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const root = document.documentElement;
+    if (!root) {
+      return;
+    }
+
+    const { theme, accent } = normaliseAppearance(appearance);
+
+    if (theme === "system") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", theme);
+    }
+
+    if (accent) {
+      root.setAttribute("data-accent", accent);
+    } else {
+      root.removeAttribute("data-accent");
+    }
+  };
+
+  const initialAppearance = normaliseAppearance(
+    readPersistedAppearance() ?? DEFAULT_APPEARANCE
+  );
+  applyDocumentAppearance(initialAppearance);
+  let currentAppearance = { ...initialAppearance };
+
   const isNameValid = (value) =>
     typeof value === "string" && NAME_PATTERN.test(value);
 
@@ -164,7 +248,16 @@
     }
 
     const fields = getFieldElements(form);
+    const themeInputs = Array.from(
+      form.querySelectorAll('input[name="theme"]')
+    );
+    const accentInputs = Array.from(
+      form.querySelectorAll('input[name="accent"]')
+    );
     let currentNames = normaliseNames(readPersistedNames() ?? DEFAULT_NAMES);
+    currentAppearance = normaliseAppearance(
+      readPersistedAppearance() ?? currentAppearance
+    );
     let isModalOpen = false;
     let fieldsDirty = false;
     let suppressExternalUpdate = false;
@@ -173,7 +266,10 @@
       fieldsDirty = true;
     };
 
-    const populateForm = (names = currentNames) => {
+    const populateForm = (
+      names = currentNames,
+      appearance = currentAppearance
+    ) => {
       if (fields.X.input) {
         fields.X.input.value = names.X;
         validateField(fields.X);
@@ -182,8 +278,53 @@
         fields.O.input.value = names.O;
         validateField(fields.O);
       }
+
+      if (themeInputs.length) {
+        let matchedTheme = false;
+        themeInputs.forEach((input) => {
+          const shouldCheck = input.value === appearance.theme;
+          input.checked = shouldCheck;
+          if (shouldCheck) {
+            matchedTheme = true;
+          }
+        });
+        if (!matchedTheme) {
+          themeInputs.forEach((input) => {
+            input.checked = input.value === DEFAULT_APPEARANCE.theme;
+          });
+        }
+      }
+
+      if (accentInputs.length) {
+        let matchedAccent = false;
+        accentInputs.forEach((input) => {
+          const shouldCheck = input.value === appearance.accent;
+          input.checked = shouldCheck;
+          if (shouldCheck) {
+            matchedAccent = true;
+          }
+        });
+        if (!matchedAccent) {
+          accentInputs.forEach((input) => {
+            input.checked = input.value === DEFAULT_APPEARANCE.accent;
+          });
+        }
+      }
+
       fieldsDirty = false;
     };
+
+    themeInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        markDirty();
+      });
+    });
+
+    accentInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        markDirty();
+      });
+    });
 
     const syncToExternalModules = (names, source = "settings") => {
       let latest = { ...names };
@@ -260,10 +401,50 @@
       }
 
       if (forceFormUpdate || !isModalOpen || !fieldsDirty) {
-        populateForm(finalNames);
+        populateForm(finalNames, currentAppearance);
       }
 
       return finalNames;
+    };
+
+    const readAppearanceFromForm = () => {
+      const getCheckedValue = (inputs, fallback) => {
+        const selected = inputs.find((input) => input.checked);
+        return selected ? selected.value : fallback;
+      };
+
+      return normaliseAppearance({
+        theme: getCheckedValue(themeInputs, currentAppearance.theme),
+        accent: getCheckedValue(accentInputs, currentAppearance.accent),
+      });
+    };
+
+    const applyAndPersistAppearance = (appearance, options = {}) => {
+      const {
+        persist = true,
+        notify = true,
+        updateForm = true,
+        source = "settings",
+      } = options;
+
+      const next = normaliseAppearance(appearance);
+      currentAppearance = next;
+
+      if (persist) {
+        writePersistedAppearance(next);
+      }
+
+      applyDocumentAppearance(next);
+
+      if (notify) {
+        dispatchAppearanceUpdate(next, source);
+      }
+
+      if (updateForm && (!isModalOpen || !fieldsDirty)) {
+        populateForm(currentNames, next);
+      }
+
+      return next;
     };
 
     attachValidation(fields.X, { onDirty: markDirty });
@@ -305,6 +486,7 @@
         X: fields.X.input ? fields.X.input.value : "",
         O: fields.O.input ? fields.O.input.value : "",
       };
+      const nextAppearance = readAppearanceFromForm();
 
       applyAndPersistNames(updated, {
         source: "settings",
@@ -312,6 +494,13 @@
         notify: true,
         persist: true,
         forceFormUpdate: false,
+      });
+
+      applyAndPersistAppearance(nextAppearance, {
+        source: "settings",
+        persist: true,
+        notify: true,
+        updateForm: false,
       });
 
       closeModal();
@@ -334,6 +523,27 @@
         closeModal();
       });
     }
+
+    document.addEventListener("settings:appearance-updated", (event) => {
+      const detail = event?.detail;
+      if (!detail || !detail.appearance) {
+        return;
+      }
+      if (
+        detail.source &&
+        typeof detail.source === "string" &&
+        detail.source.startsWith("settings")
+      ) {
+        return;
+      }
+
+      applyAndPersistAppearance(detail.appearance, {
+        source: detail.source ?? "external",
+        persist: true,
+        notify: false,
+        updateForm: true,
+      });
+    });
 
     document.addEventListener("state:players-changed", (event) => {
       if (suppressExternalUpdate) {
@@ -372,6 +582,13 @@
         persist: true,
         forceFormUpdate: true,
       });
+    });
+
+    applyAndPersistAppearance(currentAppearance, {
+      source: "settings:init",
+      persist: true,
+      notify: true,
+      updateForm: false,
     });
 
     applyAndPersistNames(currentNames, {
