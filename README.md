@@ -54,6 +54,12 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 - **Unit tests:** `npm run test`
 - **Continuous integration:** See the workflows in `.github/workflows/` for Pages deployment.
 
+## Performance monitoring
+
+- **Budgets:** Performance budgets for Largest Contentful Paint, Total Blocking Time, and script size live in [`lighthouse-budgets.json`](lighthouse-budgets.json). Update these values when agreed targets change so CI reflects the latest expectations.
+- **Automation:** The [Lighthouse CI workflow](.github/workflows/lighthouse.yml) runs on every push to `main` and for pull requests. It serves the static `site/` directory locally using [`lighthouserc.json`](lighthouserc.json) and fails if a budget is exceeded.
+- **Interpreting results:** Download the `lighthouse-report` artifact from the workflow run, extract it, and open `lighthouse-report.html` (or the run-specific HTML file) in a browser to review metric deltas, opportunities, and budgets. The artifact also includes the `manifest.json` file for comparing scores across runs.
+
 ## Deployment Overview
 
 1. Build the project locally with `npm run build` to generate optimized assets.
