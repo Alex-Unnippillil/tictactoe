@@ -153,6 +153,37 @@
           ></button>
         </section>
 
+        <aside
+          class="timeline"
+          id="timeline"
+          aria-label="Round timeline"
+          data-timeline
+        >
+          <header class="timeline__header">
+            <h2 class="timeline__title">Move timeline</h2>
+            <p class="timeline__meta" data-timeline-meta>
+              Waiting for the next round.
+            </p>
+          </header>
+          <div class="timeline__body">
+            <p id="timelineHelp" class="timeline__hint">
+              Focus this timeline and use arrow keys, Page Up, Page Down, Home, or
+              End to scroll through recorded moves.
+            </p>
+            <ol
+              class="timeline__list"
+              data-timeline-list
+              tabindex="0"
+              role="list"
+              aria-describedby="timelineHelp"
+              aria-live="polite"
+            ></ol>
+            <p class="timeline__empty" data-timeline-empty>
+              No moves recorded yet. Start a round to see each play appear here.
+            </p>
+          </div>
+        </aside>
+
         <footer class="controls">
           <div class="controls__group">
             <button
@@ -235,6 +266,7 @@
     </dialog>
 
     <script src="js/ui/status.js" defer></script>
+    <script src="js/ui/timeline.js" defer></script>
     <script src="js/app.js" defer></script>
     <script src="js/core/constants.js" defer></script>
     <script src="js/core/history.js" defer></script>
