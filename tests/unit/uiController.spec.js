@@ -22,17 +22,7 @@ function createDom() {
   const getMessage = () => document.querySelector('.message');
 
   const resetState = () => {
-    window.currentPlayer = 'X';
-    window.board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ];
-    window.gameOver = false;
-    getCells().forEach((cell) => {
-      cell.textContent = '';
-    });
-    getMessage().textContent = '';
+    window.resetGameState();
   };
 
   return { dom, window, document, clickCell, getCells, getMessage, resetState };
@@ -54,13 +44,13 @@ describe('uiController DOM interactions', () => {
 
     const firstCell = clickCell(0, 0);
     expect(firstCell.textContent).toBe('X');
-    expect(window.board[0][0]).toBe('X');
-    expect(window.currentPlayer).toBe('O');
+    expect(window.gameState.board[0][0]).toBe('X');
+    expect(window.gameState.currentPlayer).toBe('O');
 
     const secondCell = clickCell(1, 1);
     expect(secondCell.textContent).toBe('O');
-    expect(window.board[1][1]).toBe('O');
-    expect(window.currentPlayer).toBe('X');
+    expect(window.gameState.board[1][1]).toBe('O');
+    expect(window.gameState.currentPlayer).toBe('X');
   });
 
   test('winning move updates the status message and locks the board', () => {
@@ -75,11 +65,12 @@ describe('uiController DOM interactions', () => {
 
     expect(document.querySelector('.message').textContent).toBe('X Wins!');
     expect(window.gameOver).toBe(true);
+    expect(window.gameState.result).toBe('X');
 
     const blockedCell = document.querySelector('.board').rows[2].cells[0];
     blockedCell.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     expect(blockedCell.textContent).toBe('');
-    expect(window.board[2][0]).toBe('');
+    expect(window.gameState.board[2][0]).toBe(null);
   });
 
   test('full board without winner results in a draw message', () => {
@@ -104,6 +95,7 @@ describe('uiController DOM interactions', () => {
 
     expect(document.querySelector('.message').textContent).toBe("It's a draw!");
     expect(window.gameOver).toBe(true);
+    expect(window.gameState.result).toBe('draw');
   });
 
   test('resetting state clears the board and allows new moves', () => {
@@ -118,13 +110,13 @@ describe('uiController DOM interactions', () => {
     getCells().forEach((cell) => {
       expect(cell.textContent).toBe('');
     });
-    expect(window.board.flat().every((value) => value === '')).toBe(true);
+    expect(window.gameState.board.flat().every((value) => value === null)).toBe(true);
     expect(getMessage().textContent).toBe('');
-    expect(window.currentPlayer).toBe('X');
+    expect(window.gameState.currentPlayer).toBe('X');
     expect(window.gameOver).toBe(false);
 
     const restartedCell = clickCell(2, 2);
     expect(restartedCell.textContent).toBe('X');
-    expect(window.board[2][2]).toBe('X');
+    expect(window.gameState.board[2][2]).toBe('X');
   });
 });

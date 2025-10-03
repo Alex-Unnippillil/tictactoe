@@ -31,64 +31,155 @@
   </main>
 
   <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
-        return;
+    (function () {
+      var boardElement = document.querySelector('.board');
+      var messageElement = document.querySelector('.message');
+      var winningLines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+      var gameState;
+
+      function createGame() {
+        return {
+          board: [
+            [null, null, null],
+            [null, null, null],
+            [null, null, null]
+          ],
+          currentPlayer: 'X',
+          moves: 0,
+          result: null
+        };
       }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+      function cloneBoard(board) {
+        return board.map(function (row) {
+          return row.slice();
+        });
       }
-    }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
+
+      function isLegalMove(state, index) {
+        var row = Math.floor(index / 3);
+        var col = index % 3;
+
+        return state.result === null && state.board[row][col] === null;
+      }
+
+      function winner(state) {
+        var board = state.board;
+
+        for (var i = 0; i < winningLines.length; i++) {
+          var line = winningLines[i];
+          var first = board[Math.floor(line[0] / 3)][line[0] % 3];
+
+          if (first === null) {
+            continue;
+          }
+
+          var second = board[Math.floor(line[1] / 3)][line[1] % 3];
+          var third = board[Math.floor(line[2] / 3)][line[2] % 3];
+
+          if (first === second && first === third) {
+            return first;
+          }
         }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
+
+        if (state.moves === 9) {
+          return 'draw';
         }
+
+        return null;
       }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
+
+      function applyMove(state, index) {
+        if (!isLegalMove(state, index)) {
+          return state;
+        }
+
+        var row = Math.floor(index / 3);
+        var col = index % 3;
+        var nextBoard = cloneBoard(state.board);
+
+        nextBoard[row][col] = state.currentPlayer;
+
+        var moves = state.moves + 1;
+        var result = winner({ board: nextBoard, moves: moves });
+        var nextPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
+
+        return {
+          board: nextBoard,
+          currentPlayer: result ? state.currentPlayer : nextPlayer,
+          moves: moves,
+          result: result
+        };
       }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
-    }
-    
-    function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
+
+      function renderBoard(state) {
+        for (var row = 0; row < 3; row++) {
+          for (var col = 0; col < 3; col++) {
+            var cell = boardElement.rows[row].cells[col];
+            var value = state.board[row][col];
+
+            cell.textContent = value === null ? '' : value;
           }
         }
       }
-      
-      return true;
-    }
+
+      function updateGlobals(state) {
+        window.gameState = state;
+        window.board = state.board;
+        window.currentPlayer = state.currentPlayer;
+        window.gameOver = state.result !== null;
+      }
+
+      function reset() {
+        gameState = createGame();
+        updateGlobals(gameState);
+        renderBoard(gameState);
+        messageElement.textContent = '';
+      }
+
+      window.makeMove = function (row, col) {
+        var index = row * 3 + col;
+
+        if (!isLegalMove(gameState, index)) {
+          return;
+        }
+
+        var nextState = applyMove(gameState, index);
+
+        if (nextState === gameState) {
+          return;
+        }
+
+        gameState = nextState;
+        updateGlobals(gameState);
+        renderBoard(gameState);
+
+        if (gameState.result === 'draw') {
+          messageElement.textContent = "It's a draw!";
+        } else if (gameState.result) {
+          messageElement.textContent = gameState.result + ' Wins!';
+        } else {
+          messageElement.textContent = '';
+        }
+      };
+
+      window.createGame = createGame;
+      window.isLegalMove = isLegalMove;
+      window.applyMove = applyMove;
+      window.winner = winner;
+      window.resetGameState = reset;
+
+      reset();
+    })();
   </script>
 </body>
 </html>
