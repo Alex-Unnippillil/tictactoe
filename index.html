@@ -1,19 +1,44 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #f7f7f7;
     }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    .controls label {
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .controls select,
+    .controls button {
+      padding: 6px 12px;
+      font-size: 16px;
+      margin: 0 6px;
+    }
+
     .board {
-      display: inline-block;
+      margin: 0 auto;
       border-collapse: collapse;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
+
     .board td {
       width: 100px;
       height: 100px;
@@ -22,98 +47,60 @@
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
+      background-color: #fff;
+      transition: background-color 0.2s ease-in-out;
     }
-    
+
     .board td:hover {
       background-color: #f2f2f2;
     }
-    
+
     .message {
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 24px;
       font-weight: bold;
+      min-height: 36px;
+    }
+
+    @media (max-width: 480px) {
+      .board td {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+      }
     }
   </style>
 </head>
 <body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
+  <h1>Tic Tac Toe</h1>
+  <div class="controls">
+    <label for="aiSelector">AI Strategy:</label>
+    <select id="aiSelector"></select>
+    <button id="resetButton" type="button">Reset</button>
+  </div>
+  <table class="board" id="board">
+    <tbody>
+      <tr>
+        <td data-row="0" data-col="0"></td>
+        <td data-row="0" data-col="1"></td>
+        <td data-row="0" data-col="2"></td>
+      </tr>
+      <tr>
+        <td data-row="1" data-col="0"></td>
+        <td data-row="1" data-col="1"></td>
+        <td data-row="1" data-col="2"></td>
+      </tr>
+      <tr>
+        <td data-row="2" data-col="0"></td>
+        <td data-row="2" data-col="1"></td>
+        <td data-row="2" data-col="2"></td>
+      </tr>
+    </tbody>
   </table>
-  <div class="message"></div>
+  <div class="message" id="message"></div>
 
-  <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
-        return;
-      }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-    }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
-        }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
-        }
-      }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
-      }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
-    }
-    
-    function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
-          }
-        }
-      }
-      
-      return true;
-    }
-  </script>
+  <script src="site/js/ai/orchestrator.js"></script>
+  <script src="site/js/ai/heuristic.js"></script>
+  <script src="site/js/app.js"></script>
 </body>
 </html>
