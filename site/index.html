@@ -10,13 +10,24 @@
     <h1>Tic Tac Toe</h1>
     <main class="app-shell" role="application" aria-label="Tic Tac Toe">
       <header class="toolbar">
-        <p class="toolbar__title">Friendly match</p>
+        <p class="toolbar__title">
+          <span class="toolbar__title-icon" aria-hidden="true">
+            <img src="assets/icon-handshake.svg" alt="" />
+          </span>
+          <span class="toolbar__title-label">Friendly match</span>
+        </p>
         <div class="toolbar__actions">
           <button type="button" id="newRoundButton" class="button button--ghost">
-            New round
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-refresh.svg" alt="" />
+            </span>
+            <span class="button__label">New round</span>
           </button>
           <button type="button" id="settingsButton" class="button button--ghost">
-            Settings
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-settings.svg" alt="" />
+            </span>
+            <span class="button__label">Settings</span>
           </button>
         </div>
       </header>
@@ -27,118 +38,138 @@
         role="region"
         aria-label="Player scoreboard"
       >
-        <article class="scoreboard__player scoreboard__player--x">
+        <article class="scoreboard__player scoreboard__player--x" data-player="X">
           <span class="scoreboard__mark" aria-hidden="true">X</span>
           <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
-          <span
-            class="scoreboard__score"
-            data-role="score"
-            data-player="X"
-            aria-label="Wins for player X"
-            >0</span
-          >
+          <span class="scoreboard__score" data-player="X">
+            <span id="score-label-x" class="visually-hidden">Wins for player X</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="X"
+              aria-labelledby="score-label-x"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
         </article>
-        <article class="scoreboard__player scoreboard__player--o">
+        <article class="scoreboard__player scoreboard__player--o" data-player="O">
           <span class="scoreboard__mark" aria-hidden="true">O</span>
           <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
-          <span
-            class="scoreboard__score"
-            data-role="score"
-            data-player="O"
-            aria-label="Wins for player O"
-            >0</span
-          >
+          <span class="scoreboard__score" data-player="O">
+            <span id="score-label-o" class="visually-hidden">Wins for player O</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="O"
+              aria-labelledby="score-label-o"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
         </article>
-      </section>
-
-      <section class="status" id="statusMessage" aria-live="polite">
-        Player X (X) to move
       </section>
 
       <section
-        class="board"
-        id="board"
-        role="grid"
-        aria-label="Tic Tac Toe board"
+        class="status"
+        id="statusMessage"
         aria-live="polite"
+        data-state="turn"
+        data-player="X"
       >
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="0"
-          aria-label="Row 1 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="1"
-          aria-label="Row 1 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="2"
-          aria-label="Row 1 column 3, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="3"
-          aria-label="Row 2 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="4"
-          aria-label="Row 2 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="5"
-          aria-label="Row 2 column 3, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="6"
-          aria-label="Row 3 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="7"
-          aria-label="Row 3 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="8"
-          aria-label="Row 3 column 3, empty"
-        ></button>
+        Player X (X) to move
       </section>
 
-      <footer class="controls">
-        <div class="controls__group">
-          <button type="button" id="resetScoresButton" class="button button--ghost">
-            Reset scores
-          </button>
-        </div>
-        <div class="controls__group">
-          <button type="button" id="resetGameButton" class="button">
-            Reset game
-          </button>
-        </div>
-      </footer>
+      <div class="play-area">
+        <section
+          class="board"
+          id="board"
+          role="grid"
+          aria-label="Tic Tac Toe board"
+          aria-live="polite"
+        >
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="0"
+            aria-label="Row 1 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="1"
+            aria-label="Row 1 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="2"
+            aria-label="Row 1 column 3, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="3"
+            aria-label="Row 2 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="4"
+            aria-label="Row 2 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="5"
+            aria-label="Row 2 column 3, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="6"
+            aria-label="Row 3 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="7"
+            aria-label="Row 3 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="8"
+            aria-label="Row 3 column 3, empty"
+          ></button>
+        </section>
+
+        <footer class="controls">
+          <div class="controls__group">
+            <button
+              type="button"
+              id="resetScoresButton"
+              class="button button--ghost"
+            >
+              Reset scores
+            </button>
+          </div>
+          <div class="controls__group">
+            <button type="button" id="resetGameButton" class="button">
+              Reset game
+            </button>
+          </div>
+        </footer>
+      </div>
     </main>
 
     <dialog id="settingsModal" aria-labelledby="settingsTitle">
