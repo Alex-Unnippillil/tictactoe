@@ -1,190 +1,235 @@
-(function () {
-  const STORAGE_KEY = "tictactoe:player-names";
-  const DEFAULT_NAMES = {
-    X: "Player X",
-    O: "Player O",
-  };
-  const NAME_PATTERN = /^[\p{L}\p{N}](?:[\p{L}\p{N}\s'.-]{0,23})$/u;
+'use strict';
 
-  const sanitiseName = (value, fallback) => {
-    const trimmed = value.trim();
-    return trimmed.length ? trimmed : fallback;
-  };
+import {
+  DEFAULT_PLAYER_NAMES,
+  normaliseNames,
+  sanitiseName
+} from '../core/players.js';
 
-  const normaliseNames = (names) => ({
-    X: sanitiseName(names?.X ?? "", DEFAULT_NAMES.X),
-    O: sanitiseName(names?.O ?? "", DEFAULT_NAMES.O),
-  });
+const STORAGE_KEY = 'tictactoe:player-names';
+const NAME_PATTERN = /^[\p{L}\p{N}](?:[\p{L}\p{N}\s'.-]{0,23})$/u;
 
-  const readPersistedNames = () => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object") {
-        return null;
-      }
-      return normaliseNames(parsed);
-    } catch (error) {
-      console.warn("Unable to load saved player names", error);
+function readPersistedNames(storage, defaults) {
+  if (!storage) {
+    return null;
+  }
+
+  try {
+    const raw = storage.getItem(STORAGE_KEY);
+    if (!raw) {
       return null;
     }
-  };
-
-  const writePersistedNames = (names) => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(names));
-    } catch (error) {
-      console.warn("Unable to persist player names", error);
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') {
+      return null;
     }
-  };
+    return normaliseNames(parsed, defaults);
+  } catch (error) {
+    console.warn('Unable to load saved player names', error);
+    return null;
+  }
+}
 
-  const dispatchNameUpdate = (names) => {
-    document.dispatchEvent(
-      new CustomEvent("settings:players-updated", {
-        detail: { names: { ...names } },
-      })
-    );
-  };
+function writePersistedNames(storage, names) {
+  if (!storage) {
+    return;
+  }
+  try {
+    storage.setItem(STORAGE_KEY, JSON.stringify(names));
+  } catch (error) {
+    console.warn('Unable to persist player names', error);
+  }
+}
 
-  const getFieldElements = (form) => ({
+function getFieldElements(form) {
+  if (!form) {
+    return {
+      X: {},
+      O: {}
+    };
+  }
+  return {
     X: {
       input: form.querySelector('input[name="playerX"]'),
-      error: form.querySelector('[data-error-for="playerX"]'),
+      error: form.querySelector('[data-error-for="playerX"]')
     },
     O: {
       input: form.querySelector('input[name="playerO"]'),
-      error: form.querySelector('[data-error-for="playerO"]'),
-    },
-  });
-
-  const validateField = ({ input, error }) => {
-    if (!input) {
-      return true;
+      error: form.querySelector('[data-error-for="playerO"]')
     }
+  };
+}
 
-    const trimmed = input.value.trim();
-    let message = "";
-
-    if (trimmed && !NAME_PATTERN.test(trimmed)) {
-      message =
-        "Use letters, numbers, spaces, apostrophes, periods or hyphens only.";
-    }
-
-    if (message) {
-      input.classList.add("is-invalid");
-      input.setCustomValidity(message);
-      if (error) {
-        error.hidden = false;
-        error.textContent = message;
-      }
-      return false;
-    }
-
-    input.classList.remove("is-invalid");
-    input.setCustomValidity("");
-    if (error) {
-      error.hidden = true;
-      error.textContent = "";
-    }
+function validateField(field) {
+  if (!field?.input) {
     return true;
-  };
+  }
 
-  const attachValidation = (field) => {
-    if (!field?.input) {
-      return;
+  const trimmed = field.input.value.trim();
+  let message = '';
+
+  if (trimmed && !NAME_PATTERN.test(trimmed)) {
+    message =
+      "Use letters, numbers, spaces, apostrophes, periods or hyphens only.";
+  }
+
+  if (message) {
+    field.input.classList.add('is-invalid');
+    if (typeof field.input.setCustomValidity === 'function') {
+      field.input.setCustomValidity(message);
     }
-    field.input.addEventListener("input", () => {
-      validateField(field);
-    });
-  };
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("settingsModal");
-    const form = document.getElementById("settingsForm");
-    const openButton = document.getElementById("settingsButton");
-    const cancelButton = document.getElementById("settingsCancelButton");
-
-    if (!modal || !form || !openButton) {
-      return;
+    if (field.error) {
+      field.error.hidden = false;
+      field.error.textContent = message;
     }
+    return false;
+  }
 
-    const fields = getFieldElements(form);
-    attachValidation(fields.X);
-    attachValidation(fields.O);
+  field.input.classList.remove('is-invalid');
+  if (typeof field.input.setCustomValidity === 'function') {
+    field.input.setCustomValidity('');
+  }
+  if (field.error) {
+    field.error.hidden = true;
+    field.error.textContent = '';
+  }
+  return true;
+}
 
-    let currentNames = normaliseNames(readPersistedNames() ?? DEFAULT_NAMES);
-
-    const populateForm = () => {
-      if (fields.X.input) {
-        fields.X.input.value = currentNames.X;
-        validateField(fields.X);
-      }
-      if (fields.O.input) {
-        fields.O.input.value = currentNames.O;
-        validateField(fields.O);
-      }
-    };
-
-    const closeModal = () => {
-      if (modal instanceof HTMLDialogElement) {
-        modal.close();
-      } else {
-        modal.setAttribute("open", "false");
-      }
-    };
-
-    const openModal = () => {
-      populateForm();
-      if (modal instanceof HTMLDialogElement) {
-        modal.showModal();
-      } else {
-        modal.setAttribute("open", "true");
-      }
-    };
-
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      const isValidX = validateField(fields.X);
-      const isValidO = validateField(fields.O);
-
-      if (!isValidX || !isValidO) {
-        form.reportValidity();
-        return;
-      }
-
-      const updated = {
-        X: sanitiseName(fields.X.input ? fields.X.input.value : "", DEFAULT_NAMES.X),
-        O: sanitiseName(fields.O.input ? fields.O.input.value : "", DEFAULT_NAMES.O),
-      };
-
-      currentNames = updated;
-      writePersistedNames(updated);
-      dispatchNameUpdate(updated);
-      closeModal();
-    };
-
-    openButton.addEventListener("click", () => {
-      openModal();
-    });
-
-    cancelButton?.addEventListener("click", (event) => {
-      event.preventDefault();
-      closeModal();
-    });
-
-    form.addEventListener("submit", handleSubmit);
-
-    if (modal instanceof HTMLDialogElement) {
-      modal.addEventListener("cancel", (event) => {
-        event.preventDefault();
-        closeModal();
-      });
-    }
-
-    populateForm();
-    dispatchNameUpdate(currentNames);
+function attachValidation(field) {
+  if (!field?.input) {
+    return;
+  }
+  field.input.addEventListener('input', () => {
+    validateField(field);
   });
-})();
+}
+
+export function initSettings(options = {}) {
+  const {
+    document: doc = document,
+    storage = globalThis?.localStorage ?? null,
+    onPlayersUpdated,
+    defaultNames = DEFAULT_PLAYER_NAMES
+  } = options;
+
+  if (!doc) {
+    throw new Error('A document reference is required to initialise settings.');
+  }
+
+  const fallbackNames = normaliseNames(defaultNames, DEFAULT_PLAYER_NAMES);
+  const persistedNames = readPersistedNames(storage, fallbackNames);
+  let currentNames = persistedNames ?? fallbackNames;
+
+  const modal = doc.getElementById('settingsModal');
+  const form = doc.getElementById('settingsForm');
+  const openButton = doc.getElementById('settingsButton');
+  const cancelButton = doc.getElementById('settingsCancelButton');
+
+  const notify = (names) => {
+    if (typeof onPlayersUpdated === 'function') {
+      onPlayersUpdated({ ...names });
+    }
+  };
+
+  if (!modal || !form || !openButton) {
+    notify(currentNames);
+    return {
+      close() {},
+      getCurrentNames: () => ({ ...currentNames }),
+      open() {},
+      setNames(names) {
+        currentNames = normaliseNames(names, fallbackNames);
+        writePersistedNames(storage, currentNames);
+        notify(currentNames);
+      }
+    };
+  }
+
+  const fields = getFieldElements(form);
+  attachValidation(fields.X);
+  attachValidation(fields.O);
+
+  const populateForm = () => {
+    if (fields.X.input) {
+      fields.X.input.value = currentNames.X;
+      validateField(fields.X);
+    }
+    if (fields.O.input) {
+      fields.O.input.value = currentNames.O;
+      validateField(fields.O);
+    }
+  };
+
+  const closeModal = () => {
+    if (modal instanceof HTMLDialogElement) {
+      modal.close();
+    } else {
+      modal.setAttribute('open', 'false');
+    }
+  };
+
+  const openModal = () => {
+    populateForm();
+    if (modal instanceof HTMLDialogElement) {
+      modal.showModal();
+    } else {
+      modal.setAttribute('open', 'true');
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const isValidX = validateField(fields.X);
+    const isValidO = validateField(fields.O);
+
+    if (!isValidX || !isValidO) {
+      if (typeof form.reportValidity === 'function') {
+        form.reportValidity();
+      }
+      return;
+    }
+
+    const updated = {
+      X: sanitiseName(fields.X.input ? fields.X.input.value : '', fallbackNames.X),
+      O: sanitiseName(fields.O.input ? fields.O.input.value : '', fallbackNames.O)
+    };
+
+    currentNames = normaliseNames(updated, fallbackNames);
+    writePersistedNames(storage, currentNames);
+    notify(currentNames);
+    closeModal();
+  };
+
+  openButton.addEventListener('click', openModal);
+
+  cancelButton?.addEventListener('click', (event) => {
+    event.preventDefault();
+    closeModal();
+  });
+
+  form.addEventListener('submit', handleSubmit);
+
+  if (modal instanceof HTMLDialogElement) {
+    modal.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeModal();
+    });
+  }
+
+  populateForm();
+  notify(currentNames);
+
+  return {
+    close: closeModal,
+    getCurrentNames: () => ({ ...currentNames }),
+    open: openModal,
+    setNames(names) {
+      currentNames = normaliseNames(names, fallbackNames);
+      writePersistedNames(storage, currentNames);
+      populateForm();
+      notify(currentNames);
+    }
+  };
+}

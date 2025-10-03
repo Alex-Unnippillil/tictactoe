@@ -1,109 +1,147 @@
-(function () {
-  const DEFAULT_NAMES = {
-    X: "Player X",
-    O: "Player O",
+'use strict';
+
+import { DEFAULT_PLAYER_NAMES, normaliseNames } from '../core/players.js';
+
+const STATUS_STATES = {
+  TURN: 'turn',
+  WIN: 'win',
+  DRAW: 'draw'
+};
+
+function resolveElements(doc, provided) {
+  if (provided) {
+    return provided;
+  }
+  return {
+    X: doc.querySelector('[data-role="name"][data-player="X"]'),
+    O: doc.querySelector('[data-role="name"][data-player="O"]')
+  };
+}
+
+function resolveScoreElements(doc, provided) {
+  if (provided) {
+    return provided;
+  }
+  return {
+    X: doc.querySelector('[data-role="score"][data-player="X"]'),
+    O: doc.querySelector('[data-role="score"][data-player="O"]')
+  };
+}
+
+export function createStatusController(options = {}) {
+  const {
+    document: doc = document,
+    statusElement = doc?.getElementById?.('statusMessage') ?? null,
+    nameElements: providedNameElements,
+    scoreElements: providedScoreElements,
+    initialNames = DEFAULT_PLAYER_NAMES
+  } = options;
+
+  if (!doc) {
+    throw new Error('A document reference is required to initialise the status UI.');
+  }
+
+  const nameElements = resolveElements(doc, providedNameElements);
+  const scoreElements = resolveScoreElements(doc, providedScoreElements);
+
+  if (!statusElement || !nameElements?.X || !nameElements?.O) {
+    throw new Error('Unable to initialise status UI; required elements are missing.');
+  }
+
+  let playerNames = normaliseNames(initialNames, DEFAULT_PLAYER_NAMES);
+  let scores = { X: 0, O: 0 };
+  let currentPlayer = 'X';
+  let statusState = STATUS_STATES.TURN;
+
+  const formatTurnMessage = (player) => `${playerNames[player]} (${player}) to move`;
+  const formatWinMessage = (player) => `${playerNames[player]} (${player}) wins this round!`;
+
+  const refreshStatus = () => {
+    switch (statusState) {
+      case STATUS_STATES.WIN:
+        statusElement.textContent = formatWinMessage(currentPlayer);
+        break;
+      case STATUS_STATES.DRAW:
+        statusElement.textContent = "It's a draw!";
+        break;
+      case STATUS_STATES.TURN:
+      default:
+        statusElement.textContent = formatTurnMessage(currentPlayer);
+        break;
+    }
   };
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const statusMessage = document.getElementById("statusMessage");
-    const nameElements = {
-      X: document.querySelector('[data-role="name"][data-player="X"]'),
-      O: document.querySelector('[data-role="name"][data-player="O"]'),
-    };
-    const scoreElements = {
-      X: document.querySelector('[data-role="score"][data-player="X"]'),
-      O: document.querySelector('[data-role="score"][data-player="O"]'),
-    };
-
-    if (!statusMessage || !nameElements.X || !nameElements.O) {
-      throw new Error("Unable to initialise status UI; required elements are missing.");
-    }
-
-    let playerNames = { ...DEFAULT_NAMES };
-    let scores = { X: 0, O: 0 };
-    let currentPlayer = "X";
-    let statusState = "turn"; // "turn" | "win" | "draw"
-
-    const formatTurnMessage = (player) =>
-      `${playerNames[player]} (${player}) to move`;
-    const formatWinMessage = (player) =>
-      `${playerNames[player]} (${player}) wins this round!`;
-
-    const refreshStatus = () => {
-      switch (statusState) {
-        case "win":
-          statusMessage.textContent = formatWinMessage(currentPlayer);
-          break;
-        case "draw":
-          statusMessage.textContent = "It's a draw!";
-          break;
-        case "turn":
-        default:
-          statusMessage.textContent = formatTurnMessage(currentPlayer);
-          break;
-      }
-    };
-
-    const applyNames = (names) => {
-      playerNames = { ...DEFAULT_NAMES, ...names };
-      nameElements.X.textContent = playerNames.X;
-      nameElements.O.textContent = playerNames.O;
-      refreshStatus();
-    };
-
-    const updateScoreDisplay = () => {
+  const updateScoreDisplay = () => {
+    if (scoreElements?.X) {
       scoreElements.X.textContent = String(scores.X);
+    }
+    if (scoreElements?.O) {
       scoreElements.O.textContent = String(scores.O);
-    };
+    }
+  };
 
-    const api = {
-      setTurn(player) {
-        currentPlayer = player;
-        statusState = "turn";
-        refreshStatus();
-      },
-      announceWin(player) {
-        currentPlayer = player;
-        statusState = "win";
-        refreshStatus();
-      },
-      announceDraw() {
-        statusState = "draw";
-        refreshStatus();
-      },
-      incrementScore(player) {
-        scores[player] += 1;
-        updateScoreDisplay();
-        return scores[player];
-      },
-      resetScores() {
-        scores = { X: 0, O: 0 };
-        updateScoreDisplay();
-      },
-      getScores() {
-        return { ...scores };
-      },
-      setScores(nextScores) {
-        scores = { ...scores, ...nextScores };
-        updateScoreDisplay();
-      },
-      getNames() {
-        return { ...playerNames };
-      },
-    };
-
-    window.uiStatus = api;
-
-    document.addEventListener("settings:players-updated", (event) => {
-      const detail = event?.detail;
-      if (!detail || !detail.names) {
-        return;
-      }
-      applyNames(detail.names);
-    });
-
-    applyNames(DEFAULT_NAMES);
-    updateScoreDisplay();
+  const applyNames = (names) => {
+    playerNames = normaliseNames(names, DEFAULT_PLAYER_NAMES);
+    if (nameElements?.X) {
+      nameElements.X.textContent = playerNames.X;
+    }
+    if (nameElements?.O) {
+      nameElements.O.textContent = playerNames.O;
+    }
     refreshStatus();
-  });
-})();
+    return { ...playerNames };
+  };
+
+  const setTurn = (player) => {
+    currentPlayer = player;
+    statusState = STATUS_STATES.TURN;
+    refreshStatus();
+  };
+
+  const announceWin = (player) => {
+    currentPlayer = player;
+    statusState = STATUS_STATES.WIN;
+    refreshStatus();
+  };
+
+  const announceDraw = () => {
+    statusState = STATUS_STATES.DRAW;
+    refreshStatus();
+  };
+
+  const incrementScore = (player) => {
+    scores[player] += 1;
+    updateScoreDisplay();
+    return scores[player];
+  };
+
+  const resetScores = () => {
+    scores = { X: 0, O: 0 };
+    updateScoreDisplay();
+  };
+
+  const getScores = () => ({ ...scores });
+
+  const setScores = (nextScores) => {
+    scores = { ...scores, ...nextScores };
+    updateScoreDisplay();
+  };
+
+  const getNames = () => ({ ...playerNames });
+
+  // Initialise UI state.
+  applyNames(playerNames);
+  updateScoreDisplay();
+
+  return {
+    announceDraw,
+    announceWin,
+    applyNames,
+    getNames,
+    getScores,
+    incrementScore,
+    resetScores,
+    setScores,
+    setTurn
+  };
+}
