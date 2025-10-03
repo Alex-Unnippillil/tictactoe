@@ -164,6 +164,7 @@
     }
 
     const fields = getFieldElements(form);
+    const preview = form.querySelector(".modal__preview");
     let currentNames = normaliseNames(readPersistedNames() ?? DEFAULT_NAMES);
     let isModalOpen = false;
     let fieldsDirty = false;
@@ -268,6 +269,219 @@
 
     attachValidation(fields.X, { onDirty: markDirty });
     attachValidation(fields.O, { onDirty: markDirty });
+
+    if (preview) {
+      const previewOverrides = new Map();
+      const appliedPreviewVars = new Set();
+
+      const renderPreview = () => {
+        const aggregated = {};
+        previewOverrides.forEach((tokens) => {
+          if (!tokens || typeof tokens !== "object") {
+            return;
+          }
+          Object.entries(tokens).forEach(([variable, value]) => {
+            if (typeof value === "string" && value.trim()) {
+              aggregated[variable] = value.trim();
+            }
+          });
+        });
+
+        Array.from(appliedPreviewVars).forEach((variable) => {
+          if (!Object.prototype.hasOwnProperty.call(aggregated, variable)) {
+            preview.style.removeProperty(variable);
+            appliedPreviewVars.delete(variable);
+          }
+        });
+
+        Object.entries(aggregated).forEach(([variable, value]) => {
+          preview.style.setProperty(variable, value);
+          appliedPreviewVars.add(variable);
+        });
+      };
+
+      const updatePreviewSource = (source, tokens) => {
+        if (!tokens || Object.keys(tokens).length === 0) {
+          previewOverrides.delete(source);
+        } else {
+          previewOverrides.set(source, tokens);
+        }
+        renderPreview();
+      };
+
+      const toElementArray = (field) => {
+        if (!field) {
+          return [];
+        }
+        if (typeof field.forEach === "function" && field !== window) {
+          const collected = [];
+          field.forEach((item) => {
+            if (item) {
+              collected.push(item);
+            }
+          });
+          if (collected.length) {
+            return collected;
+          }
+        }
+        if (typeof field.length === "number" && field.length > 0) {
+          return Array.from(field).filter(Boolean);
+        }
+        return field instanceof Element ? [field] : [];
+      };
+
+      const getActiveOption = (field) => {
+        const elements = toElementArray(field);
+        if (!elements.length) {
+          return null;
+        }
+
+        const first = elements[0];
+        if (first instanceof HTMLSelectElement) {
+          return first.selectedOptions?.[0] ?? null;
+        }
+
+        const choice = elements.find((element) => {
+          if (!(element instanceof Element)) {
+            return false;
+          }
+          if (element instanceof HTMLInputElement) {
+            const type = element.type?.toLowerCase();
+            if (type === "radio" || type === "checkbox") {
+              return element.checked;
+            }
+          }
+          if (element instanceof HTMLOptionElement) {
+            return element.selected;
+          }
+          return true;
+        });
+
+        return choice ?? null;
+      };
+
+      const normalisePreviewVar = (key) => {
+        if (!key) {
+          return null;
+        }
+        let trimmed = key;
+        if (trimmed.startsWith("preview")) {
+          trimmed = trimmed.slice("preview".length);
+        }
+        if (!trimmed) {
+          return null;
+        }
+        const hyphenated = trimmed
+          .replace(/^[A-Z]/, (match) => match.toLowerCase())
+          .replace(/([A-Z])/g, (match) => `-${match.toLowerCase()}`);
+        return `--preview-${hyphenated}`;
+      };
+
+      const extractPreviewTokens = (element) => {
+        if (!element || typeof element !== "object") {
+          return {};
+        }
+
+        const tokens = {};
+        const dataset = element.dataset ?? {};
+        Object.entries(dataset).forEach(([key, value]) => {
+          if (!key.startsWith("preview") || typeof value !== "string") {
+            return;
+          }
+          const variable = normalisePreviewVar(key);
+          if (variable && value.trim()) {
+            tokens[variable] = value.trim();
+          }
+        });
+
+        if (element instanceof HTMLInputElement) {
+          const type = element.type?.toLowerCase();
+          if (element.name === "accent" && typeof element.value === "string") {
+            const accentValue = element.value.trim();
+            if (accentValue) {
+              tokens["--preview-accent"] = accentValue;
+              if (!tokens["--preview-accent-dark"]) {
+                tokens["--preview-accent-dark"] =
+                  element.dataset?.accentDark?.trim() || accentValue;
+              }
+            }
+          } else if (type === "color" && element.name && !element.name.startsWith("player")) {
+            const colorValue = element.value.trim();
+            if (colorValue) {
+              const variable = element.dataset?.previewVar
+                ? element.dataset.previewVar
+                : normalisePreviewVar(element.name);
+              if (variable) {
+                tokens[variable] = colorValue;
+              }
+            }
+          }
+        }
+
+        if (element instanceof HTMLOptionElement) {
+          const optionValue = element.value?.trim();
+          if (optionValue && element.parentElement?.name === "accent") {
+            tokens["--preview-accent"] = optionValue;
+            if (!tokens["--preview-accent-dark"]) {
+              tokens["--preview-accent-dark"] = optionValue;
+            }
+          }
+        }
+
+        return tokens;
+      };
+
+      const attachPreviewListeners = (field, handler) => {
+        const elements = toElementArray(field);
+        if (!elements.length) {
+          return;
+        }
+        elements.forEach((element) => {
+          if (!(element instanceof Element)) {
+            return;
+          }
+          element.addEventListener("change", handler);
+          element.addEventListener("input", handler);
+        });
+        handler();
+      };
+
+      const syncThemePreview = () => {
+        const field = form.elements.namedItem("theme");
+        const active = getActiveOption(field);
+        const tokens = extractPreviewTokens(active);
+        updatePreviewSource("theme", tokens);
+      };
+
+      const syncAccentPreview = () => {
+        const field = form.elements.namedItem("accent");
+        const active = getActiveOption(field);
+        const tokens = extractPreviewTokens(active);
+        updatePreviewSource("accent", tokens);
+      };
+
+      const themeField = form.elements.namedItem("theme");
+      if (themeField) {
+        attachPreviewListeners(themeField, syncThemePreview);
+      }
+
+      const accentField = form.elements.namedItem("accent");
+      if (accentField) {
+        attachPreviewListeners(accentField, syncAccentPreview);
+      }
+
+      form.addEventListener("reset", () => {
+        window.requestAnimationFrame(() => {
+          previewOverrides.clear();
+          Array.from(appliedPreviewVars).forEach((variable) => {
+            preview.style.removeProperty(variable);
+            appliedPreviewVars.delete(variable);
+          });
+          syncThemePreview();
+          syncAccentPreview();
+        });
+      });
+    }
 
     const closeModal = () => {
       isModalOpen = false;
