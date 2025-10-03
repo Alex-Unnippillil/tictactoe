@@ -67,6 +67,10 @@ behavior and reporting. For details on how to get involved, see the
 3. Deploy the latest build using `npm run deploy`, which pushes the generated content to the GitHub Pages branch.
 4. GitHub Actions workflows automate deployment to ensure the published site stays in sync with the main branch.
 
+## Changelog
+
+Review the [CHANGELOG](CHANGELOG.md) for a curated list of notable updates to the project. Release announcements should link back to the same changelog entry to keep documentation and notes aligned.
+
 ## Architecture Overview
 
 The project is a static HTML application comprised of:
