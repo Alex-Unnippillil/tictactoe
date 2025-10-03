@@ -554,6 +554,10 @@ button:focus-visible {
     justify-content: center;
     align-content: center;
   }
+
+  .scoreboard__player {
+    --scoreboard-name-max-inline-size: clamp(11rem, 26vw, 16rem);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -577,6 +581,9 @@ button:focus-visible {
   --player-highlight: rgba(59, 130, 246, 0.42);
   --player-glow: rgba(59, 130, 246, 0.68);
   --player-mark-glow: rgba(59, 130, 246, 0.58);
+  --scoreboard-name-max-inline-size: clamp(9.5rem, 38vw, 12.5rem);
+  --scoreboard-name-max-lines: 2;
+  --scoreboard-name-marquee-duration: 11s;
   position: relative;
   z-index: 0;
   display: grid;
@@ -744,8 +751,73 @@ button:focus-visible {
 
 .scoreboard__name {
   font-weight: 600;
-  font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+  font-size: clamp(1rem, 2.35vw, 1.25rem);
   letter-spacing: 0.01em;
+  line-height: 1.25;
+  max-inline-size: var(--scoreboard-name-max-inline-size, 100%);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--scoreboard-name-max-lines);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+@supports (line-clamp: 2) {
+  .scoreboard__name {
+    display: block;
+    line-clamp: var(--scoreboard-name-max-lines);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scoreboard__name[data-marquee="true"] {
+    animation: scoreboard-name-marquee var(--scoreboard-name-marquee-duration)
+      linear infinite;
+    display: block;
+    white-space: nowrap;
+    max-inline-size: min(
+      var(--scoreboard-name-max-inline-size, 100%),
+      100%
+    );
+    overflow: hidden;
+    text-overflow: ellipsis;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scoreboard__name,
+  .scoreboard__name[data-marquee="true"] {
+    animation: none !important;
+  }
+}
+
+@keyframes scoreboard-name-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  49% {
+    transform: translateX(0);
+  }
+
+  60% {
+    transform: translateX(
+      calc(
+        -1 * max(
+          0%,
+          var(--scoreboard-name-max-inline-size, 100%) - 100%
+        )
+      )
+    );
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .scoreboard__score {
