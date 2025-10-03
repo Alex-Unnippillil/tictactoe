@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="game" data-testid="game">
+      <header class="scoreboard" aria-label="Scoreboard">
+        <div class="scoreboard__player" data-player="X">
+          <span class="scoreboard__symbol" aria-hidden="true">X</span>
+          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <span class="scoreboard__score" data-role="score" data-player="X">0</span>
+        </div>
+        <div class="scoreboard__player" data-player="O">
+          <span class="scoreboard__symbol" aria-hidden="true">O</span>
+          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <span class="scoreboard__score" data-role="score" data-player="O">0</span>
+        </div>
+      </header>
+
+      <p id="statusMessage" class="message" role="status" aria-live="polite">
+        Player X to move
+      </p>
+
+      <section class="controls" aria-label="Game controls">
+        <button type="button" id="settingsButton" class="control-button">
+          Player settings
+        </button>
+        <label class="control-select" for="difficultySelect">
+          <span class="control-select__label">Difficulty</span>
+          <select id="difficultySelect" name="difficulty">
+            <option value="easy">Easy (Random)</option>
+            <option value="normal">Normal (Heuristic)</option>
+            <option value="hard" selected>Hard (Minimax)</option>
+          </select>
+        </label>
+        <button type="button" id="newGameButton" class="control-button">
+          New game
+        </button>
+      </section>
+
+      <table
+        id="gameBoard"
+        class="board"
+        data-testid="board"
+        role="grid"
+        aria-label="Tic Tac Toe board"
+      >
+        <tbody>
+          <tr>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="0"
+                data-col="0"
+                aria-label="Row 1, Column 1, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="0"
+                data-col="1"
+                aria-label="Row 1, Column 2, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="0"
+                data-col="2"
+                aria-label="Row 1, Column 3, empty"
+              ></button>
+            </td>
+          </tr>
+          <tr>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="1"
+                data-col="0"
+                aria-label="Row 2, Column 1, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="1"
+                data-col="1"
+                aria-label="Row 2, Column 2, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="1"
+                data-col="2"
+                aria-label="Row 2, Column 3, empty"
+              ></button>
+            </td>
+          </tr>
+          <tr>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="2"
+                data-col="0"
+                aria-label="Row 3, Column 1, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="2"
+                data-col="1"
+                aria-label="Row 3, Column 2, empty"
+              ></button>
+            </td>
+            <td role="presentation">
+              <button
+                type="button"
+                class="cell"
+                data-testid="cell"
+                data-cell
+                data-row="2"
+                data-col="2"
+                aria-label="Row 3, Column 3, empty"
+              ></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <dialog id="settingsModal" aria-labelledby="settingsTitle">
+        <form id="settingsForm" method="dialog" class="settings-form">
+          <h2 id="settingsTitle">Player names</h2>
+          <p class="settings-description">
+            Update the display names for each player. Changes are saved to your
+            browser.
+          </p>
+          <div class="settings-field">
+            <label class="settings-label" for="playerXInput">Player X</label>
+            <input
+              id="playerXInput"
+              name="playerX"
+              type="text"
+              maxlength="24"
+              autocomplete="off"
+              placeholder="Player X"
+            />
+            <span
+              class="settings-error"
+              data-error-for="playerX"
+              role="alert"
+              hidden
+            ></span>
+          </div>
+          <div class="settings-field">
+            <label class="settings-label" for="playerOInput">Player O</label>
+            <input
+              id="playerOInput"
+              name="playerO"
+              type="text"
+              maxlength="24"
+              autocomplete="off"
+              placeholder="Player O"
+            />
+            <span
+              class="settings-error"
+              data-error-for="playerO"
+              role="alert"
+              hidden
+            ></span>
+          </div>
+          <div class="settings-actions">
+            <button
+              type="button"
+              id="settingsCancelButton"
+              class="control-button"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="control-button">Save</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script src="js/ui/status.js"></script>
+    <script src="js/ui/settings.js"></script>
+    <script src="js/ai/random.js"></script>
+    <script src="js/ai/heuristic.js"></script>
+    <script src="js/ai/minimax.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        const BOARD_SIZE = 3;
+        const HUMAN_SYMBOL = "X";
+        const CPU_SYMBOL = "O";
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const boardElement = document.getElementById("gameBoard");
+          const statusElement = document.getElementById("statusMessage");
+          const difficultySelect = document.getElementById("difficultySelect");
+          const newGameButton = document.getElementById("newGameButton");
+          const scoreElements = {
+            X: document.querySelector('[data-role="score"][data-player="X"]'),
+            O: document.querySelector('[data-role="score"][data-player="O"]'),
+          };
+
+          if (!boardElement) {
+            throw new Error("Unable to initialise the game board");
+          }
+
+          const cellButtons = Array.from(
+            boardElement.querySelectorAll("[data-cell]")
+          );
+          const buttonMatrix = Array.from({ length: BOARD_SIZE }, () => []);
+
+          cellButtons.forEach((button) => {
+            const row = Number(button.dataset.row);
+            const col = Number(button.dataset.col);
+            if (!Number.isInteger(row) || !Number.isInteger(col)) {
+              return;
+            }
+            buttonMatrix[row][col] = button;
+          });
+
+          const createEmptyBoard = () =>
+            Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(""));
+
+          let boardState = createEmptyBoard();
+          let gameOver = false;
+          let cpuThinking = false;
+          let difficulty = difficultySelect ? difficultySelect.value : "hard";
+          const fallbackScores = { X: 0, O: 0 };
+
+          const ensureStatus = (callback, fallbackMessage) => {
+            if (window.uiStatus && typeof callback === "function") {
+              callback(window.uiStatus);
+              return;
+            }
+            if (statusElement && fallbackMessage) {
+              statusElement.textContent = fallbackMessage;
+            }
+          };
+
+          const announceTurn = (player) => {
+            ensureStatus(
+              (api) => api.setTurn(player),
+              `Player ${player} to move`
+            );
+          };
+
+          const announceWin = (player) => {
+            ensureStatus(
+              (api) => {
+                api.announceWin(player);
+                if (typeof api.incrementScore === "function") {
+                  api.incrementScore(player);
+                }
+              },
+              `Player ${player} wins!`
+            );
+            if (!window.uiStatus && scoreElements[player]) {
+              fallbackScores[player] += 1;
+              scoreElements[player].textContent = String(
+                fallbackScores[player]
+              );
+            }
+          };
+
+          const announceDraw = () => {
+            ensureStatus((api) => api.announceDraw(), "It's a draw!");
+          };
+
+          const createCellLabel = (row, col, value) => {
+            const base = `Row ${row + 1}, Column ${col + 1}`;
+            if (value) {
+              return `${base}, ${value}`;
+            }
+            return `${base}, empty`;
+          };
+
+          const updateButtonState = (row, col) => {
+            const button = buttonMatrix[row]?.[col];
+            if (!button) {
+              return;
+            }
+            const value = boardState[row][col];
+            button.textContent = value;
+            button.dataset.value = value;
+            button.disabled = Boolean(value) || gameOver || cpuThinking;
+            button.setAttribute("aria-label", createCellLabel(row, col, value));
+          };
+
+          const refreshBoardUI = () => {
+            for (let row = 0; row < BOARD_SIZE; row += 1) {
+              for (let col = 0; col < BOARD_SIZE; col += 1) {
+                updateButtonState(row, col);
+              }
+            }
+          };
+
+          const isBoardFull = (state) =>
+            state.every((row) => row.every((cell) => Boolean(cell)));
+
+          const hasWinningLine = (state, symbol) => {
+            for (let index = 0; index < BOARD_SIZE; index += 1) {
+              if (
+                state[index][0] === symbol &&
+                state[index][1] === symbol &&
+                state[index][2] === symbol
+              ) {
+                return true;
+              }
+              if (
+                state[0][index] === symbol &&
+                state[1][index] === symbol &&
+                state[2][index] === symbol
+              ) {
+                return true;
+              }
+            }
+
+            if (
+              state[0][0] === symbol &&
+              state[1][1] === symbol &&
+              state[2][2] === symbol
+            ) {
+              return true;
+            }
+
+            if (
+              state[0][2] === symbol &&
+              state[1][1] === symbol &&
+              state[2][0] === symbol
+            ) {
+              return true;
+            }
+
+            return false;
+          };
+
+          const makeMove = (row, col, symbol) => {
+            if (boardState[row][col]) {
+              return false;
+            }
+            boardState[row][col] = symbol;
+            updateButtonState(row, col);
+            return true;
+          };
+
+          const endGame = (winner) => {
+            gameOver = true;
+            cpuThinking = false;
+            if (winner) {
+              announceWin(winner);
+            } else {
+              announceDraw();
+            }
+            refreshBoardUI();
+          };
+
+          const proceedToNextTurn = (currentSymbol) => {
+            if (hasWinningLine(boardState, currentSymbol)) {
+              endGame(currentSymbol);
+              return;
+            }
+            if (isBoardFull(boardState)) {
+              endGame(null);
+              return;
+            }
+
+            const nextSymbol = currentSymbol === HUMAN_SYMBOL ? CPU_SYMBOL : HUMAN_SYMBOL;
+            if (nextSymbol === HUMAN_SYMBOL) {
+              announceTurn(HUMAN_SYMBOL);
+              cpuThinking = false;
+              refreshBoardUI();
+              return;
+            }
+
+            announceTurn(CPU_SYMBOL);
+            cpuThinking = true;
+            refreshBoardUI();
+            window.setTimeout(() => {
+              if (!gameOver) {
+                performCpuMove();
+              }
+            }, 250);
+          };
+
+          const getActiveEngine = () => {
+            const engines = {
+              easy: window.RandomAI,
+              normal: window.HeuristicAI,
+              hard: window.MinimaxAI,
+            };
+            return engines[difficulty] || engines.hard;
+          };
+
+          const performCpuMove = () => {
+            const engine = getActiveEngine();
+            const clonedBoard = boardState.map((row) => row.slice());
+            let move = null;
+            if (engine && typeof engine.chooseMove === "function") {
+              move = engine.chooseMove(clonedBoard, CPU_SYMBOL, HUMAN_SYMBOL);
+            }
+
+            if (!move || typeof move.row !== "number" || typeof move.col !== "number") {
+              endGame(null);
+              return;
+            }
+
+            const placed = makeMove(move.row, move.col, CPU_SYMBOL);
+            cpuThinking = false;
+            refreshBoardUI();
+            if (placed) {
+              proceedToNextTurn(CPU_SYMBOL);
+            }
+          };
+
+          const handleHumanMove = (row, col) => {
+            if (gameOver || cpuThinking) {
+              return;
+            }
+            if (!makeMove(row, col, HUMAN_SYMBOL)) {
+              return;
+            }
+            proceedToNextTurn(HUMAN_SYMBOL);
+          };
+
+          const handleCellClick = (event) => {
+            const button = event.currentTarget;
+            const row = Number(button.dataset.row);
+            const col = Number(button.dataset.col);
+            if (!Number.isInteger(row) || !Number.isInteger(col)) {
+              return;
+            }
+            handleHumanMove(row, col);
+          };
+
+          const focusCell = (row, col) => {
+            const button = buttonMatrix[row]?.[col];
+            if (button) {
+              button.focus();
+            }
+          };
+
+          const handleCellKeyDown = (event) => {
+            const key = event.key;
+            const button = event.currentTarget;
+            const row = Number(button.dataset.row);
+            const col = Number(button.dataset.col);
+            if (!Number.isInteger(row) || !Number.isInteger(col)) {
+              return;
+            }
+
+            let nextRow = row;
+            let nextCol = col;
+            let handled = true;
+
+            switch (key) {
+              case "ArrowUp":
+                nextRow = (row + BOARD_SIZE - 1) % BOARD_SIZE;
+                break;
+              case "ArrowDown":
+                nextRow = (row + 1) % BOARD_SIZE;
+                break;
+              case "ArrowLeft":
+                nextCol = (col + BOARD_SIZE - 1) % BOARD_SIZE;
+                break;
+              case "ArrowRight":
+                nextCol = (col + 1) % BOARD_SIZE;
+                break;
+              case "Home":
+                nextRow = row;
+                nextCol = 0;
+                break;
+              case "End":
+                nextRow = row;
+                nextCol = BOARD_SIZE - 1;
+                break;
+              case "PageUp":
+                nextRow = 0;
+                break;
+              case "PageDown":
+                nextRow = BOARD_SIZE - 1;
+                break;
+              default:
+                handled = false;
+            }
+
+            if (handled) {
+              event.preventDefault();
+              focusCell(nextRow, nextCol);
+            }
+          };
+
+          const resetBoard = () => {
+            boardState = createEmptyBoard();
+            gameOver = false;
+            cpuThinking = false;
+            refreshBoardUI();
+            announceTurn(HUMAN_SYMBOL);
+          };
+
+          const handleNewGame = () => {
+            resetBoard();
+          };
+
+          cellButtons.forEach((button) => {
+            button.addEventListener("click", handleCellClick);
+            button.addEventListener("keydown", handleCellKeyDown);
+          });
+
+          if (difficultySelect) {
+            difficultySelect.addEventListener("change", (event) => {
+              difficulty = event.target.value;
+              resetBoard();
+            });
+          }
+
+          if (newGameButton) {
+            newGameButton.addEventListener("click", handleNewGame);
+          }
+
+          resetBoard();
+        });
+      })();
+    </script>
+  </body>
+</html>
