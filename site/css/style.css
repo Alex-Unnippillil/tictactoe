@@ -86,11 +86,32 @@ body {
   vertical-align: middle;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: clamp(0.25rem, 1vw, 0.5rem);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .board td:hover {
   background-color: var(--color-border-hover);
   border-color: var(--color-accent);
+}
+
+button,
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  min-block-size: 44px;
+  padding-block: 0.625rem;
+  padding-inline: 1rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .message {

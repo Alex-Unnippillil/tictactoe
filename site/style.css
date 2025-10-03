@@ -45,6 +45,12 @@ a.button {
   text-decoration: none;
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a.button:hover {
