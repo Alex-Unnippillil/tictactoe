@@ -39,6 +39,11 @@ body {
     sans-serif;
   background: var(--surface, #ffffff);
   color: var(--text, #111827);
+  min-height: 100vh;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 img,
@@ -55,6 +60,15 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+body.page--game * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body.page--game ::selection {
+  background: transparent;
 }
 
 :root {
@@ -346,11 +360,11 @@ body.page--game {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
-    clamp(3.5rem, 8vw, 5.5rem);
+  padding: clamp(2.75rem, 6.5vw, 4.75rem) clamp(1.75rem, 5.2vw, 3.75rem)
+    clamp(4.75rem, 9vw, 6.75rem);
   box-sizing: border-box;
-  gap: clamp(1.75rem, 4vw, 3rem);
-  min-height: 100%;
+  gap: clamp(2rem, 4.5vw, 3.5rem);
+  min-height: 100vh;
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
@@ -672,7 +686,7 @@ button:focus-visible {
   border: 1px solid var(--glass-border);
   border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
   padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
-  padding-block-end: clamp(2.5rem, 2.5vw + 2rem, 4rem);
+  padding-block-end: clamp(3.5rem, 3vw + 2.75rem, 5rem);
   box-shadow: var(--glass-shadow);
   overflow: hidden;
   z-index: 0;
@@ -1181,6 +1195,7 @@ button:focus-visible {
   padding: clamp(12px, 2.5vw, 18px);
   max-width: clamp(280px, 70vw, 420px);
   margin-inline: auto;
+  margin-block-end: clamp(1.5rem, 2.5vw, 2.75rem);
   border-radius: 22px;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.45), rgba(148, 163, 184, 0.25))
       padding-box,
@@ -1479,10 +1494,10 @@ button:focus-visible {
 
 .play-area {
   display: grid;
-  gap: 24px;
-  align-content: space-between;
-  min-height: clamp(360px, 52vh, 520px);
-  padding-block-end: clamp(1.5rem, 2vw, 2.5rem);
+  gap: clamp(1.75rem, 3vw, 3rem);
+  align-content: start;
+  min-height: clamp(380px, 55vh, 560px);
+  padding-block-end: clamp(2.5rem, 3vw, 3.5rem);
 }
 
 .controls {
@@ -2129,7 +2144,7 @@ dialog.is-closing::backdrop {
 
 @media (max-width: 600px) {
   .app-shell {
-    padding: 20px 16px;
+    padding: 22px 16px 32px;
   }
 
   .controls {
