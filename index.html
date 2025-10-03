@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,12 +6,34 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin-top: 60px;
     }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls label {
+      font-weight: bold;
+    }
+
+    .controls select,
+    .controls button {
+      padding: 6px 12px;
+      font-size: 16px;
+    }
+
     .board {
       display: inline-block;
       border-collapse: collapse;
+      margin: 0 auto;
     }
+
     .board td {
       width: 100px;
       height: 100px;
@@ -22,98 +42,196 @@
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
     }
-    
+
     .board td:hover {
       background-color: #f2f2f2;
     }
-    
+
     .message {
       margin-top: 20px;
       font-size: 24px;
       font-weight: bold;
+      min-height: 28px;
     }
   </style>
 </head>
 <body>
+  <div class="controls">
+    <label for="opponent">Opponent:</label>
+    <select id="opponent">
+      <option value="human">Human</option>
+      <option value="ai-random">Random AI</option>
+    </select>
+    <button id="reset">Restart</button>
+  </div>
+
   <table class="board">
     <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
+      <td data-row="0" data-col="0"></td>
+      <td data-row="0" data-col="1"></td>
+      <td data-row="0" data-col="2"></td>
     </tr>
     <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
+      <td data-row="1" data-col="0"></td>
+      <td data-row="1" data-col="1"></td>
+      <td data-row="1" data-col="2"></td>
     </tr>
     <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
+      <td data-row="2" data-col="0"></td>
+      <td data-row="2" data-col="1"></td>
+      <td data-row="2" data-col="2"></td>
     </tr>
   </table>
   <div class="message"></div>
 
-  <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
+  <script type="module">
+    import { aiRandom } from './site/js/ai/random.js';
+
+    const boardElement = document.querySelector('.board');
+    const messageElement = document.querySelector('.message');
+    const opponentSelect = document.getElementById('opponent');
+    const resetButton = document.getElementById('reset');
+
+    const aiStrategies = {
+      'ai-random': aiRandom,
+    };
+
+    const state = {
+      board: Array.from({ length: 3 }, () => Array(3).fill('')),
+      currentPlayer: 'X',
+      gameOver: false,
+    };
+
+    function resetGame() {
+      state.board.forEach((row) => row.fill(''));
+      state.currentPlayer = 'X';
+      state.gameOver = false;
+      Array.from(boardElement.getElementsByTagName('td')).forEach((cell) => {
+        cell.textContent = '';
+      });
+      messageElement.textContent = '';
+      maybeAiMove();
+    }
+
+    function isAiTurn() {
+      return opponentSelect.value !== 'human' && state.currentPlayer === 'O';
+    }
+
+    function makeMove(row, col, fromAi = false) {
+      if (state.gameOver || state.board[row][col] !== '') {
         return;
       }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+
+      if (!fromAi && isAiTurn()) {
+        return;
       }
+
+      state.board[row][col] = state.currentPlayer;
+      boardElement.rows[row].cells[col].textContent = state.currentPlayer;
+
+      if (checkWin(state.currentPlayer)) {
+        messageElement.textContent = `${state.currentPlayer} Wins!`;
+        state.gameOver = true;
+        return;
+      }
+
+      if (checkDraw()) {
+        messageElement.textContent = `It's a draw!`;
+        state.gameOver = true;
+        return;
+      }
+
+      state.currentPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
+      maybeAiMove();
     }
-    
+
     function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
+      for (let i = 0; i < 3; i += 1) {
+        if (
+          state.board[i][0] === player &&
+          state.board[i][1] === player &&
+          state.board[i][2] === player
+        ) {
+          return true;
         }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
+
+        if (
+          state.board[0][i] === player &&
+          state.board[1][i] === player &&
+          state.board[2][i] === player
+        ) {
+          return true;
         }
       }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
+
+      if (
+        state.board[0][0] === player &&
+        state.board[1][1] === player &&
+        state.board[2][2] === player
+      ) {
+        return true;
       }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
+
+      if (
+        state.board[0][2] === player &&
+        state.board[1][1] === player &&
+        state.board[2][0] === player
+      ) {
+        return true;
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
+      return state.board.every((row) => row.every((cell) => cell !== ''));
+    }
+
+    function maybeAiMove() {
+      if (!state.gameOver && isAiTurn()) {
+        const strategy = aiStrategies[opponentSelect.value];
+        if (typeof strategy === 'function') {
+          const moveState = {
+            board: state.board.map((row) => row.slice()),
+            currentPlayer: state.currentPlayer,
+          };
+          const move = strategy(moveState);
+
+          if (move && typeof move.row === 'number' && typeof move.col === 'number') {
+            setTimeout(() => makeMove(move.row, move.col, true), 200);
           }
         }
       }
-      
-      return true;
     }
+
+    boardElement.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLTableCellElement)) {
+        return;
+      }
+
+      const row = Number(target.dataset.row);
+      const col = Number(target.dataset.col);
+
+      if (Number.isInteger(row) && Number.isInteger(col)) {
+        makeMove(row, col);
+      }
+    });
+
+    resetButton.addEventListener('click', () => {
+      resetGame();
+    });
+
+    opponentSelect.addEventListener('change', () => {
+      if (!state.gameOver) {
+        messageElement.textContent = '';
+        maybeAiMove();
+      }
+    });
+
+    resetGame();
   </script>
 </body>
 </html>
