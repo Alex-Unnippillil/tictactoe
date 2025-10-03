@@ -1224,6 +1224,158 @@ dialog.is-closing::backdrop {
   gap: var(--modal-section-gap);
 }
 
+.modal__preview {
+  --preview-surface: var(--surface);
+  --preview-surface-muted: var(--surface-muted);
+  --preview-border: var(--border);
+  --preview-text: var(--text);
+  --preview-text-secondary: var(--text-secondary);
+  --preview-accent: var(--accent);
+  --preview-accent-dark: var(--accent-dark);
+  --preview-gradient-base: var(--page-gradient-base);
+  --preview-gradient-overlay: var(--page-gradient-overlay);
+  --preview-glass-surface: var(--glass-surface, rgba(255, 255, 255, 0.72));
+  --preview-glass-border: var(--glass-border, rgba(148, 163, 184, 0.35));
+  --preview-glass-highlight: var(--glass-highlight, rgba(255, 255, 255, 0.6));
+  --preview-glow-primary: var(--glow-primary);
+  --preview-glow-accent: var(--glow-accent);
+  --preview-glow-ambient: var(--glow-ambient);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  border-radius: clamp(1rem, 1.2vw + 0.75rem, 1.5rem);
+  padding: clamp(1rem, 1.2vw + 0.85rem, 1.6rem);
+  background-image: var(--preview-gradient-overlay), var(--preview-gradient-base);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 45px
+    color-mix(in srgb, var(--preview-glow-ambient) 55%, transparent);
+  overflow: hidden;
+  min-height: clamp(8.5rem, 16vw, 12rem);
+}
+
+.modal__preview::before,
+.modal__preview::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.72;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.modal__preview::before {
+  width: clamp(6rem, 12vw, 9.5rem);
+  height: clamp(6rem, 12vw, 9.5rem);
+  background: radial-gradient(circle, var(--preview-glow-primary), transparent 68%);
+  top: clamp(-2.5rem, -3vw, -1.5rem);
+  left: clamp(-2.5rem, -3vw, -1.25rem);
+}
+
+.modal__preview::after {
+  width: clamp(7rem, 14vw, 10.5rem);
+  height: clamp(7rem, 14vw, 10.5rem);
+  background: radial-gradient(circle, var(--preview-glow-accent), transparent 70%);
+  bottom: clamp(-3rem, -4vw, -1.75rem);
+  right: clamp(-3rem, -4vw, -1.5rem);
+}
+
+.modal__preview-scene {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal__preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 0.8vw + 0.5rem, 1.1rem);
+  width: min(100%, clamp(9.5rem, 22vw, 14rem));
+  padding: clamp(0.9rem, 1vw + 0.6rem, 1.2rem)
+    clamp(1.15rem, 1.2vw + 0.85rem, 1.7rem);
+  border-radius: clamp(0.9rem, 1vw + 0.65rem, 1.3rem);
+  background: color-mix(
+    in srgb,
+    var(--preview-glass-surface) 86%,
+    var(--preview-surface-muted) 14%
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--preview-glass-border) 65%, transparent);
+  box-shadow:
+    inset 0 1px 0
+      color-mix(in srgb, var(--preview-glass-highlight) 55%, transparent),
+    0 14px 32px color-mix(in srgb, var(--preview-glow-primary) 35%, transparent);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.modal__preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.4rem, 0.6vw, 0.65rem);
+  width: 100%;
+}
+
+.modal__preview-cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: clamp(0.55rem, 0.8vw, 0.75rem);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 0.9vw + 0.7rem, 1.2rem);
+  color: var(--preview-text-secondary);
+  background: color-mix(in srgb, var(--preview-surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--preview-border) 60%, transparent);
+  box-shadow:
+    inset 0 1px 0
+      color-mix(in srgb, var(--preview-glass-highlight) 35%, transparent),
+    0 10px 24px color-mix(in srgb, var(--preview-glow-accent) 25%, transparent);
+  letter-spacing: 0.04em;
+}
+
+.modal__preview-cell--x {
+  color: var(--preview-accent);
+  text-shadow: 0 4px 12px
+    color-mix(in srgb, var(--preview-glow-accent) 45%, transparent);
+}
+
+.modal__preview-cell--o {
+  color: var(--preview-accent-dark);
+  text-shadow: 0 4px 12px
+    color-mix(in srgb, var(--preview-glow-primary) 45%, transparent);
+}
+
+.modal__preview-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.45rem, 0.6vw + 0.35rem, 0.65rem)
+    clamp(1.1rem, 1.2vw + 0.85rem, 1.65rem);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 0.8vw + 0.55rem, 0.9rem);
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  background-image: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--preview-accent) 95%, transparent),
+      color-mix(in srgb, var(--preview-accent-dark) 90%, transparent)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.15), transparent 65%);
+  border: 1px solid
+    color-mix(in srgb, var(--preview-accent) 70%, transparent);
+  box-shadow:
+    0 14px 30px color-mix(in srgb, var(--preview-glow-accent) 50%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 65%, transparent);
+  text-transform: uppercase;
+}
+
 .modal__footer {
   padding: clamp(0.7rem, 0.9vw + 0.5rem, 1.1rem) var(--modal-padding-inline)
     clamp(1rem, 1vw + 0.75rem, 1.35rem);
