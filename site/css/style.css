@@ -7,6 +7,7 @@
   margin: 0;
   padding: 0;
   font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .visually-hidden {
@@ -39,6 +40,25 @@ body {
     sans-serif;
   background: var(--surface, #ffffff);
   color: var(--text, #111827);
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+::selection {
+  background: transparent;
+}
+
+::-moz-selection {
+  background: transparent;
+}
+
+input,
+textarea,
+select {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 img,
@@ -347,10 +367,10 @@ body.page--game {
   flex-direction: column;
   align-items: center;
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
-    clamp(3.5rem, 8vw, 5.5rem);
+    clamp(4.5rem, 10vw, 7rem);
   box-sizing: border-box;
   gap: clamp(1.75rem, 4vw, 3rem);
-  min-height: 100%;
+  min-height: 100dvh;
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
@@ -672,9 +692,9 @@ button:focus-visible {
   border: 1px solid var(--glass-border);
   border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
   padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
-  padding-block-end: clamp(2.5rem, 2.5vw + 2rem, 4rem);
+  padding-block-end: clamp(3.25rem, 3vw + 2.5rem, 5rem);
   box-shadow: var(--glass-shadow);
-  overflow: hidden;
+  overflow: visible;
   z-index: 0;
 }
 
@@ -1482,7 +1502,7 @@ button:focus-visible {
   gap: 24px;
   align-content: space-between;
   min-height: clamp(360px, 52vh, 520px);
-  padding-block-end: clamp(1.5rem, 2vw, 2.5rem);
+  padding-block-end: clamp(2.5rem, 4vw, 3.5rem);
 }
 
 .controls {
