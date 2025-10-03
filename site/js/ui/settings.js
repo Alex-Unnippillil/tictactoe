@@ -111,28 +111,64 @@
     O: sanitiseName(names?.O ?? "", DEFAULT_NAMES.O),
   });
 
-  const readPersistedNames = () => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object") {
-        return null;
-      }
-      return normaliseNames(parsed);
-    } catch (error) {
-      console.warn("Unable to load saved player names", error);
-      return null;
-    }
-  };
+  const LEGACY_NAME_KEYS = ["tictactoe:names"];
 
   const writePersistedNames = (names) => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(names));
     } catch (error) {
       console.warn("Unable to persist player names", error);
+    }
+  };
+
+  const readLegacyNames = () => {
+    try {
+      for (const key of LEGACY_NAME_KEYS) {
+        const raw = window.localStorage.getItem(key);
+        if (!raw) {
+          continue;
+        }
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") {
+          continue;
+        }
+        return { key, names: normaliseNames(parsed) };
+      }
+    } catch (error) {
+      console.warn("Unable to read legacy player names", error);
+    }
+    return null;
+  };
+
+  const migrateLegacyNames = () => {
+    const legacy = readLegacyNames();
+    if (!legacy) {
+      return null;
+    }
+    const { key, names } = legacy;
+    writePersistedNames(names);
+    try {
+      window.localStorage.removeItem(key);
+    } catch (error) {
+      console.warn("Unable to clean up legacy player names", error);
+    }
+    return names;
+  };
+
+  const readPersistedNames = () => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return migrateLegacyNames();
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") {
+        return migrateLegacyNames();
+      }
+      return normaliseNames(parsed);
+    } catch (error) {
+      console.warn("Unable to load saved player names", error);
+      return migrateLegacyNames();
     }
   };
 
@@ -451,6 +487,9 @@
     attachValidation(fields.O, { onDirty: markDirty });
 
     const closeModal = () => {
+      if (!isModalOpen) {
+        return;
+      }
       isModalOpen = false;
       if (modal instanceof HTMLDialogElement) {
         modal.close();
@@ -458,9 +497,15 @@
         modal.setAttribute("open", "false");
       }
       populateForm();
+      window.setTimeout(() => {
+        openButton?.focus();
+      }, 0);
     };
 
     const openModal = () => {
+      if (isModalOpen) {
+        return;
+      }
       isModalOpen = true;
       populateForm();
       if (modal instanceof HTMLDialogElement) {
@@ -468,6 +513,13 @@
       } else {
         modal.setAttribute("open", "true");
       }
+      window.setTimeout(() => {
+        const focusTarget = fields.X.input || fields.O.input || form.querySelector("input, button, select, textarea");
+        focusTarget?.focus();
+        if (focusTarget instanceof HTMLInputElement) {
+          focusTarget.select?.();
+        }
+      }, 0);
     };
 
     const handleSubmit = (event) => {
