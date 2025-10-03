@@ -14,7 +14,8 @@
     "start": "npm run serve",
     "lint": "echo \"No lint script configured\"",
     "test": "node --test tests/unit",
-    "e2e": "echo \"No end-to-end tests configured\""
+    "e2e": "echo \"No end-to-end tests configured\"",
+    "e2e:ci": "npm run e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
