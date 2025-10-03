@@ -9,7 +9,9 @@
 SPDX-License-Identifier: MIT
 
 ![image](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
-https://alex-unnippillil.github.io/tictactoe/
+Visit the live game on GitHub Pages: https://alex-unnippillil.github.io/tictactoe/
+
+The site is built from the `site/` directory, with [`site/index.html`](site/index.html) serving as the canonical entry point that GitHub Pages publishes.
 
 ## Static site assets
 
@@ -29,7 +31,7 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 
 1. Install dependencies with `npm install`.
 2. Launch the local development server with `npm run dev` and open the provided URL in your browser.
-3. Make changes to `index.html`; the development server will automatically reload the page.
+3. Make changes to [`site/index.html`](site/index.html); the development server will automatically reload the page.
 
 > **Prerequisites:** Node.js 18+ and npm 9+.
 
@@ -65,12 +67,13 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 
 The project is a static HTML application comprised of:
 
-- `index.html` containing the markup, inline styles, and JavaScript that power the entire game experience.
+- [`site/index.html`](site/index.html) containing the markup, inline styles, and JavaScript that power the entire game experience.
 - No external build system is required; however, npm scripts provide scaffolding for future enhancements such as bundling or testing frameworks.
 
 ## GitHub Pages URL
 
-> Placeholder: Update this section with the final published GitHub Pages link when available.
+The project is published at [https://alex-unnippillil.github.io/tictactoe/](https://alex-unnippillil.github.io/tictactoe/).
+The GitHub Pages workflow copies the contents of the `site/` directory—including [`site/index.html`](site/index.html)—to the deployment branch, so edit those files when updating the game.
 
 ## License
 
