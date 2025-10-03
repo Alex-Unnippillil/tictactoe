@@ -1,73 +1,127 @@
 :root {
   color-scheme: light dark;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f0f4ff, #ffffff);
-  min-height: 100vh;
   margin: 0;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle at top, #f5f7ff, #dbe4ff);
   color: #1f2933;
 }
 
 main {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
-  padding: 48px 56px;
-  max-width: 480px;
+  width: min(480px, 90vw);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+  padding: 40px 32px 48px;
   text-align: center;
 }
 
 h1 {
-  font-size: 2.75rem;
-  margin-bottom: 16px;
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 4vw, 2.8rem);
 }
 
-p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 32px;
+.intro {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #475569;
 }
 
-a.button {
+.status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 24px;
-  border-radius: 9999px;
+  min-height: 48px;
+  padding: 8px 16px;
+  margin-bottom: 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+  color: #1d4ed8;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0 auto 24px;
+  width: min(360px, 80vw);
+}
+
+.board button {
+  aspect-ratio: 1 / 1;
+  border: none;
+  border-radius: 20px;
+  background: rgba(241, 245, 249, 0.85);
+  box-shadow: inset 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 20px rgba(15, 23, 42, 0.08);
+  font-size: clamp(2.2rem, 8vw, 3.2rem);
+  font-weight: 700;
+  color: #0f172a;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+
+.board button:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 6px 16px rgba(15, 23, 42, 0.08), 0 16px 26px rgba(15, 23, 42, 0.12);
+}
+
+.board button:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 4px;
+}
+
+.board button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+#resetButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
   background: #2563eb;
   color: #ffffff;
+  font-size: 1rem;
   font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
-a.button:hover {
+#resetButton:hover {
   background: #1d4ed8;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(29, 78, 216, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(29, 78, 216, 0.35);
 }
 
-a.button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.4);
+#resetButton:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.7);
   outline-offset: 4px;
 }
 
 @media (max-width: 480px) {
   main {
-    padding: 32px 24px;
+    padding: 32px 24px 40px;
   }
 
-  h1 {
-    font-size: 2.1rem;
-  }
-
-  p {
-    font-size: 1rem;
+  .board {
+    gap: 10px;
   }
 }

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Keyboard play', () => {
   test('allows navigating the grid with arrow keys and announces moves', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/tictactoe/');
 
     const board = page.locator('[role="grid"], [data-testid="board"]').first();
     await expect(board).toBeVisible();

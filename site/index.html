@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Tic Tac Toe</h1>
+      <p class="intro">Take turns placing marks on the board. First to three in a row wins!</p>
+      <section class="status" aria-live="polite" role="status" data-testid="status">
+        Player X's turn
+      </section>
+      <section
+        class="board"
+        role="grid"
+        aria-label="Tic Tac Toe board"
+        data-testid="board"
+      >
+        <button type="button" data-testid="cell" data-index="0" role="gridcell" aria-label="Cell 1"></button>
+        <button type="button" data-testid="cell" data-index="1" role="gridcell" aria-label="Cell 2"></button>
+        <button type="button" data-testid="cell" data-index="2" role="gridcell" aria-label="Cell 3"></button>
+        <button type="button" data-testid="cell" data-index="3" role="gridcell" aria-label="Cell 4"></button>
+        <button type="button" data-testid="cell" data-index="4" role="gridcell" aria-label="Cell 5"></button>
+        <button type="button" data-testid="cell" data-index="5" role="gridcell" aria-label="Cell 6"></button>
+        <button type="button" data-testid="cell" data-index="6" role="gridcell" aria-label="Cell 7"></button>
+        <button type="button" data-testid="cell" data-index="7" role="gridcell" aria-label="Cell 8"></button>
+        <button type="button" data-testid="cell" data-index="8" role="gridcell" aria-label="Cell 9"></button>
+      </section>
+      <div class="actions">
+        <button id="resetButton" type="button">Reset game</button>
+      </div>
+    </main>
+    <script>
+      (() => {
+        const status = document.querySelector('[data-testid="status"]');
+        const boardEl = document.querySelector('[data-testid="board"]');
+        const resetButton = document.getElementById('resetButton');
+        const cells = Array.from(boardEl?.querySelectorAll('[data-testid="cell"]') || []);
+
+        if (!status || !boardEl || cells.length !== 9) {
+          return;
+        }
+
+        let board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let winner = null;
+
+        const winningLines = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6],
+        ];
+
+        const setStatus = (text) => {
+          status.textContent = text;
+        };
+
+        const checkWinner = () => {
+          for (const [a, b, c] of winningLines) {
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+              return board[a];
+            }
+          }
+          return null;
+        };
+
+        const applyMove = (index) => {
+          if (winner || board[index]) {
+            return;
+          }
+          const activePlayer = currentPlayer;
+          board[index] = activePlayer;
+          cells[index].textContent = activePlayer;
+          winner = checkWinner();
+
+          if (winner) {
+            setStatus(`Player ${winner} wins!`);
+            return;
+          }
+
+          if (!board.some((cell) => !cell)) {
+            setStatus("It's a draw!");
+            return;
+          }
+
+          currentPlayer = activePlayer === 'X' ? 'O' : 'X';
+          setStatus(`Player ${currentPlayer}'s turn`);
+        };
+
+        const focusCell = (index) => {
+          const target = cells[index];
+          if (target) {
+            target.focus();
+          }
+        };
+
+        const moveFocus = (fromIndex, key) => {
+          const row = Math.floor(fromIndex / 3);
+          const col = fromIndex % 3;
+          let nextRow = row;
+          let nextCol = col;
+
+          switch (key) {
+            case 'ArrowUp':
+              nextRow = (row + 2) % 3;
+              break;
+            case 'ArrowDown':
+              nextRow = (row + 1) % 3;
+              break;
+            case 'ArrowLeft':
+              nextCol = (col + 2) % 3;
+              break;
+            case 'ArrowRight':
+              nextCol = (col + 1) % 3;
+              break;
+            default:
+              return;
+          }
+
+          const nextIndex = nextRow * 3 + nextCol;
+          focusCell(nextIndex);
+        };
+
+        cells.forEach((cell, index) => {
+          cell.addEventListener('click', () => {
+            applyMove(index);
+          });
+
+          cell.addEventListener('keydown', (event) => {
+            if (
+              event.key === 'ArrowUp' ||
+              event.key === 'ArrowDown' ||
+              event.key === 'ArrowLeft' ||
+              event.key === 'ArrowRight'
+            ) {
+              event.preventDefault();
+              moveFocus(index, event.key);
+            }
+          });
+        });
+
+        if (resetButton) {
+          resetButton.addEventListener('click', () => {
+            board = Array(9).fill(null);
+            winner = null;
+            currentPlayer = 'X';
+            cells.forEach((cell) => {
+              cell.textContent = '';
+            });
+            setStatus("Player X's turn");
+            focusCell(0);
+          });
+        }
+
+        setStatus("Player X's turn");
+      })();
+    </script>
+  </body>
+</html>
