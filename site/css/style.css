@@ -55,6 +55,30 @@ select {
   --text: #111827;
   --text-secondary: #4b5563;
   --danger: #dc2626;
+  --page-gradient-base: radial-gradient(
+      circle at 20% 20%,
+      rgba(59, 130, 246, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(circle at 80% 15%, rgba(59, 222, 255, 0.24), transparent 52%),
+    linear-gradient(140deg, #eef2ff 0%, #f7faff 50%, #ffffff 100%);
+  --page-gradient-overlay: radial-gradient(
+      120% 140% at 20% 90%,
+      rgba(30, 64, 175, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(90% 120% at 80% 70%, rgba(109, 40, 217, 0.12), transparent 65%);
+  --glass-surface: rgba(255, 255, 255, 0.72);
+  --glass-surface-fallback: rgba(248, 250, 252, 0.94);
+  --glass-border: rgba(148, 163, 184, 0.35);
+  --glass-highlight: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+  --glass-blur: 28px;
+  --glow-primary: rgba(59, 130, 246, 0.32);
+  --glow-secondary: rgba(96, 165, 250, 0.28);
+  --glow-accent: rgba(14, 165, 233, 0.26);
+  --glow-ambient: rgba(15, 118, 110, 0.18);
+  --glow-strong: rgba(79, 70, 229, 0.24);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,18 +91,77 @@ select {
     --accent-dark: #2563eb;
     --text: #f9fafb;
     --text-secondary: #d1d5db;
+    --page-gradient-base: radial-gradient(
+        circle at 18% 22%,
+        rgba(37, 99, 235, 0.4),
+        transparent 55%
+      ),
+      radial-gradient(circle at 78% 12%, rgba(14, 116, 144, 0.32), transparent 58%),
+      linear-gradient(150deg, #0f172a 0%, #111827 55%, #0b1120 100%);
+    --page-gradient-overlay: radial-gradient(
+        130% 150% at 16% 88%,
+        rgba(56, 189, 248, 0.24),
+        transparent 70%
+      ),
+      radial-gradient(90% 130% at 82% 72%, rgba(99, 102, 241, 0.28), transparent 68%);
+    --glass-surface: rgba(15, 23, 42, 0.72);
+    --glass-surface-fallback: rgba(17, 24, 39, 0.94);
+    --glass-border: rgba(94, 122, 164, 0.4);
+    --glass-highlight: rgba(226, 232, 240, 0.2);
+    --glass-shadow: 0 30px 90px rgba(8, 15, 35, 0.56);
+    --glow-primary: rgba(56, 189, 248, 0.35);
+    --glow-secondary: rgba(34, 211, 238, 0.32);
+    --glow-accent: rgba(129, 140, 248, 0.32);
+    --glow-ambient: rgba(45, 212, 191, 0.22);
+    --glow-strong: rgba(30, 64, 175, 0.35);
   }
 }
 
 body.page--game {
-  background: var(--surface-muted);
+  background-color: var(--surface-muted);
+  background-image: var(--page-gradient-overlay), var(--page-gradient-base);
+  background-attachment: fixed;
+  background-size: cover;
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px 48px;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
+    clamp(3.5rem, 8vw, 5.5rem);
   box-sizing: border-box;
-  gap: 24px;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  min-height: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+}
+
+body.page--game::before,
+body.page--game::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  width: clamp(22rem, 40vw, 34rem);
+  height: clamp(22rem, 45vw, 38rem);
+  border-radius: 999px;
+  filter: blur(60px);
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: -2;
+}
+
+body.page--game::before {
+  background: radial-gradient(circle, var(--glow-primary), transparent 65%);
+  top: clamp(-6rem, -4vw, -2rem);
+  left: clamp(-10rem, -6vw, -3rem);
+  animation: glow-drift 28s ease-in-out infinite alternate;
+}
+
+body.page--game::after {
+  background: radial-gradient(circle, var(--glow-ambient), transparent 70%);
+  bottom: clamp(-8rem, -6vw, -3rem);
+  right: clamp(-12rem, -8vw, -4rem);
+  animation: glow-drift 32s ease-in-out infinite alternate-reverse;
 }
 
 body.page--error {
@@ -189,15 +272,88 @@ button:focus-visible {
 }
 
 .app-shell {
-  width: min(680px, 100%);
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: clamp(20px, 4vw, 32px);
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
+  gap: clamp(1.25rem, 1.5vw + 1rem, 2.5rem);
+  margin-inline: auto;
+  width: min(100%, clamp(22rem, 85vw, 56rem));
+  background: var(--glass-surface-fallback);
+  border: 1px solid var(--glass-border);
+  border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
+  padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  z-index: 0;
+}
+
+.app-shell::before,
+.app-shell::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.app-shell::before {
+  width: clamp(10rem, 22vw, 16rem);
+  height: clamp(10rem, 22vw, 16rem);
+  top: clamp(-5rem, -3vw, -2rem);
+  left: clamp(-6rem, -4vw, -2rem);
+  background: radial-gradient(circle, var(--glow-secondary), transparent 65%);
+}
+
+.app-shell::after {
+  width: clamp(8rem, 18vw, 14rem);
+  height: clamp(8rem, 18vw, 14rem);
+  bottom: clamp(-4rem, -2vw, -1.5rem);
+  right: clamp(-5rem, -3vw, -1.5rem);
+  background: radial-gradient(circle, var(--glow-accent), transparent 70%);
+}
+
+@supports ((backdrop-filter: blur(0.5px)) or (-webkit-backdrop-filter: blur(0.5px))) {
+  .app-shell {
+    background: linear-gradient(
+      135deg,
+      var(--glass-highlight) 0%,
+      var(--glass-surface) 35%,
+      var(--glass-surface) 100%
+    );
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+}
+
+@supports not ((backdrop-filter: blur(0.5px)) or (-webkit-backdrop-filter: blur(0.5px))) {
+  .app-shell {
+    background: var(--glass-surface-fallback);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.page--game {
+    background-attachment: scroll;
+  }
+
+  body.page--game::before,
+  body.page--game::after {
+    animation: none;
+  }
+}
+
+@keyframes glow-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -2%, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(-4%, 3%, 0) scale(0.98);
+  }
 }
 
 .toolbar {
