@@ -1,67 +1,72 @@
-# tictactoe
+# Tic Tac Toe
 
 [![CI Status](https://img.shields.io/github/actions/workflow/status/Alex-Unnippillil/tictactoe/ci.yml?branch=main&label=CI)](https://github.com/Alex-Unnippillil/tictactoe/actions/workflows/ci.yml)
 [![Pages Deployment](https://img.shields.io/github/actions/workflow/status/Alex-Unnippillil/tictactoe/pages.yml?branch=main&label=Pages)](https://github.com/Alex-Unnippillil/tictactoe/actions/workflows/pages.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## Live Demo
+A lightweight, framework-free Tic Tac Toe implementation that showcases how we test, ship, and operate a static site on GitHub Pages.
 
+![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
+
+## Table of contents
+- [Live demo](#live-demo)
+- [Quick start](#quick-start)
+- [Repository layout](#repository-layout)
+- [Architecture overview](#architecture-overview)
+- [Scripts](#scripts)
+- [Testing](#testing)
+- [Lighthouse audits](#lighthouse-audits)
+- [Deployment overview](#deployment-overview)
+- [Community guidelines](#community-guidelines)
+- [Changelog](#changelog)
+- [License](#license)
+
+## Live demo
 Visit the published site on GitHub Pages: **https://alex-unnippillil.github.io/tictactoe/**
 
-![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
+## Quick start
+1. Install dependencies with `npm install` (the project pins Node.js 20+ for tooling parity with CI).
+2. Launch the local preview server with `npm run dev` and open the provided URL in your browser.
+3. Make changes under `site/`; the static assets load instantly without a bundler.
 
-## Static site assets
+> **Prerequisites:** Node.js 20+ and npm 9+.
 
-The `site/` directory contains supplemental static files such as `robots.txt` and `sitemap.xml`. Include this folder when publishing or deploying the site so search engines can access these resources.
-## License
+## Repository layout
+| Path | Purpose |
+| --- | --- |
+| `site/` | Production-ready HTML, CSS, and JavaScript for the game. `npm run dev` serves this directory locally, and the Pages workflow copies it into `dist/` for publication. |
+| `site/js/` | Modular JavaScript split into `core/` (game constants), `state/` (shared state controllers such as `history.js`), `ui/` (DOM bindings for settings and status), plus optional AI and PWA helpers. These modules coordinate player input, persistence, and announcements. |
+| `tests/` | Node-based unit tests that exercise the pure game logic. `npm run test` runs everything in this tree inside Node’s built-in test runner. |
+| `.github/workflows/` | Automation pipelines. `ci.yml` runs the unit tests on every push, `lighthouse.yml` audits performance, and `pages.yml` mirrors the manual `npm run build` flow by copying `site/` into `dist/` before deploying to GitHub Pages so the live site stays up-to-date. |
 
-This project is licensed under the [MIT License](LICENSE).
-# Tic Tac Toe
+Because the project ships pre-built assets, `npm run build` simply stages the `site/` directory into `dist/`—mirroring what the Pages workflow does before deploying. Deployment to GitHub Pages happens automatically, so you rarely need to run `npm run deploy` manually.
 
-![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
+## Architecture overview
+The game is organised around small browser modules that communicate through custom events:
 
-## Project Purpose
+1. `site/js/state/core.js` exposes `window.coreState`, the canonical source for player names. It normalises input, emits `state:*` events, and boots the rest of the app once it dispatches `core:ready`.
+2. `site/js/state/history.js` attaches to `coreState`, keeps player metadata in sync with localStorage, and rebroadcasts updates as `history:*` events so features like the share payload and scoreboard can react without tight coupling.
+3. UI bindings under `site/js/ui/` (for example `settings.js` and `status.js`) subscribe to both state channels. They manage focus, validation, and announcements so the DOM always reflects the latest state.
+4. `site/js/game.js` ties everything together: it listens for board interactions, applies the core win-checking logic, persists progress, and asks the status module to narrate outcomes.
 
-Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of building, testing, and deploying a simple interactive game. It is intentionally lightweight, making it ideal for experimenting with static site hosting on GitHub Pages or for showcasing basic DOM manipulation with vanilla JavaScript.
+This event-driven flow keeps the board responsive while allowing new controllers—such as the optional AI helpers—to plug in without modifying the core DOM wiring. On every push to `main`, GitHub Actions runs the `ci.yml` workflow to verify the logic and the `pages.yml` workflow to publish the refreshed `dist/` bundle, keeping the public site continuously deployed.
 
-## Quick Start
-
-1. Install dependencies with `npm install`.
-2. Launch the local development server with `npm run dev` and open the provided URL in your browser.
-3. Make changes to `index.html`; the development server will automatically reload the page.
-
-> **Prerequisites:** Node.js 18+ and npm 9+.
-
-## Community guidelines
-
-We are committed to fostering a welcoming and inclusive environment. Please
-review our [Code of Conduct](CODE_OF_CONDUCT.md) for expectations on community
-behavior and reporting. For details on how to get involved, see the
-[contribution guide](CONTRIBUTING.md).
+For a deeper dive into the state synchronisation layer, see the inline documentation in [`site/js/state/history.js`](site/js/state/history.js).
 
 ## Scripts
-
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Starts the local development server for iterative work.
-| `npm run build` | Produces the production-ready static assets.
-| `npm run test` | Executes the automated test suite.
-| `npm run lint` | Runs linting to ensure code quality and consistency.
-| `npm run deploy` | Publishes the `dist/` output to GitHub Pages.
-
-## Local Development
-
-- **Start a hot-reloading server:** `npm run dev`
-- **Run linters while developing:** `npm run lint`
-- **Format and lint before committing:** `npm run lint && npm run test`
+| `npm run dev` | Starts the local static server (via `http-server`) so you can iterate on files inside `site/`. |
+| `npm run build` | Copies `site/` into `dist/` to mirror the GitHub Pages packaging step. |
+| `npm run test` | Executes the automated test suite located in `tests/`. |
+| `npm run lint` | Placeholder script reserved for future lint rules. |
+| `npm run deploy` | Bundled into the Pages workflow; manual runs are rarely needed because GitHub Actions publishes automatically. |
 
 ## Testing
-
 - **Unit tests:** `npm run test`
-- **Continuous integration:** See the workflows in `.github/workflows/` for Pages deployment.
+- **Continuous integration:** See [`ci.yml`](.github/workflows/ci.yml) for the test pipeline and [`static.yml`](.github/workflows/static.yml) for additional static analysis jobs.
 
 ## Lighthouse audits
-
 A dedicated [Lighthouse CI workflow](.github/workflows/lighthouse.yml) runs `npx lhci autorun` against the deployed GitHub Pages site at `https://alex-unnippillil.github.io/tictactoe/`. The job uploads the HTML report as an artifact named **`lighthouse-report`** so you can review the latest accessibility, performance, best practices, and SEO scores for the production build.
 
 To inspect the results for any run:
@@ -70,24 +75,16 @@ To inspect the results for any run:
 2. Scroll to the **Artifacts** section and download **`lighthouse-report`**.
 3. Extract the archive locally and open `report.html` in your browser to view the full Lighthouse dashboard.
 
-## Deployment Overview
-
-1. Build the project locally with `npm run build` to generate optimized assets.
+## Deployment overview
+1. Build the project locally with `npm run build` to stage the `dist/` directory (or let the Pages workflow do this automatically).
 2. Preview the static bundle by serving the `dist/` directory locally if desired.
-3. Deploy the latest build using `npm run deploy`, which pushes the generated content to the GitHub Pages branch.
-4. GitHub Actions workflows automate deployment to ensure the published site stays in sync with the main branch.
+3. GitHub Actions deploys the latest build through `.github/workflows/pages.yml` whenever changes land on `main`, ensuring the published site stays in sync.
+
+## Community guidelines
+We are committed to fostering a welcoming and inclusive environment. Please review our [Code of Conduct](CODE_OF_CONDUCT.md) for expectations on community behavior and reporting. For details on how to get involved, see the [contribution guide](CONTRIBUTING.md).
 
 ## Changelog
-
 Review the [CHANGELOG](CHANGELOG.md) for a curated list of notable updates to the project. Release announcements should link back to the same changelog entry to keep documentation and notes aligned.
 
-## Architecture Overview
-
-The project is a static HTML application comprised of:
-
-- `index.html` containing the markup, inline styles, and JavaScript that power the entire game experience.
-- No external build system is required; however, npm scripts provide scaffolding for future enhancements such as bundling or testing frameworks.
-
 ## License
-
-SPDX-License-Identifier: MIT
+This project is licensed under the [MIT License](LICENSE).

@@ -7,10 +7,13 @@
     "node": ">=20"
   },
   "scripts": {
+    "dev": "npm run serve",
+    "serve": "npx http-server site",
+    "build": "node scripts/build.mjs",
+    "deploy": "npm run build",
     "lint": "echo \"No lint script configured\"",
     "test": "node --test tests/unit",
-    "e2e": "echo \"No end-to-end tests configured\"",
-    "serve": "npx http-server site"
+    "e2e": "echo \"No end-to-end tests configured\""
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
