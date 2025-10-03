@@ -9,8 +9,76 @@
     [0, 4, 8],
     [2, 4, 6],
   ];
+  const STORAGE_KEY = "tictactoe:game-state";
 
   const nextPlayer = (player) => (player === "X" ? "O" : "X");
+
+  const normaliseBoard = (value) => {
+    if (!Array.isArray(value) || value.length !== 9) {
+      return Array(9).fill(null);
+    }
+
+    return value.map((cell) => (cell === "X" || cell === "O" ? cell : null));
+  };
+
+  const normaliseWinningLine = (value) => {
+    if (!Array.isArray(value)) {
+      return null;
+    }
+
+    const filtered = value
+      .map((index) => (Number.isInteger(index) ? index : null))
+      .filter((index) => index !== null && index >= 0 && index < 9);
+
+    return filtered.length === 3 ? filtered : null;
+  };
+
+  const parseScore = (input) => {
+    const number = Number(input);
+    if (!Number.isFinite(number) || number < 0) {
+      return 0;
+    }
+
+    return Math.trunc(number);
+  };
+
+  const normaliseScores = (value) => {
+    if (!value || typeof value !== "object") {
+      return null;
+    }
+
+    return {
+      X: parseScore(value.X),
+      O: parseScore(value.O),
+    };
+  };
+
+  const readPersistedState = () => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return null;
+      }
+
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") {
+        return null;
+      }
+
+      return parsed;
+    } catch (error) {
+      console.warn("Unable to load saved game state", error);
+      return null;
+    }
+  };
+
+  const writePersistedState = (state) => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.warn("Unable to persist game state", error);
+    }
+  };
 
   document.addEventListener("DOMContentLoaded", () => {
     const cells = Array.from(document.querySelectorAll("[data-cell]"));
@@ -26,6 +94,8 @@
     let board = Array(9).fill(null);
     let currentPlayer = "X";
     let gameOver = false;
+    let lastWinner = null;
+    let activeWinningLine = null;
 
     const disableAllCells = () => {
       cells.forEach((cell) => {
@@ -52,6 +122,7 @@
       WINNING_LINES.find((line) => line.every((index) => board[index] === player));
 
     const highlightWinner = (line) => {
+      activeWinningLine = [...line];
       line.forEach((index) => {
         cells[index].classList.add("cell--winner");
       });
@@ -59,12 +130,74 @@
 
     const isBoardFull = () => board.every((value) => value !== null);
 
+    const persistState = () => {
+      const state = {
+        board: [...board],
+        currentPlayer,
+        gameOver,
+        winner: lastWinner,
+        winningLine: activeWinningLine ? [...activeWinningLine] : null,
+        scores: status.getScores(),
+      };
+
+      writePersistedState(state);
+    };
+
+    const restoreState = () => {
+      const saved = readPersistedState();
+      if (!saved) {
+        startNewRound();
+        return;
+      }
+
+      board = normaliseBoard(saved.board);
+      currentPlayer = saved.currentPlayer === "O" ? "O" : "X";
+      gameOver = Boolean(saved.gameOver);
+      lastWinner = saved.winner === "X" || saved.winner === "O" ? saved.winner : null;
+      activeWinningLine = normaliseWinningLine(saved.winningLine);
+
+      const savedScores = normaliseScores(saved.scores);
+      if (savedScores) {
+        status.setScores(savedScores);
+      } else {
+        status.resetScores();
+      }
+
+      cells.forEach((cell, index) => {
+        const mark = board[index];
+        if (mark === "X" || mark === "O") {
+          renderCell(cell, mark);
+        } else {
+          clearCell(cell);
+        }
+      });
+
+      if (gameOver) {
+        if (activeWinningLine && activeWinningLine.length === 3) {
+          highlightWinner(activeWinningLine);
+        }
+        disableAllCells();
+        if (lastWinner) {
+          status.announceWin(lastWinner);
+        } else {
+          status.announceDraw();
+        }
+      } else {
+        status.setTurn(currentPlayer);
+      }
+
+      persistState();
+    };
+
     const startNewRound = () => {
       board = Array(9).fill(null);
       gameOver = false;
+      lastWinner = null;
+      activeWinningLine = null;
       cells.forEach((cell) => clearCell(cell));
       currentPlayer = "X";
       status.setTurn(currentPlayer);
+      persistState();
     };
 
     const resetGame = () => {
@@ -91,21 +224,27 @@
       if (winningLine) {
         highlightWinner(winningLine);
         gameOver = true;
+        lastWinner = currentPlayer;
         status.announceWin(currentPlayer);
         status.incrementScore(currentPlayer);
         disableAllCells();
+        persistState();
         return;
       }
 
       if (isBoardFull()) {
         gameOver = true;
+        lastWinner = null;
+        activeWinningLine = null;
         status.announceDraw();
         disableAllCells();
+        persistState();
         return;
       }
 
       currentPlayer = nextPlayer(currentPlayer);
       status.setTurn(currentPlayer);
+      persistState();
     };
 
     const handleNewRound = () => {
@@ -118,6 +257,7 @@
 
     const handleResetScores = () => {
       status.resetScores();
+      persistState();
     };
 
     cells.forEach((cell) => {
@@ -128,6 +268,6 @@
     resetGameButton?.addEventListener("click", handleResetGame);
     resetScoresButton?.addEventListener("click", handleResetScores);
 
-    startNewRound();
+    restoreState();
   });
 })();
