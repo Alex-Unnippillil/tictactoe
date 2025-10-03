@@ -6,9 +6,27 @@
     capacity: Infinity,
   };
 
+  const cloneUsingStructuredClone =
+    typeof global.structuredClone === 'function'
+      ? (value) => global.structuredClone(value)
+      : null;
+
+  let cloneUsingV8 = null;
+  if (!cloneUsingStructuredClone && typeof module !== 'undefined' && module.exports) {
+    try {
+      const { serialize, deserialize } = require('node:v8');
+      cloneUsingV8 = (value) => deserialize(serialize(value));
+    } catch (error) {
+      // Ignore – fall back to JSON cloning below.
+    }
+  }
+
   function defaultClone(value) {
-    if (typeof structuredClone === 'function') {
-      return structuredClone(value);
+    if (cloneUsingStructuredClone) {
+      return cloneUsingStructuredClone(value);
+    }
+    if (cloneUsingV8) {
+      return cloneUsingV8(value);
     }
     return JSON.parse(JSON.stringify(value));
   }
