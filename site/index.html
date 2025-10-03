@@ -81,13 +81,14 @@
       </section>
 
       <div class="play-area">
-        <section
-          class="board"
-          id="board"
-          role="grid"
-          aria-label="Tic Tac Toe board"
-          aria-live="polite"
-        >
+        <div class="board-indicator" id="boardIndicator" data-role="board-indicator">
+          <section
+            class="board"
+            id="board"
+            role="grid"
+            aria-label="Tic Tac Toe board"
+            aria-live="polite"
+          >
           <button
             type="button"
             class="cell"
@@ -151,7 +152,8 @@
             data-index="8"
             aria-label="Row 3 column 3, empty"
           ></button>
-        </section>
+          </section>
+        </div>
 
         <footer class="controls">
           <div class="controls__group">

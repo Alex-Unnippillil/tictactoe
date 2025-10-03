@@ -150,6 +150,7 @@
     const statusApi = global.uiStatus;
     const statusElement = document.getElementById('statusMessage');
     const boardElement = document.getElementById('board');
+    const boardIndicatorElement = document.querySelector('[data-role="board-indicator"]');
     if (!boardElement) {
       return null;
     }
@@ -228,7 +229,22 @@
       }
     };
 
+    const updateBoardIndicator = (player) => {
+      if (!boardIndicatorElement) {
+        return;
+      }
+
+      boardIndicatorElement.classList.remove('is-turn-x', 'is-turn-o');
+
+      if (player === PLAYER_X) {
+        boardIndicatorElement.classList.add('is-turn-x');
+      } else if (player === PLAYER_O) {
+        boardIndicatorElement.classList.add('is-turn-o');
+      }
+    };
+
     const announceTurn = (player) => {
+      updateBoardIndicator(player);
       if (statusApi && typeof statusApi.setTurn === 'function') {
         statusApi.setTurn(player);
       } else {
