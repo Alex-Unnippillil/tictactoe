@@ -184,16 +184,19 @@
           </p>
           <div class="field">
             <label for="playerXName">Player X name</label>
-            <input
-              type="text"
-              id="playerXName"
-              name="playerX"
-              inputmode="text"
-              autocomplete="name"
-              maxlength="24"
-              placeholder="Player X"
-              aria-describedby="playerXHelp playerXError"
-            />
+            <div class="field__control">
+              <input
+                type="text"
+                id="playerXName"
+                name="playerX"
+                inputmode="text"
+                autocomplete="name"
+                maxlength="24"
+                placeholder="Player X"
+                aria-describedby="playerXHelp playerXError"
+              />
+              <span class="field__status" aria-hidden="true"></span>
+            </div>
             <p id="playerXHelp" class="field__hint">
               Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
               characters).
@@ -202,16 +205,19 @@
           </div>
           <div class="field">
             <label for="playerOName">Player O name</label>
-            <input
-              type="text"
-              id="playerOName"
-              name="playerO"
-              inputmode="text"
-              autocomplete="name"
-              maxlength="24"
-              placeholder="Player O"
-              aria-describedby="playerOHelp playerOError"
-            />
+            <div class="field__control">
+              <input
+                type="text"
+                id="playerOName"
+                name="playerO"
+                inputmode="text"
+                autocomplete="name"
+                maxlength="24"
+                placeholder="Player O"
+                aria-describedby="playerOHelp playerOError"
+              />
+              <span class="field__status" aria-hidden="true"></span>
+            </div>
             <p id="playerOHelp" class="field__hint">
               Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
               characters).

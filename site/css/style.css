@@ -977,50 +977,141 @@ button:focus-visible {
 
 dialog {
   border: none;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 0;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
-  max-width: min(420px, 90vw);
+  max-width: min(460px, 92vw);
+  background: transparent;
+  color: inherit;
+  opacity: 0;
+  transform: translate3d(0, 28px, 0) scale(0.98);
+  transition:
+    opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 32px 60px var(--glass-shadow));
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+dialog.is-closing {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0) scale(0.97);
+  pointer-events: none;
 }
 
 dialog::backdrop {
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
+  background:
+    radial-gradient(circle at top, rgba(148, 163, 184, 0.22), transparent 60%),
+    rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+dialog[open]::backdrop {
+  opacity: 1;
+}
+
+dialog.is-closing::backdrop {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog,
+  dialog::backdrop {
+    transition: none;
+  }
+
+  dialog {
+    transform: none;
+    opacity: 1;
+  }
+
+  dialog.is-closing {
+    transform: none;
+    opacity: 0;
+  }
 }
 
 .modal {
+  position: relative;
   display: flex;
   flex-direction: column;
+  border-radius: 20px;
+  padding: 0;
+  --modal-padding-inline: clamp(1.25rem, 1.5vw + 1rem, 1.75rem);
+  --modal-section-gap: clamp(1rem, 1vw + 0.75rem, 1.5rem);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 60%),
+    var(--glass-overlay);
+  backdrop-filter: blur(26px) saturate(165%);
+  border: 1px solid var(--glass-outline);
+  box-shadow:
+    inset 0 1px 0 var(--modal-edge-light),
+    0 14px 40px var(--glass-shadow);
+  overflow: hidden;
+}
+
+.modal::before,
+.modal::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.modal::before {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  mix-blend-mode: screen;
+  opacity: 0.4;
+}
+
+.modal::after {
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.08) 100%);
+  opacity: 0.35;
 }
 
 .modal__header {
-  padding: 24px 24px 12px;
+  padding: clamp(0.9rem, 1vw + 0.6rem, 1.35rem) var(--modal-padding-inline)
+    clamp(0.7rem, 0.9vw + 0.5rem, 1.1rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: inset 0 -1px 0 var(--divider);
 }
 
 .modal__title {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: clamp(1.2rem, 1.1vw + 1rem, 1.45rem);
+  font-weight: 650;
 }
 
 .modal__body {
-  padding: 0 24px 12px;
+  padding: clamp(0.9rem, 1vw + 0.65rem, 1.35rem) var(--modal-padding-inline)
+    clamp(0.4rem, 0.8vw + 0.35rem, 0.9rem);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--modal-section-gap);
 }
 
 .modal__footer {
-  padding: 16px 24px 24px;
+  padding: clamp(0.7rem, 0.9vw + 0.5rem, 1.1rem) var(--modal-padding-inline)
+    clamp(1rem, 1vw + 0.75rem, 1.35rem);
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  border-top: 1px solid var(--border);
+  gap: clamp(0.5rem, 1vw, 0.75rem);
+  flex-wrap: wrap;
+  box-shadow: inset 0 1px 0 var(--divider);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: clamp(0.5rem, 1vw, 0.75rem);
 }
 
 .field label {
@@ -1028,22 +1119,110 @@ dialog::backdrop {
   font-size: 0.95rem;
 }
 
-.field input[type="text"] {
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 10px 14px;
+.field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  box-shadow: 0 12px 28px var(--field-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+
+.field__control::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.field__control input[type="text"] {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: clamp(0.65rem, 1.6vw, 0.85rem) clamp(1.1rem, 2.2vw, 1.5rem);
   font: inherit;
-  background: var(--surface);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  color: inherit;
+  border-radius: inherit;
+  min-width: 0;
 }
 
-.field input[type="text"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.field__control input[type="text"]::placeholder {
+  color: var(--text-secondary);
+  color: color-mix(in srgb, var(--text-secondary) 68%, transparent);
 }
 
-.field input[type="text"].is-invalid {
+.field__control input[type="text"]:focus-visible {
+  outline: none;
+}
+
+.field__control input[type="text"]:focus-visible + .field__status,
+.field__control input[type="text"].is-invalid + .field__status,
+.field__control input[type="text"]:not(:placeholder-shown):not(.is-invalid) + .field__status {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.field__control input[type="text"]:focus-visible + .field__status {
+  color: var(--accent);
+}
+
+.field__control:focus-within {
+  border-color: var(--accent);
+  box-shadow:
+    0 12px 28px var(--field-shadow),
+    0 0 0 1px var(--accent-ring),
+    0 0 0 8px var(--accent-ring-outer);
+  background: var(--field-focus-bg);
+}
+
+.field__control input[type="text"].is-invalid {
+  color: var(--danger);
+}
+
+.field__control:has(input.is-invalid),
+.field__control.is-invalid {
   border-color: var(--danger);
+  box-shadow:
+    0 12px 28px var(--field-shadow),
+    0 0 0 1px var(--danger-ring),
+    0 0 0 8px var(--danger-ring-outer);
+}
+
+.field__status {
+  position: absolute;
+  right: clamp(0.9rem, 2vw, 1.25rem);
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 200ms ease, transform 200ms ease;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.2));
+}
+
+.field__control input[type="text"].is-invalid + .field__status {
+  color: var(--danger);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='9' stroke='currentColor' stroke-width='2'/%3E%3Cpath stroke='currentColor' stroke-linecap='round' stroke-width='2' d='M10 5v6m0 4h.01'/%3E%3C/svg%3E");
+}
+
+.field__control input[type="text"]:not(:placeholder-shown):not(.is-invalid) + .field__status {
+  color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5.5 10.5 8.5 13.5 14.5 7.5'/%3E%3C/svg%3E");
 }
 
 .field__hint {
