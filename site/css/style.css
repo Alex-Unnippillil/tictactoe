@@ -2169,7 +2169,7 @@ dialog.is-closing::backdrop {
   .toolbar__actions .button,
   .status,
   .board,
-  .board::after,
+  .board::after {
   .segmented-control__label,
   .swatch__content,
   .swatch__visual {
