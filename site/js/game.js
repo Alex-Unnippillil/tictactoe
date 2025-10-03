@@ -274,6 +274,28 @@
       });
     };
 
+    const runWinEffects = (player) => {
+      const effects = global.uiEffects;
+      if (!effects) {
+        return;
+      }
+      const tone = player === PLAYER_X ? 'x' : 'o';
+      if (typeof effects.playConfetti === 'function') {
+        effects.playConfetti({ tone });
+      }
+      if (typeof effects.playRadialGlow === 'function') {
+        effects.playRadialGlow(boardElement, { tone });
+      }
+    };
+
+    const runDrawEffects = () => {
+      const effects = global.uiEffects;
+      if (!effects || typeof effects.playParticleOverlay !== 'function') {
+        return;
+      }
+      effects.playParticleOverlay(boardElement, { tone: 'draw' });
+    };
+
     const refreshBoardUi = () => {
       cells.forEach((cell, index) => {
         const value = board[index];
@@ -362,6 +384,7 @@
 
       announceWin(player);
       highlightWinningLine(line);
+      runWinEffects(player);
       cells.forEach((cell) => setCellDisabled(cell, true));
       dispatchEvent('round-ended', {
         result: 'win',
@@ -373,6 +396,7 @@
 
     const handleDraw = () => {
       announceDraw();
+      runDrawEffects();
       cells.forEach((cell) => setCellDisabled(cell, true));
       dispatchEvent('round-ended', {
         result: 'draw',
