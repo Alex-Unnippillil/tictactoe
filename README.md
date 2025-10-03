@@ -82,7 +82,7 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 ## Deployment
 1. Build the distributable bundle with `npm run build` (or rely on the automated Pages workflow).
 2. Optionally serve `dist/` locally to verify the static output.
-3. Push to `main` to trigger `.github/workflows/pages.yml`, which stages `dist/` and deploys it to GitHub Pages automatically.
+3. Push to `main` to trigger `.github/workflows/pages.yml`, which runs `npm run build` to populate `dist/` before deploying it to GitHub Pages automatically.
 
 ## Documentation and support
 - Review the [Code of Conduct](CODE_OF_CONDUCT.md) and [Contributing Guide](CONTRIBUTING.md) for expectations and onboarding details.
