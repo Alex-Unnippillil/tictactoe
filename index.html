@@ -1,39 +1,10 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tic Tac Toe</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    .board {
-      display: inline-block;
-      border-collapse: collapse;
-    }
-    .board td {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #ccc;
-      font-size: 48px;
-      text-align: center;
-      vertical-align: middle;
-      cursor: pointer;
-    }
-    
-    .board td:hover {
-      background-color: #f2f2f2;
-    }
-    
-    .message {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="site/css/style.css">
 </head>
 <body>
   <table class="board">
@@ -63,26 +34,26 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
+
     function makeMove(row, col) {
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
       document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
+
       if (checkWin(currentPlayer)) {
         document.querySelector('.message').textContent = currentPlayer + ' Wins!';
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        document.querySelector('.message').textContent = "It's a draw!";
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       }
     }
-    
+
     function checkWin(player) {
       for (var i = 0; i < 3; i++) {
         if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
@@ -92,17 +63,17 @@
           return true; // Vertical
         }
       }
-      
+
       if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
         return true; // Diagonal
       }
       if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
         return true; // Diagonal
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,7 +82,7 @@
           }
         }
       }
-      
+
       return true;
     }
   </script>
