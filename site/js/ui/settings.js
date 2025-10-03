@@ -168,6 +168,44 @@
     let isModalOpen = false;
     let fieldsDirty = false;
     let suppressExternalUpdate = false;
+    const modalStates = {
+      entering: "modal--entering",
+      leaving: "modal--leaving",
+      open: "modal--open",
+    };
+    const modalAnimations = {
+      enter: "modal-fade-in",
+      exit: "modal-fade-out",
+    };
+    let enterAnimationHandler = null;
+    let exitAnimationHandler = null;
+    let closeAnimationFallback = null;
+
+    const prefersReducedMotion = () =>
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const clearEnterAnimation = () => {
+      if (enterAnimationHandler && modal) {
+        modal.removeEventListener("animationend", enterAnimationHandler);
+        enterAnimationHandler = null;
+      }
+    };
+
+    const clearExitAnimation = () => {
+      if (exitAnimationHandler && modal) {
+        modal.removeEventListener("animationend", exitAnimationHandler);
+        exitAnimationHandler = null;
+      }
+    };
+
+    const clearCloseFallback = () => {
+      if (typeof closeAnimationFallback === "number") {
+        window.clearTimeout(closeAnimationFallback);
+      }
+      closeAnimationFallback = null;
+    };
 
     const markDirty = () => {
       fieldsDirty = true;
@@ -271,22 +309,121 @@
 
     const closeModal = () => {
       isModalOpen = false;
-      if (modal instanceof HTMLDialogElement) {
-        modal.close();
-      } else {
-        modal.setAttribute("open", "false");
+      if (!modal) {
+        return;
       }
-      populateForm();
+
+      const isDialogElement = modal instanceof HTMLDialogElement;
+      const isOpen =
+        (isDialogElement && modal.open) || modal.hasAttribute("open");
+
+      if (!isOpen) {
+        populateForm();
+        return;
+      }
+
+      const finishClose = () => {
+        clearExitAnimation();
+        clearCloseFallback();
+        modal.classList.remove(
+          modalStates.entering,
+          modalStates.leaving,
+          modalStates.open,
+          "is-closing"
+        );
+        if (isDialogElement) {
+          if (modal.open) {
+            try {
+              modal.close();
+            } catch (error) {
+              console.warn("Unable to close settings dialog", error);
+            }
+          }
+        } else {
+          modal.removeAttribute("open");
+        }
+        populateForm();
+      };
+
+      const reduceMotion = prefersReducedMotion();
+
+      clearEnterAnimation();
+      clearCloseFallback();
+
+      if (reduceMotion) {
+        finishClose();
+        return;
+      }
+
+      if (modal.classList.contains(modalStates.leaving)) {
+        return;
+      }
+
+      const handleAnimationEnd = (event) => {
+        if (event.target !== modal || event.animationName !== modalAnimations.exit) {
+          return;
+        }
+        finishClose();
+      };
+
+      exitAnimationHandler = handleAnimationEnd;
+      modal.addEventListener("animationend", handleAnimationEnd);
+
+      modal.classList.remove(modalStates.entering, modalStates.open, "is-closing");
+      // Trigger reflow so the exit animation restarts consistently.
+      void modal.offsetWidth;
+      modal.classList.add(modalStates.leaving);
+
+      closeAnimationFallback = window.setTimeout(finishClose, 450);
     };
 
     const openModal = () => {
       isModalOpen = true;
       populateForm();
-      if (modal instanceof HTMLDialogElement) {
-        modal.showModal();
+      if (!modal) {
+        return;
+      }
+
+      const isDialogElement = modal instanceof HTMLDialogElement;
+
+      if (isDialogElement) {
+        if (!modal.open) {
+          modal.showModal();
+        }
       } else {
         modal.setAttribute("open", "true");
       }
+
+      clearExitAnimation();
+      clearCloseFallback();
+
+      modal.classList.remove(modalStates.leaving, "is-closing");
+
+      const reduceMotion = prefersReducedMotion();
+
+      if (reduceMotion) {
+        modal.classList.remove(modalStates.entering);
+        modal.classList.add(modalStates.open);
+        return;
+      }
+
+      const handleAnimationEnd = (event) => {
+        if (event.target !== modal || event.animationName !== modalAnimations.enter) {
+          return;
+        }
+        modal.classList.remove(modalStates.entering);
+        modal.classList.add(modalStates.open);
+        clearEnterAnimation();
+      };
+
+      clearEnterAnimation();
+      enterAnimationHandler = handleAnimationEnd;
+      modal.addEventListener("animationend", handleAnimationEnd);
+
+      modal.classList.remove(modalStates.entering, modalStates.open);
+      // Force a reflow to allow re-triggering the entry animation.
+      void modal.offsetWidth;
+      modal.classList.add(modalStates.entering);
     };
 
     const handleSubmit = (event) => {
