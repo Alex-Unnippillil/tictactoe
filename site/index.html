@@ -7,7 +7,19 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body class="page page--game">
-    <h1>Tic Tac Toe</h1>
+    <h1 class="page-title" aria-describedby="pageTitleSubtitle">
+      <span class="page-title__badge" aria-hidden="true">
+        <img src="assets/icon-handshake.svg" alt="" />
+      </span>
+      <span class="page-title__text">
+        <span class="page-title__eyebrow">Interactive match center</span>
+        <span class="page-title__headline">Tic Tac Toe Showdown</span>
+      </span>
+      <span id="pageTitleSubtitle" class="page-title__subhead">
+        Challenge friends, monitor live scoreboards, and personalize every round
+        from one polished control hub.
+      </span>
+    </h1>
     <main class="app-shell" role="application" aria-label="Tic Tac Toe">
       <header class="toolbar">
         <p class="toolbar__title">
@@ -94,63 +106,81 @@
             data-cell
             data-index="0"
             aria-label="Row 1 column 1, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="1"
             aria-label="Row 1 column 2, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="2"
             aria-label="Row 1 column 3, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="3"
             aria-label="Row 2 column 1, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="4"
             aria-label="Row 2 column 2, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="5"
             aria-label="Row 2 column 3, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="6"
             aria-label="Row 3 column 1, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="7"
             aria-label="Row 3 column 2, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
           <button
             type="button"
             class="cell"
             data-cell
             data-index="8"
             aria-label="Row 3 column 3, empty"
-          ></button>
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
         </section>
 
         <footer class="controls">
