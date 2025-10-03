@@ -1,0 +1,7 @@
+{
+  "title": "Tres en raya",
+  "message": {
+    "win": "¡{player} gana!",
+    "draw": "¡Es un empate!"
+  }
+}

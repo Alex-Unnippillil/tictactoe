@@ -1,0 +1,7 @@
+{
+  "title": "Tic Tac Toe",
+  "message": {
+    "win": "{player} Wins!",
+    "draw": "It's a draw!"
+  }
+}

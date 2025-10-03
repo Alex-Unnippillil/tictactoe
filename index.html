@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tic Tac Toe</title>
+  <title data-i18n-key="title"></title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,6 +55,7 @@
   </table>
   <div class="message"></div>
 
+  <script src="site/js/i18n/i18n.js"></script>
   <script>
     var currentPlayer = 'X';
     var board = [
@@ -63,26 +64,40 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
+    var messageElement = document.querySelector('.message');
+
+    function setLocalizedMessage(key, params) {
+      if (!key) {
+        I18n.clearElementTranslation(messageElement);
+        messageElement.textContent = '';
+        return;
+      }
+
+      I18n.setElementTranslation(messageElement, key, params || {});
+      if (!I18n.isReady()) {
+        messageElement.textContent = '';
+      }
+    }
+
     function makeMove(row, col) {
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
       document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
+
       if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
+        setLocalizedMessage('message.win', { player: currentPlayer });
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        setLocalizedMessage('message.draw');
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       }
     }
-    
+
     function checkWin(player) {
       for (var i = 0; i < 3; i++) {
         if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
@@ -92,17 +107,17 @@
           return true; // Vertical
         }
       }
-      
+
       if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
         return true; // Diagonal
       }
       if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
         return true; // Diagonal
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,9 +126,15 @@
           }
         }
       }
-      
+
       return true;
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      I18n.init({ locale: 'en' }).then(function () {
+        I18n.setElementTranslation(document.querySelector('title'), 'title');
+      });
+    });
   </script>
 </body>
 </html>
