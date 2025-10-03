@@ -51,94 +51,106 @@
         </article>
       </section>
 
-      <section class="status" id="statusMessage" aria-live="polite">
+      <section
+        class="status"
+        id="statusMessage"
+        aria-live="polite"
+        data-state="turn"
+        data-player="X"
+      >
         Player X (X) to move
       </section>
 
-      <section
-        class="board"
-        id="board"
-        role="grid"
-        aria-label="Tic Tac Toe board"
-        aria-live="polite"
-      >
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="0"
-          aria-label="Row 1 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="1"
-          aria-label="Row 1 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="2"
-          aria-label="Row 1 column 3, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="3"
-          aria-label="Row 2 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="4"
-          aria-label="Row 2 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="5"
-          aria-label="Row 2 column 3, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="6"
-          aria-label="Row 3 column 1, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="7"
-          aria-label="Row 3 column 2, empty"
-        ></button>
-        <button
-          type="button"
-          class="cell"
-          data-cell
-          data-index="8"
-          aria-label="Row 3 column 3, empty"
-        ></button>
-      </section>
+      <div class="play-area">
+        <section
+          class="board"
+          id="board"
+          role="grid"
+          aria-label="Tic Tac Toe board"
+          aria-live="polite"
+        >
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="0"
+            aria-label="Row 1 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="1"
+            aria-label="Row 1 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="2"
+            aria-label="Row 1 column 3, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="3"
+            aria-label="Row 2 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="4"
+            aria-label="Row 2 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="5"
+            aria-label="Row 2 column 3, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="6"
+            aria-label="Row 3 column 1, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="7"
+            aria-label="Row 3 column 2, empty"
+          ></button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="8"
+            aria-label="Row 3 column 3, empty"
+          ></button>
+        </section>
 
-      <footer class="controls">
-        <div class="controls__group">
-          <button type="button" id="resetScoresButton" class="button button--ghost">
-            Reset scores
-          </button>
-        </div>
-        <div class="controls__group">
-          <button type="button" id="resetGameButton" class="button">
-            Reset game
-          </button>
-        </div>
-      </footer>
+        <footer class="controls">
+          <div class="controls__group">
+            <button
+              type="button"
+              id="resetScoresButton"
+              class="button button--ghost"
+            >
+              Reset scores
+            </button>
+          </div>
+          <div class="controls__group">
+            <button type="button" id="resetGameButton" class="button">
+              Reset game
+            </button>
+          </div>
+        </footer>
+      </div>
     </main>
 
     <dialog id="settingsModal" aria-labelledby="settingsTitle">
