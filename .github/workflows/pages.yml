@@ -27,13 +27,15 @@ jobs:
 
       - name: Build site artifact
         run: |
-          mkdir -p site
-          cp index.html site/index.html
+          set -euo pipefail
+          rm -rf dist
+          mkdir -p dist
+          cp -R site/. dist/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site/
+          path: dist/
 
   deploy:
     runs-on: ubuntu-latest
