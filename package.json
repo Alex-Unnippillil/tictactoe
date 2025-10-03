@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "echo \"No lint script configured\"",
-    "test": "echo \"No unit tests configured\"",
+    "test": "node --test tests/unit",
     "e2e": "echo \"No end-to-end tests configured\"",
     "serve": "npx http-server site"
   },
