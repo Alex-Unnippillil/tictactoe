@@ -1,9 +1,9 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="site/css/animations.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,11 +23,11 @@
       vertical-align: middle;
       cursor: pointer;
     }
-    
+
     .board td:hover {
       background-color: #f2f2f2;
     }
-    
+
     .message {
       margin-top: 20px;
       font-size: 24px;
@@ -63,46 +63,73 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
+    var boardElement = document.querySelector('.board');
+    var messageElement = document.querySelector('.message');
+
     function makeMove(row, col) {
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
+      var cell = boardElement.rows[row].cells[col];
+      cell.textContent = currentPlayer;
+      cell.classList.add('marked', 'marked-' + currentPlayer.toLowerCase());
+
+      var winningLine = checkWin(currentPlayer);
+
+      if (winningLine) {
+        highlightWinningLine(winningLine);
+        messageElement.textContent = currentPlayer + ' Wins!';
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        messageElement.textContent = "It's a draw!";
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       }
     }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
-        }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
-        }
+
+    function highlightWinningLine(line) {
+      for (var i = 0; i < line.length; i++) {
+        var position = line[i];
+        var cell = boardElement.rows[position[0]].cells[position[1]];
+        cell.classList.add('win-line');
       }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
-      }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
     }
-    
+
+    function checkWin(player) {
+      var lines = [
+        [[0, 0], [0, 1], [0, 2]],
+        [[1, 0], [1, 1], [1, 2]],
+        [[2, 0], [2, 1], [2, 2]],
+        [[0, 0], [1, 0], [2, 0]],
+        [[0, 1], [1, 1], [2, 1]],
+        [[0, 2], [1, 2], [2, 2]],
+        [[0, 0], [1, 1], [2, 2]],
+        [[0, 2], [1, 1], [2, 0]]
+      ];
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var hasWinner = true;
+
+        for (var j = 0; j < line.length; j++) {
+          var position = line[j];
+          if (board[position[0]][position[1]] !== player) {
+            hasWinner = false;
+            break;
+          }
+        }
+
+        if (hasWinner) {
+          return line;
+        }
+      }
+
+      return null;
+    }
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,7 +138,7 @@
           }
         }
       }
-      
+
       return true;
     }
   </script>
