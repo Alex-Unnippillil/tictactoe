@@ -4,6 +4,9 @@
     O: "Player O",
   };
 
+  const formatTurnMessage = (names, player) => `${names[player]} (${player}) to move`;
+  const formatWinMessage = (names, player) => `${names[player]} (${player}) wins this round!`;
+
   document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("statusMessage");
     const nameElements = {
@@ -16,7 +19,8 @@
     };
 
     if (!statusMessage || !nameElements.X || !nameElements.O) {
-      throw new Error("Unable to initialise status UI; required elements are missing.");
+      console.error("Unable to initialise status UI; required elements are missing.");
+      return;
     }
 
     let playerNames = { ...DEFAULT_NAMES };
@@ -24,24 +28,24 @@
     let currentPlayer = "X";
     let statusState = "turn"; // "turn" | "win" | "draw"
 
-    const formatTurnMessage = (player) =>
-      `${playerNames[player]} (${player}) to move`;
-    const formatWinMessage = (player) =>
-      `${playerNames[player]} (${player}) wins this round!`;
-
     const refreshStatus = () => {
       switch (statusState) {
         case "win":
-          statusMessage.textContent = formatWinMessage(currentPlayer);
+          statusMessage.textContent = formatWinMessage(playerNames, currentPlayer);
           break;
         case "draw":
           statusMessage.textContent = "It's a draw!";
           break;
         case "turn":
         default:
-          statusMessage.textContent = formatTurnMessage(currentPlayer);
+          statusMessage.textContent = formatTurnMessage(playerNames, currentPlayer);
           break;
       }
+    };
+
+    const updateScoreDisplay = () => {
+      scoreElements.X.textContent = String(scores.X);
+      scoreElements.O.textContent = String(scores.O);
     };
 
     const applyNames = (names) => {
@@ -49,11 +53,6 @@
       nameElements.X.textContent = playerNames.X;
       nameElements.O.textContent = playerNames.O;
       refreshStatus();
-    };
-
-    const updateScoreDisplay = () => {
-      scoreElements.X.textContent = String(scores.X);
-      scoreElements.O.textContent = String(scores.O);
     };
 
     const api = {
@@ -89,6 +88,9 @@
       },
       getNames() {
         return { ...playerNames };
+      },
+      setNames(nextNames) {
+        applyNames(nextNames);
       },
     };
 

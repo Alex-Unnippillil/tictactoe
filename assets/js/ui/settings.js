@@ -101,6 +101,34 @@
     });
   };
 
+  const withDialog = (dialog, fallback) => {
+    if (!dialog) {
+      return fallback;
+    }
+
+    const isDialogElement =
+      typeof HTMLDialogElement !== "undefined" && dialog instanceof HTMLDialogElement;
+    const supportsShowModal = isDialogElement && typeof dialog.showModal === "function";
+    const supportsClose = isDialogElement && typeof dialog.close === "function";
+
+    return {
+      show() {
+        if (supportsShowModal) {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "true");
+        }
+      },
+      close() {
+        if (supportsClose) {
+          dialog.close();
+        } else {
+          dialog.removeAttribute("open");
+        }
+      },
+    };
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("settingsModal");
     const form = document.getElementById("settingsForm");
@@ -116,6 +144,14 @@
     attachValidation(fields.O);
 
     let currentNames = normaliseNames(readPersistedNames() ?? DEFAULT_NAMES);
+    const dialogController = withDialog(modal, {
+      show() {
+        modal.setAttribute("open", "true");
+      },
+      close() {
+        modal.removeAttribute("open");
+      },
+    });
 
     const populateForm = () => {
       if (fields.X.input) {
@@ -128,21 +164,17 @@
       }
     };
 
-    const closeModal = () => {
-      if (modal instanceof HTMLDialogElement) {
-        modal.close();
-      } else {
-        modal.setAttribute("open", "false");
+    const openModal = () => {
+      populateForm();
+      dialogController.show();
+      if (fields.X.input) {
+        fields.X.input.focus();
       }
     };
 
-    const openModal = () => {
-      populateForm();
-      if (modal instanceof HTMLDialogElement) {
-        modal.showModal();
-      } else {
-        modal.setAttribute("open", "true");
-      }
+    const closeModal = () => {
+      dialogController.close();
+      openButton.focus();
     };
 
     const handleSubmit = (event) => {
@@ -151,7 +183,9 @@
       const isValidO = validateField(fields.O);
 
       if (!isValidX || !isValidO) {
-        form.reportValidity();
+        if (typeof form.reportValidity === "function") {
+          form.reportValidity();
+        }
         return;
       }
 

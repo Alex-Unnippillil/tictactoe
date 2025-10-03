@@ -1,94 +1,213 @@
-
-
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tic Tac Toe</title>
-  <link rel="stylesheet" href="site/css/style.css">
-</head>
-<body>
-  <main class="game">
-    <table class="board">
-      <tr>
-        <td onclick="makeMove(0, 0)"></td>
-        <td onclick="makeMove(0, 1)"></td>
-        <td onclick="makeMove(0, 2)"></td>
-      </tr>
-      <tr>
-        <td onclick="makeMove(1, 0)"></td>
-        <td onclick="makeMove(1, 1)"></td>
-        <td onclick="makeMove(1, 2)"></td>
-      </tr>
-      <tr>
-        <td onclick="makeMove(2, 0)"></td>
-        <td onclick="makeMove(2, 1)"></td>
-        <td onclick="makeMove(2, 2)"></td>
-      </tr>
-    </table>
-    <div class="message"></div>
-  </main>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="assets/css/app.css" />
+  </head>
+  <body>
+    <h1>Tic Tac Toe</h1>
+    <main class="app-shell">
+      <header class="toolbar">
+        <p class="toolbar__title">Friendly match</p>
+        <div class="toolbar__actions">
+          <button type="button" id="newRoundButton" class="button button--ghost">
+            New round
+          </button>
+          <button type="button" id="settingsButton" class="button button--ghost">
+            Settings
+          </button>
+        </div>
+      </header>
 
-  <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
-        return;
-      }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-    }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
-        }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
-        }
-      }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
-      }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
-    }
-    
-    function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
-          }
-        }
-      }
-      
-      return true;
-    }
-  </script>
-</body>
+      <section
+        class="scoreboard"
+        id="scoreboard"
+        role="region"
+        aria-label="Player scoreboard"
+      >
+        <article class="scoreboard__player scoreboard__player--x">
+          <span class="scoreboard__mark" aria-hidden="true">X</span>
+          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <span
+            class="scoreboard__score"
+            data-role="score"
+            data-player="X"
+            aria-label="Wins for player X"
+            >0</span
+          >
+        </article>
+        <article class="scoreboard__player scoreboard__player--o">
+          <span class="scoreboard__mark" aria-hidden="true">O</span>
+          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <span
+            class="scoreboard__score"
+            data-role="score"
+            data-player="O"
+            aria-label="Wins for player O"
+            >0</span
+          >
+        </article>
+      </section>
+
+      <section class="status" id="statusMessage" role="status" aria-live="polite">
+        Player X (X) to move
+      </section>
+
+      <section
+        class="board"
+        id="board"
+        role="grid"
+        aria-label="Tic Tac Toe board"
+        aria-live="polite"
+      >
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="0"
+          role="gridcell"
+          aria-label="Row 1 column 1"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="1"
+          role="gridcell"
+          aria-label="Row 1 column 2"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="2"
+          role="gridcell"
+          aria-label="Row 1 column 3"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="3"
+          role="gridcell"
+          aria-label="Row 2 column 1"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="4"
+          role="gridcell"
+          aria-label="Row 2 column 2"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="5"
+          role="gridcell"
+          aria-label="Row 2 column 3"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="6"
+          role="gridcell"
+          aria-label="Row 3 column 1"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="7"
+          role="gridcell"
+          aria-label="Row 3 column 2"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="8"
+          role="gridcell"
+          aria-label="Row 3 column 3"
+        ></button>
+      </section>
+
+      <footer class="controls">
+        <div class="controls__group">
+          <button type="button" id="resetScoresButton" class="button button--ghost">
+            Reset scores
+          </button>
+        </div>
+        <div class="controls__group">
+          <button type="button" id="resetGameButton" class="button">
+            Reset game
+          </button>
+        </div>
+      </footer>
+    </main>
+
+    <dialog id="settingsModal" aria-labelledby="settingsTitle">
+      <form method="dialog" id="settingsForm" class="modal" novalidate>
+        <header class="modal__header">
+          <h2 id="settingsTitle" class="modal__title">Game settings</h2>
+        </header>
+        <section class="modal__body">
+          <p class="field__hint">
+            Update each player's display name. Leave a field blank to use the default
+            name.
+          </p>
+          <div class="field">
+            <label for="playerXName">Player X name</label>
+            <input
+              type="text"
+              id="playerXName"
+              name="playerX"
+              inputmode="text"
+              autocomplete="name"
+              maxlength="24"
+              placeholder="Player X"
+              aria-describedby="playerXHelp playerXError"
+            />
+            <p id="playerXHelp" class="field__hint">
+              Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
+              characters).
+            </p>
+            <p id="playerXError" class="field__error" data-error-for="playerX" hidden></p>
+          </div>
+          <div class="field">
+            <label for="playerOName">Player O name</label>
+            <input
+              type="text"
+              id="playerOName"
+              name="playerO"
+              inputmode="text"
+              autocomplete="name"
+              maxlength="24"
+              placeholder="Player O"
+              aria-describedby="playerOHelp playerOError"
+            />
+            <p id="playerOHelp" class="field__hint">
+              Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
+              characters).
+            </p>
+            <p id="playerOError" class="field__error" data-error-for="playerO" hidden></p>
+          </div>
+        </section>
+        <footer class="modal__footer">
+          <button type="button" value="cancel" class="button button--ghost" id="settingsCancelButton">
+            Cancel
+          </button>
+          <button type="submit" class="button">Save</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="assets/js/ui/status.js" defer></script>
+    <script src="assets/js/game.js" defer></script>
+    <script src="assets/js/ui/settings.js" defer></script>
+  </body>
 </html>

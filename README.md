@@ -1,79 +1,67 @@
-# tictactoe
-
-[![CI Status](https://img.shields.io/github/actions/workflow/status/Alex-Unnippillil/tictactoe/ci.yml?branch=main&label=CI)](https://github.com/Alex-Unnippillil/tictactoe/actions/workflows/ci.yml)
-[![Pages Deployment](https://img.shields.io/github/actions/workflow/status/Alex-Unnippillil/tictactoe/pages.yml?branch=main&label=Pages)](https://github.com/Alex-Unnippillil/tictactoe/actions/workflows/pages.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
-![image](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
-
-SPDX-License-Identifier: MIT
-
-![image](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
-https://alex-unnippillil.github.io/tictactoe/
-
-## Static site assets
-
-The `site/` directory contains supplemental static files such as `robots.txt` and `sitemap.xml`. Include this folder when publishing or deploying the site so search engines can access these resources.
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 # Tic Tac Toe
+
+A polished vanilla JavaScript implementation of Tic Tac Toe featuring score tracking,
+keyboard play, accessible status updates, and configurable player names. The site is
+entirely static and is designed to be deployed to GitHub Pages or any other static
+hosting provider.
 
 ![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
 
-## Project Purpose
+## Features
 
-Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of building, testing, and deploying a simple interactive game. It is intentionally lightweight, making it ideal for experimenting with static site hosting on GitHub Pages or for showcasing basic DOM manipulation with vanilla JavaScript.
+- 🎯 **Responsive board** rendered with semantic markup and accessible ARIA roles.
+- 🧮 **Persistent scoreboard** that highlights winning lines and keeps a tally of wins.
+- 🎛️ **Settings dialog** allowing custom player names that are stored in `localStorage`.
+- ♿ **Keyboard support** with roving focus, arrow-key navigation, and live status updates.
+- 📦 **Zero-build tooling** – everything runs in the browser with lightweight npm scripts for linting and tests.
 
-## Quick Start
+## Project structure
 
-1. Install dependencies with `npm install`.
-2. Launch the local development server with `npm run dev` and open the provided URL in your browser.
-3. Make changes to `index.html`; the development server will automatically reload the page.
+```
+├── assets/
+│   ├── css/app.css        # Shared styles for the game UI
+│   └── js/                # Status, settings, and game logic modules
+├── site/                  # Supplemental static files (404 page, robots.txt, sitemap.xml)
+├── tests/                 # Jest test suites
+├── index.html             # Main application entry point
+└── package.json
+```
 
-> **Prerequisites:** Node.js 18+ and npm 9+.
+## Quick start
 
-## Scripts
+1. Install dependencies:
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Starts the local development server for iterative work.
-| `npm run build` | Produces the production-ready static assets.
-| `npm run test` | Executes the automated test suite.
-| `npm run lint` | Runs linting to ensure code quality and consistency.
-| `npm run deploy` | Publishes the `dist/` output to GitHub Pages.
+   ```bash
+   npm install
+   ```
 
-## Local Development
+2. Start a static file server for local development:
 
-- **Start a hot-reloading server:** `npm run dev`
-- **Run linters while developing:** `npm run lint`
-- **Format and lint before committing:** `npm run lint && npm run test`
+   ```bash
+   npm run serve
+   ```
+
+   The command uses [`http-server`](https://www.npmjs.com/package/http-server) to serve the repository root. Open the printed URL (defaults to `http://127.0.0.1:8080`).
+
+3. Run the automated checks:
+
+   ```bash
+   npm run lint
+   npm test
+   ```
 
 ## Testing
 
-- **Unit tests:** `npm run test`
-- **Continuous integration:** See the workflows in `.github/workflows/` for Pages deployment.
+- **Unit tests:** Implemented with Jest and JSDOM under `tests/unit`. Execute them with `npm test`.
+- **Linting:** `npm run lint` runs ESLint with the recommended rule-set for browser scripts.
 
-## Deployment Overview
+## Deployment
 
-1. Build the project locally with `npm run build` to generate optimized assets.
-2. Preview the static bundle by serving the `dist/` directory locally if desired.
-3. Deploy the latest build using `npm run deploy`, which pushes the generated content to the GitHub Pages branch.
-4. GitHub Actions workflows automate deployment to ensure the published site stays in sync with the main branch.
-
-## Architecture Overview
-
-The project is a static HTML application comprised of:
-
-- `index.html` containing the markup, inline styles, and JavaScript that power the entire game experience.
-- No external build system is required; however, npm scripts provide scaffolding for future enhancements such as bundling or testing frameworks.
-
-## GitHub Pages URL
-
-> Placeholder: Update this section with the final published GitHub Pages link when available.
+The project ships as static assets. Build steps are not required; deploy the repository
+contents (including the `site/` directory) to your static host of choice. When using
+GitHub Pages, ensure that `index.html` and the `assets/` directory are included in the
+published branch. The supplemental files inside `site/` keep search engines happy.
 
 ## License
 
-SPDX-License-Identifier: MIT
-
-A dedicated `LICENSE` file will be added to outline the full MIT license terms.
+This project is licensed under the [MIT License](LICENSE).

@@ -4,9 +4,14 @@
   "description": "Tic Tac Toe project setup",
   "private": true,
   "scripts": {
-    "lint": "echo \"No lint script configured\"",
-    "test": "echo \"No unit tests configured\"",
-    "e2e": "echo \"No end-to-end tests configured\"",
-    "serve": "npx http-server site"
+    "lint": "eslint . --ext js",
+    "test": "jest",
+    "serve": "http-server -c-1 ."
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "http-server": "^14.1.1",
+    "jest": "^29.7.0",
+    "jsdom": "^22.1.0"
   }
 }
