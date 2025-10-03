@@ -41,6 +41,15 @@
     const formatWinMessage = (player) =>
       `${playerNames[player]} (${player}) wins this round!`;
 
+    const applyVisualState = () => {
+      statusMessage.dataset.state = statusState;
+      if (statusState === "draw") {
+        statusMessage.dataset.player = "none";
+        return;
+      }
+      statusMessage.dataset.player = currentPlayer;
+    };
+
     const refreshStatus = () => {
       switch (statusState) {
         case "win":
@@ -54,6 +63,7 @@
           statusMessage.textContent = formatTurnMessage(currentPlayer);
           break;
       }
+      applyVisualState();
     };
 
     const applyNames = (names) => {
