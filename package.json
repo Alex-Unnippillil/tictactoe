@@ -7,6 +7,7 @@
     "lint": "echo \"No lint script configured\"",
     "test": "echo \"No unit tests configured\"",
     "e2e": "echo \"No end-to-end tests configured\"",
+    "e2e:ci": "npm run e2e",
     "serve": "npx http-server site"
   }
 }
