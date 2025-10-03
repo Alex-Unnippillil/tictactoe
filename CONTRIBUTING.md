@@ -49,6 +49,8 @@ npx serve .
 Then visit `http://localhost:3000`.
 
 ### Linting and formatting
+Editor defaults are captured in the repository's [`.editorconfig`](./.editorconfig), which enforces UTF-8 encoding, LF line endings, final newlines, and two-space indentation for web assets and config files. Most modern editors detect this automatically.
+
 Run the following commands from the project root before committing:
 
 ```bash
