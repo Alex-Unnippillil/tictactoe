@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n-key="appTitle">Tic Tac Toe</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --surface: #ffffff;
+        --surface-alt: #f3f4f6;
+        --border: #d1d5db;
+        --accent: #2563eb;
+        --text: #111827;
+        --shadow: rgba(15, 23, 42, 0.1);
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surface: #1f2937;
+          --surface-alt: #111827;
+          --border: #374151;
+          --accent: #60a5fa;
+          --text: #f9fafb;
+          --shadow: rgba(15, 23, 42, 0.35);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, rgba(37, 99, 235, 0.08), transparent 60%),
+          var(--surface-alt);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+      }
+
+      .app {
+        background: var(--surface);
+        width: min(480px, 100%);
+        padding: 32px 28px;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px var(--shadow);
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 3vw, 2.5rem);
+        letter-spacing: -0.03em;
+      }
+
+      .ghost-button {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        padding: 8px 14px;
+        border-radius: 999px;
+        transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+      }
+
+      .ghost-button:focus-visible,
+      .ghost-button:hover {
+        background: rgba(37, 99, 235, 0.1);
+        border-color: rgba(37, 99, 235, 0.15);
+      }
+
+      .status {
+        font-size: 1.05rem;
+        padding: 12px 16px;
+        background: var(--surface-alt);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .cell {
+        aspect-ratio: 1;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        font-size: clamp(2.5rem, 8vw, 3.5rem);
+        font-weight: 600;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.2s ease, border 0.2s ease;
+      }
+
+      .cell:hover {
+        transform: translateY(-2px);
+        background: rgba(37, 99, 235, 0.1);
+        border-color: rgba(37, 235, 187, 0.25);
+      }
+
+      .cell:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+        transform: none;
+      }
+
+      .primary-button {
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 12px 18px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: filter 0.2s ease;
+      }
+
+      .primary-button:hover,
+      .primary-button:focus-visible {
+        filter: brightness(1.05);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+
+      /* Modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(4px);
+        padding: 24px;
+        z-index: 100;
+      }
+
+      .modal.modal--open {
+        display: flex;
+      }
+
+      .modal__dialog {
+        background: var(--surface);
+        color: var(--text);
+        padding: 24px 24px 20px;
+        border-radius: 20px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+        width: min(360px, 100%);
+        display: grid;
+        gap: 16px;
+      }
+
+      .modal__title {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .modal__field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .select {
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .modal__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      @media (max-width: 540px) {
+        .app {
+          padding: 24px;
+          border-radius: 20px;
+        }
+
+        .board {
+          gap: 8px;
+        }
+
+        .cell {
+          border-radius: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1 data-i18n-key="appTitle">Tic Tac Toe</h1>
+        <button id="settingsButton" type="button" class="ghost-button" data-i18n-key="settings">Settings</button>
+      </header>
+
+      <p id="instructions" class="status" data-i18n-key="instructions">
+        Select a square to make your move.
+      </p>
+
+      <div class="board" id="board" role="grid" data-i18n-key="boardLabel" data-i18n-attr="aria-label">
+        <button class="cell" type="button" aria-live="polite" data-index="0"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="1"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="2"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="3"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="4"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="5"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="6"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="7"></button>
+        <button class="cell" type="button" aria-live="polite" data-index="8"></button>
+      </div>
+
+      <div class="status" id="statusMessage">Current turn: X</div>
+
+      <button id="resetButton" type="button" class="primary-button" data-i18n-key="resetGame">New Game</button>
+    </div>
+
+    <div id="settingsModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="settingsTitle">
+      <div class="modal__dialog">
+        <div class="modal__header">
+          <h2 id="settingsTitle" class="modal__title" data-i18n-key="settingsTitle">Settings</h2>
+        </div>
+        <div class="modal__field">
+          <label for="languageSelect" data-i18n-key="languageLabel">Language</label>
+          <select id="languageSelect" class="select">
+            <option value="en" data-i18n-key="languageEnglish">English</option>
+            <option value="es" data-i18n-key="languageSpanish">Español</option>
+            <option value="fr" data-i18n-key="languageFrench">Français</option>
+          </select>
+        </div>
+        <div class="modal__actions">
+          <button id="closeSettings" type="button" class="ghost-button" data-i18n-key="close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const translations = {
+          en: {
+            appTitle: 'Tic Tac Toe',
+            settings: 'Settings',
+            settingsTitle: 'Settings',
+            languageLabel: 'Language',
+            languageEnglish: 'English',
+            languageSpanish: 'Spanish',
+            languageFrench: 'French',
+            close: 'Close',
+            resetGame: 'New Game',
+            instructions: 'Select a square to make your move.',
+            boardLabel: 'Tic Tac Toe board',
+            currentTurn: 'Current turn: {player}',
+            winMessage: '{player} wins!',
+            drawMessage: "It\'s a draw!",
+            cellEmpty: 'Cell {index}, empty',
+            cellMarked: 'Cell {index}, marked with {player}'
+          },
+          es: {
+            appTitle: 'Tres en Raya',
+            settings: 'Configuración',
+            settingsTitle: 'Configuración',
+            languageLabel: 'Idioma',
+            languageEnglish: 'Inglés',
+            languageSpanish: 'Español',
+            languageFrench: 'Francés',
+            close: 'Cerrar',
+            resetGame: 'Nueva partida',
+            instructions: 'Selecciona una casilla para hacer tu jugada.',
+            boardLabel: 'Tablero de tres en raya',
+            currentTurn: 'Turno actual: {player}',
+            winMessage: '¡{player} gana!',
+            drawMessage: '¡Empate!',
+            cellEmpty: 'Casilla {index}, vacía',
+            cellMarked: 'Casilla {index}, marcada con {player}'
+          },
+          fr: {
+            appTitle: 'Morpion',
+            settings: 'Paramètres',
+            settingsTitle: 'Paramètres',
+            languageLabel: 'Langue',
+            languageEnglish: 'Anglais',
+            languageSpanish: 'Espagnol',
+            languageFrench: 'Français',
+            close: 'Fermer',
+            resetGame: 'Nouvelle partie',
+            instructions: 'Sélectionnez une case pour jouer.',
+            boardLabel: 'Plateau de morpion',
+            currentTurn: 'Tour actuel : {player}',
+            winMessage: '{player} gagne !',
+            drawMessage: 'Match nul !',
+            cellEmpty: 'Case {index}, vide',
+            cellMarked: 'Case {index}, marquée {player}'
+          }
+        };
+
+        const i18n = new I18n({
+          translations,
+          defaultLanguage: 'en'
+        });
+
+        i18n.initialize();
+
+        const boardElement = document.getElementById('board');
+        const cells = Array.from(boardElement.querySelectorAll('.cell'));
+        const statusMessage = document.getElementById('statusMessage');
+        const instructions = document.getElementById('instructions');
+        const resetButton = document.getElementById('resetButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const languageSelect = document.getElementById('languageSelect');
+
+        let boardState = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let winner = null;
+
+        const updateAriaLabels = () => {
+          cells.forEach((cell, index) => {
+            const mark = boardState[index];
+            const labelKey = mark ? 'cellMarked' : 'cellEmpty';
+            const label = i18n.t(labelKey, { index: index + 1, player: mark });
+            cell.setAttribute('aria-label', label);
+          });
+        };
+
+        const updateStatusMessage = () => {
+          if (winner) {
+            statusMessage.textContent = i18n.t('winMessage', { player: winner });
+          } else if (boardState.every(Boolean)) {
+            statusMessage.textContent = i18n.t('drawMessage');
+          } else {
+            statusMessage.textContent = i18n.t('currentTurn', { player: currentPlayer });
+          }
+        };
+
+        const render = () => {
+          instructions.textContent = i18n.t('instructions');
+          updateStatusMessage();
+          updateAriaLabels();
+        };
+
+        const openModal = () => {
+          settingsModal.classList.add('modal--open');
+          settingsModal.setAttribute('aria-hidden', 'false');
+          languageSelect.focus();
+        };
+
+        const closeModal = () => {
+          settingsModal.classList.remove('modal--open');
+          settingsModal.setAttribute('aria-hidden', 'true');
+          settingsButton.focus();
+        };
+
+        const checkWinner = (player) => {
+          const lines = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+          ];
+
+          return lines.some((line) => line.every((index) => boardState[index] === player));
+        };
+
+        const resetGame = () => {
+          boardState = Array(9).fill(null);
+          currentPlayer = 'X';
+          winner = null;
+          cells.forEach((cell) => {
+            cell.textContent = '';
+            cell.disabled = false;
+          });
+          render();
+        };
+
+        cells.forEach((cell) => {
+          cell.addEventListener('click', () => {
+            const index = Number(cell.dataset.index);
+            if (boardState[index] || winner) {
+              return;
+            }
+
+            boardState[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            updateAriaLabels();
+
+            if (checkWinner(currentPlayer)) {
+              winner = currentPlayer;
+              cells.forEach((button) => button.disabled = true);
+            } else if (boardState.every(Boolean)) {
+              cells.forEach((button) => button.disabled = true);
+            } else {
+              currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+
+            updateStatusMessage();
+          });
+        });
+
+        resetButton.addEventListener('click', () => {
+          cells.forEach((button) => (button.disabled = false));
+          resetGame();
+        });
+
+        settingsButton.addEventListener('click', openModal);
+        closeSettings.addEventListener('click', closeModal);
+        settingsModal.addEventListener('click', (event) => {
+          if (event.target === settingsModal) {
+            closeModal();
+          }
+        });
+
+        languageSelect.value = i18n.getLanguage();
+        languageSelect.addEventListener('change', (event) => {
+          i18n.setLanguage(event.target.value);
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && settingsModal.classList.contains('modal--open')) {
+            closeModal();
+          }
+        });
+
+        document.addEventListener('i18n:change', () => {
+          languageSelect.value = i18n.getLanguage();
+          render();
+        });
+
+        render();
+      });
+    </script>
+  </body>
+</html>
