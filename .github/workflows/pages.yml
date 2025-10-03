@@ -19,23 +19,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: echo "No dependencies to install"
-
-      - name: Run tests
-        run: echo "No tests to run"
-
-      - name: Build site artifact
+      - name: Verify site directory
         run: |
           set -euo pipefail
-          rm -rf dist
-          mkdir -p dist
-          cp -R site/. dist/
+          if [ ! -d site ]; then
+            echo "Missing site/ directory"
+            exit 1
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/
+          path: site/
 
   deploy:
     runs-on: ubuntu-latest
