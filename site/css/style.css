@@ -39,6 +39,14 @@ body {
     sans-serif;
   background: var(--surface, #ffffff);
   color: var(--text, #111827);
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+*::selection {
+  background: transparent;
+  color: inherit;
 }
 
 img,
@@ -55,6 +63,12 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 :root {
@@ -350,7 +364,7 @@ body.page--game {
     clamp(4.5rem, 10vw, 6.75rem);
   box-sizing: border-box;
   gap: clamp(1.75rem, 4vw, 3rem);
-  min-height: 100%;
+  min-height: 100vh;
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
