@@ -202,6 +202,56 @@
       </div>
     </main>
 
+    <div
+      id="confirmationRoot"
+      class="confirm-sheet-root"
+      hidden
+      aria-hidden="true"
+    ></div>
+
+    <template id="confirmationSheetTemplate">
+      <div class="confirm-sheet-layer" data-confirmation-container>
+        <div
+          class="confirm-sheet-layer__backdrop"
+          data-confirmation-backdrop
+        ></div>
+        <section
+          class="confirm-sheet"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          data-confirmation-sheet
+        >
+          <header class="confirm-sheet__header">
+            <h2 class="confirm-sheet__title" data-confirmation-title>
+              Confirm action
+            </h2>
+          </header>
+          <div class="confirm-sheet__body">
+            <p class="confirm-sheet__message" data-confirmation-message>
+              Are you sure you want to continue?
+            </p>
+          </div>
+          <footer class="confirm-sheet__actions">
+            <button
+              type="button"
+              class="button button--ghost"
+              data-confirmation-cancel
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="button"
+              data-confirmation-confirm
+            >
+              Confirm
+            </button>
+          </footer>
+        </section>
+      </div>
+    </template>
+
     <dialog id="settingsModal" aria-labelledby="settingsTitle">
       <form method="dialog" id="settingsForm" class="modal" novalidate>
         <header class="modal__header">

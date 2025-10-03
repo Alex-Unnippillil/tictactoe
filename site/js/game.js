@@ -187,6 +187,8 @@
     const resetGameButton = document.getElementById('resetGameButton');
     const resetScoresButton = document.getElementById('resetScoresButton');
     const newRoundButton = document.getElementById('newRoundButton');
+    const confirmationRoot = document.getElementById('confirmationRoot');
+    const confirmationTemplate = document.getElementById('confirmationSheetTemplate');
 
     const getGlyphContainer = (cell) => cell.querySelector('.cell__glyph');
 
@@ -290,6 +292,214 @@
     const clearPersistedGameState = () => {
       safeLocalStorage.remove(GAME_STORAGE_KEY);
     };
+
+    const showConfirmationSheet = (options = {}) => {
+      const {
+        title = 'Confirm action',
+        message = 'Are you sure you want to continue?',
+        confirmLabel = 'Confirm',
+        cancelLabel = 'Cancel',
+      } = options;
+
+      const doc = typeof document !== 'undefined' ? document : null;
+
+      const useNativeConfirm = () => {
+        if (typeof global.confirm === 'function') {
+          return global.confirm(message || title);
+        }
+        return true;
+      };
+
+      if (!confirmationRoot || !confirmationTemplate) {
+        return Promise.resolve(useNativeConfirm());
+      }
+
+      return new Promise((resolve) => {
+        const fragment = confirmationTemplate.content
+          ? confirmationTemplate.content.cloneNode(true)
+          : null;
+
+        if (!fragment) {
+          resolve(useNativeConfirm());
+          return;
+        }
+
+        const container = fragment.querySelector('[data-confirmation-container]');
+        const sheet = fragment.querySelector('[data-confirmation-sheet]');
+        const titleElement = fragment.querySelector('[data-confirmation-title]');
+        const messageElement = fragment.querySelector('[data-confirmation-message]');
+        const confirmButton = fragment.querySelector('[data-confirmation-confirm]');
+        const cancelButton = fragment.querySelector('[data-confirmation-cancel]');
+        const backdrop = fragment.querySelector('[data-confirmation-backdrop]');
+
+        if (!container || !sheet || !confirmButton || !cancelButton || !backdrop) {
+          resolve(useNativeConfirm());
+          return;
+        }
+
+        const idSuffix = Date.now().toString(36);
+        const titleId = `confirm-sheet-title-${idSuffix}`;
+        const messageId = `confirm-sheet-message-${idSuffix}`;
+
+        titleElement.id = titleId;
+        titleElement.textContent = title;
+        messageElement.id = messageId;
+        messageElement.textContent = message;
+        sheet.setAttribute('aria-labelledby', titleId);
+        sheet.setAttribute('aria-describedby', messageId);
+
+        confirmButton.textContent = confirmLabel;
+        cancelButton.textContent = cancelLabel;
+
+        const focusableSelectors =
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const getFocusableElements = () =>
+          Array.from(sheet.querySelectorAll(focusableSelectors)).filter((element) => {
+            if (element.disabled) {
+              return false;
+            }
+            const ariaHidden = element.getAttribute('aria-hidden');
+            return ariaHidden !== 'true' && ariaHidden !== '1';
+          });
+
+        const previouslyFocusedElement =
+          doc && doc.activeElement instanceof HTMLElement
+            ? doc.activeElement
+            : null;
+        const previousBodyOverflow = doc && doc.body && doc.body.style
+          ? doc.body.style.overflow
+          : '';
+
+        let isSettled = false;
+
+        const cleanup = () => {
+          container.removeEventListener('keydown', handleKeyDown);
+          backdrop.removeEventListener('click', handleBackdropClick);
+          confirmButton.removeEventListener('click', handleConfirm);
+          cancelButton.removeEventListener('click', handleCancel);
+          sheet.removeEventListener('click', stopPropagation);
+          sheet.removeEventListener('keydown', handleKeyDown);
+
+          if (container.isConnected) {
+            container.remove();
+          }
+
+          if (!confirmationRoot.hasChildNodes()) {
+            confirmationRoot.dataset.open = 'false';
+            confirmationRoot.setAttribute('aria-hidden', 'true');
+            confirmationRoot.hidden = true;
+          }
+
+          if (doc && doc.body) {
+            doc.body.style.overflow = previousBodyOverflow;
+          }
+
+          if (previouslyFocusedElement && typeof previouslyFocusedElement.focus === 'function') {
+            previouslyFocusedElement.focus();
+          }
+        };
+
+        const close = (result) => {
+          if (isSettled) {
+            return;
+          }
+          isSettled = true;
+          cleanup();
+          resolve(result);
+        };
+
+        const handleKeyDown = (event) => {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            close(false);
+            return;
+          }
+
+          if (event.key !== 'Tab') {
+            return;
+          }
+
+          const focusable = getFocusableElements();
+          if (!focusable.length) {
+            event.preventDefault();
+            sheet.focus();
+            return;
+          }
+
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          const active = doc ? doc.activeElement : null;
+
+          if (event.shiftKey) {
+            if (active === first || !sheet.contains(active)) {
+              event.preventDefault();
+              last.focus();
+            }
+          } else if (active === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        };
+
+        const handleBackdropClick = (event) => {
+          if (event.target === backdrop) {
+            event.preventDefault();
+            close(false);
+          }
+        };
+
+        const handleConfirm = (event) => {
+          event.preventDefault();
+          close(true);
+        };
+
+        const handleCancel = (event) => {
+          event.preventDefault();
+          close(false);
+        };
+
+        const stopPropagation = (event) => {
+          event.stopPropagation();
+        };
+
+        confirmationRoot.hidden = false;
+        confirmationRoot.setAttribute('aria-hidden', 'false');
+        confirmationRoot.dataset.open = 'true';
+        confirmationRoot.appendChild(container);
+
+        if (doc && doc.body) {
+          doc.body.style.overflow = 'hidden';
+        }
+
+        container.addEventListener('keydown', handleKeyDown);
+        sheet.addEventListener('keydown', handleKeyDown);
+        sheet.addEventListener('click', stopPropagation);
+        backdrop.addEventListener('click', handleBackdropClick);
+        confirmButton.addEventListener('click', handleConfirm);
+        cancelButton.addEventListener('click', handleCancel);
+
+        const focusInitialElement = () => {
+          const focusable = getFocusableElements();
+          if (focusable.length) {
+            focusable[0].focus();
+          } else {
+            sheet.focus();
+          }
+        };
+
+        if (typeof requestAnimationFrame === 'function') {
+          requestAnimationFrame(focusInitialElement);
+        } else {
+          setTimeout(focusInitialElement, 0);
+        }
+      });
+    };
+
+    const promptConfirmation = (message, overrides = {}) =>
+      showConfirmationSheet({
+        message,
+        ...overrides,
+      });
 
     const setCellDisabled = (cell, disabled) => {
       cell.disabled = disabled;
@@ -518,11 +728,11 @@
       });
     };
 
-    const confirmReset = (message) => {
-      if (!board.some((cell) => cell) || typeof global.confirm !== 'function') {
-        return true;
+    const confirmReset = (message, overrides = {}) => {
+      if (!board.some((cell) => cell)) {
+        return Promise.resolve(true);
       }
-      return global.confirm(message);
+      return promptConfirmation(message, overrides);
     };
 
     const resetScores = () => {
@@ -546,8 +756,15 @@
       });
 
       if (newRoundButton) {
-        newRoundButton.addEventListener('click', () => {
-          if (!isRoundOver && !confirmReset('Start a new round and clear the current board?')) {
+        newRoundButton.addEventListener('click', async () => {
+          if (
+            !isRoundOver &&
+            !(await confirmReset('Start a new round and clear the current board?', {
+              title: 'Start new round',
+              confirmLabel: 'Start new round',
+              cancelLabel: 'Keep playing',
+            }))
+          ) {
             return;
           }
           startNewRound();
@@ -555,8 +772,13 @@
       }
 
       if (resetGameButton) {
-        resetGameButton.addEventListener('click', () => {
-          if (!confirmReset('Reset the game, clearing the board and scores?')) {
+        resetGameButton.addEventListener('click', async () => {
+          const proceed = await confirmReset('Reset the game, clearing the board and scores?', {
+            title: 'Reset game',
+            confirmLabel: 'Reset everything',
+            cancelLabel: 'Cancel',
+          });
+          if (!proceed) {
             return;
           }
           resetGame();
@@ -564,15 +786,17 @@
       }
 
       if (resetScoresButton) {
-        resetScoresButton.addEventListener('click', () => {
+        resetScoresButton.addEventListener('click', async () => {
           if (!scores[PLAYER_X] && !scores[PLAYER_O]) {
             return;
           }
-          if (typeof global.confirm === 'function') {
-            const proceed = global.confirm('Reset the scoreboard?');
-            if (!proceed) {
-              return;
-            }
+          const proceed = await promptConfirmation('Reset the scoreboard?', {
+            title: 'Reset scores',
+            confirmLabel: 'Reset scores',
+            cancelLabel: 'Keep scores',
+          });
+          if (!proceed) {
+            return;
           }
           resetScores();
           persistGameState();
