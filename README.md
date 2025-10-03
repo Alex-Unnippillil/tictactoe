@@ -12,10 +12,13 @@ A polished, framework-free implementation of the classic Tic Tac Toe game. The p
 ## Table of contents
 - [Live demo](#live-demo)
 - [Key features](#key-features)
+- [Gameplay overview](#gameplay-overview)
 - [Getting started](#getting-started)
+- [Development workflow](#development-workflow)
 - [Project scripts](#project-scripts)
 - [Repository layout](#repository-layout)
 - [Architecture overview](#architecture-overview)
+- [Accessibility and UX commitments](#accessibility-and-ux-commitments)
 - [Testing and quality](#testing-and-quality)
 - [Deployment](#deployment)
 - [Documentation and support](#documentation-and-support)
@@ -29,6 +32,16 @@ Explore the production build on GitHub Pages: **https://alex-unnippillil.github.
 - Persistent player names and match history via `localStorage`.
 - Accessible status updates, keyboard navigation, and win-state announcements.
 - Automated CI, Lighthouse performance checks, and Pages deployments.
+- Built-in scorekeeping, rematch controls, and round management for quick series play.
+- Separation of state, UI bindings, and game logic to keep future feature work modular.
+
+## Gameplay overview
+The live app is structured to make every round easy to follow:
+
+- **Scoreboard and avatars:** The header and scoreboard components highlight each player’s mark, preferred name, and running win total. The game persists those scores between sessions so multi-round rivalries can continue even after a browser refresh.
+- **Board interactions:** Nine focusable buttons form the grid. Labels adapt as players place pieces, keeping screen reader users informed while reinforcing legal move hints for sighted players.
+- **Round controls:** Dedicated actions allow competitors to start a new round, reset the active board, or clear cumulative scores without reloading the page. Win detection highlights the finishing line and locks further moves until a new round starts.
+- **Settings integration:** Auxiliary UI modules (see `site/js/ui/`) listen for state changes to handle preferences such as player names and to broadcast announcements to the shared status area.
 
 ## Getting started
 > **Prerequisites:** Node.js 20+ and npm 9+ (aligned with the CI environment).
@@ -46,6 +59,12 @@ Explore the production build on GitHub Pages: **https://alex-unnippillil.github.
    ```bash
    npm run build
    ```
+
+## Development workflow
+- Follow Conventional Commit semantics (`type(scope): summary`) so that automated changelog tooling can infer history cleanly.
+- Branch naming typically follows `agent/<role>/<task-id>-short-title` to align with the asynchronous workflow documented in [AGENTS.md](AGENTS.md).
+- Run `npm run test` after each major change to confirm the game engine and helpers remain stable, and keep documentation (`README.md`, `docs/`) in sync with UI updates.
+- When contributing UI work, capture screenshots or short screen recordings in PRs to support the QA and accessibility review cycle described in the project’s contributor guides.
 
 ## Project scripts
 | Command | Description |
@@ -74,10 +93,17 @@ The browser experience is assembled from small event-driven modules:
 
 This modular structure keeps the board responsive, enables drop-in enhancements (such as AI helpers), and keeps rendering logic isolated from game rules.
 
+## Accessibility and UX commitments
+- **Semantic structure:** The board exposes `role="grid"`, while each cell is a button with precise `aria-label` updates so assistive technology announces the latest move context.
+- **Live status messaging:** The region identified by `#statusMessage` uses `aria-live="polite"` to announce turn changes, wins, and draw states without stealing focus.
+- **Keyboard and focus management:** All interactive elements are reachable using the keyboard alone. Visual focus indicators and reflow-friendly layout styles maintain clarity on small and large screens alike.
+- **Reduced-risk persistence:** Storage reads and writes are wrapped in guards to avoid throwing in browsers where `localStorage` is unavailable, protecting the experience for privacy-focused users.
+
 ## Testing and quality
 - **Unit tests:** `npm run test` runs the Node-based suite under `tests/`.
 - **Continuous integration:** [`ci.yml`](.github/workflows/ci.yml) validates every push, and [`static.yml`](.github/workflows/static.yml) is reserved for additional static analysis.
 - **Lighthouse audits:** [`lighthouse.yml`](.github/workflows/lighthouse.yml) executes `npx lhci autorun` against the deployed site, publishing an artifact named **`lighthouse-report`** with the latest performance, accessibility, best-practices, and SEO scores.
+- **Manual smoke testing:** Validate local changes in `npm run dev` by playing through win, draw, and reset paths to ensure focus states, narration, and persistence continue to behave as documented.
 
 ## Deployment
 1. Build the distributable bundle with `npm run build` (or rely on the automated Pages workflow).
