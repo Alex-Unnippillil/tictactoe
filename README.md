@@ -53,6 +53,8 @@ Explore the production build on GitHub Pages: **https://alex-unnippillil.github.
 | `npm run dev` | Serves the contents of `site/` locally using `http-server`. |
 | `npm run build` | Copies `site/` into `dist/`, mirroring the GitHub Pages packaging step. |
 | `npm run test` | Executes the Node-based unit tests located in `tests/`. |
+| `npm run e2e` | Placeholder stub for end-to-end tests; currently prints a status message. |
+| `npm run e2e:ci` | CI alias that proxies to `npm run e2e` so the workflow succeeds until real tests ship. |
 | `npm run lint` | Reserved for future lint rules (no-op today). |
 | `npm run deploy` | Matches the Pages workflow for manual deployments when needed. |
 
