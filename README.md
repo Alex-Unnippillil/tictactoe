@@ -88,6 +88,8 @@ The project is a static HTML application comprised of:
 - `index.html` containing the markup, inline styles, and JavaScript that power the entire game experience.
 - No external build system is required; however, npm scripts provide scaffolding for future enhancements such as bundling or testing frameworks.
 
+See [docs/architecture/overview.md](docs/architecture/overview.md) for the latest module diagram, event flow, and deployment notes that explain how the browser scripts cooperate.
+
 ## License
 
 SPDX-License-Identifier: MIT

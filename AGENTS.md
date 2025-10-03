@@ -92,6 +92,7 @@ Each agent has triggers, inputs, deliverables, labels, and exit criteria. The sa
 - Triggers: New feature or onboarding update.
 - Inputs: PR diffs and ADRs.
 - Deliverables: `README.md` and `AGENTS.md` updates, guides in `docs/`.
+- Maintain `docs/architecture/overview.md` whenever module responsibilities or browser events change.
 - Labels: `type:docs`.
 - Exit criteria: New features documented with screenshots.
 
