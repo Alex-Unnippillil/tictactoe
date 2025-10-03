@@ -81,6 +81,7 @@
 
     const trimmed = input.value.trim();
     let message = "";
+    const control = input.closest(".field__control");
 
     if (trimmed && !isNameValid(trimmed)) {
       message = INVALID_MESSAGE;
@@ -90,6 +91,9 @@
       input.classList.add("is-invalid");
       input.setAttribute("aria-invalid", "true");
       input.setCustomValidity(message);
+      if (control) {
+        control.classList.add("is-invalid");
+      }
       if (error) {
         error.hidden = false;
         error.setAttribute("aria-hidden", "false");
@@ -101,6 +105,9 @@
     input.classList.remove("is-invalid");
     input.removeAttribute("aria-invalid");
     input.setCustomValidity("");
+    if (control) {
+      control.classList.remove("is-invalid");
+    }
     if (error) {
       error.hidden = true;
       error.setAttribute("aria-hidden", "true");

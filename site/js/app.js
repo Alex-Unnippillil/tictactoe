@@ -326,6 +326,7 @@
       return;
     }
     populateSettingsForm();
+    settingsModal.classList.remove("is-closing");
     if (typeof settingsModal.showModal === "function") {
       settingsModal.showModal();
     } else {
@@ -340,11 +341,50 @@
     if (!settingsModal) {
       return;
     }
-    if (typeof settingsModal.close === "function") {
-      settingsModal.close();
-    } else {
-      settingsModal.removeAttribute("open");
+    if (!settingsModal.hasAttribute("open")) {
+      return;
     }
+
+    if (settingsModal.classList.contains("is-closing")) {
+      return;
+    }
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const finishClose = () => {
+      settingsModal.classList.remove("is-closing");
+      if (typeof settingsModal.close === "function") {
+        settingsModal.close();
+      } else {
+        settingsModal.removeAttribute("open");
+      }
+    };
+
+    if (reduceMotion) {
+      finishClose();
+      return;
+    }
+
+    const handleTransitionEnd = (event) => {
+      if (event.target !== settingsModal) {
+        return;
+      }
+      settingsModal.removeEventListener("transitionend", handleTransitionEnd);
+      finishClose();
+    };
+
+    settingsModal.addEventListener("transitionend", handleTransitionEnd);
+    settingsModal.classList.add("is-closing");
+    window.setTimeout(() => {
+      if (!settingsModal.classList.contains("is-closing")) {
+        return;
+      }
+      settingsModal.removeEventListener("transitionend", handleTransitionEnd);
+      finishClose();
+    }, 400);
   }
 
   function clearFieldError(field) {
@@ -353,6 +393,10 @@
     }
     field.input?.classList.remove("is-invalid");
     field.input?.removeAttribute("aria-invalid");
+    const control = field.input?.closest(".field__control");
+    if (control) {
+      control.classList.remove("is-invalid");
+    }
     if (field.error) {
       field.error.hidden = true;
       field.error.setAttribute("aria-hidden", "true");
@@ -366,6 +410,10 @@
     }
     field.input?.classList.add("is-invalid");
     field.input?.setAttribute("aria-invalid", "true");
+    const control = field.input?.closest(".field__control");
+    if (control) {
+      control.classList.add("is-invalid");
+    }
     if (field.error) {
       field.error.hidden = false;
       field.error.setAttribute("aria-hidden", "false");
