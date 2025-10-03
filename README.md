@@ -61,6 +61,10 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 3. Deploy the latest build using `npm run deploy`, which pushes the generated content to the GitHub Pages branch.
 4. GitHub Actions workflows automate deployment to ensure the published site stays in sync with the main branch.
 
+### GitHub Pages environment configuration
+
+The deployment workflow expects the Pages environment to be named `github-pages`. After enabling GitHub Pages (Settings → Pages), verify the environment name matches this value or rename it accordingly. This manual step keeps the repository settings aligned with the `pages.yml` workflow so approvals, badges, and environment-specific protections continue to function.
+
 ## Architecture Overview
 
 The project is a static HTML application comprised of:
