@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 40px 10px;
+      background: #f8f8f8;
+    }
+
+    h1 {
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .board {
+      display: inline-block;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .board td {
+      width: 90px;
+      height: 90px;
+      border: 2px solid #ccc;
+      font-size: 48px;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .board td:hover {
+      background-color: #f2f2f2;
+    }
+
+    .message {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+      min-height: 24px;
+    }
+
+    .scoreboard {
+      width: 100%;
+      max-width: 320px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      text-align: left;
+    }
+
+    .scoreboard h2 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      text-align: center;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .scoreboard-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .scoreboard-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+    }
+
+    .scoreboard-list li:last-child {
+      border-bottom: none;
+    }
+
+    .reset-scores {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #1f75fe;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .reset-scores:hover,
+    .reset-scores:focus {
+      background-color: #195fcc;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div>
+      <h1>Tic Tac Toe</h1>
+      <table class="board">
+        <tbody>
+          <tr>
+            <td data-row="0" data-col="0"></td>
+            <td data-row="0" data-col="1"></td>
+            <td data-row="0" data-col="2"></td>
+          </tr>
+          <tr>
+            <td data-row="1" data-col="0"></td>
+            <td data-row="1" data-col="1"></td>
+            <td data-row="1" data-col="2"></td>
+          </tr>
+          <tr>
+            <td data-row="2" data-col="0"></td>
+            <td data-row="2" data-col="1"></td>
+            <td data-row="2" data-col="2"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="message" aria-live="polite"></div>
+    </div>
+
+    <aside class="scoreboard" aria-label="Tic Tac Toe scoreboard">
+      <h2>Scoreboard</h2>
+      <ul class="scoreboard-list">
+        <li>
+          <span>Player X Wins</span>
+          <span id="score-x">0</span>
+        </li>
+        <li>
+          <span>Player O Wins</span>
+          <span id="score-o">0</span>
+        </li>
+        <li>
+          <span>Draws</span>
+          <span id="score-draws">0</span>
+        </li>
+      </ul>
+      <button type="button" class="reset-scores" id="reset-scores">Reset Scores</button>
+    </aside>
+  </div>
+
+  <script src="js/ui/scoreboard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var currentPlayer = 'X';
+      var board = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+      ];
+      var gameOver = false;
+      var messageElement = document.querySelector('.message');
+      var cells = document.querySelectorAll('.board td');
+      var scoreboard = window.Scoreboard.init({
+        xWinsElement: document.getElementById('score-x'),
+        oWinsElement: document.getElementById('score-o'),
+        drawsElement: document.getElementById('score-draws'),
+        resetButton: document.getElementById('reset-scores')
+      });
+
+      messageElement.textContent = currentPlayer + "'s turn";
+
+      cells.forEach(function (cell) {
+        cell.addEventListener('click', function () {
+          var row = parseInt(cell.getAttribute('data-row'), 10);
+          var col = parseInt(cell.getAttribute('data-col'), 10);
+          makeMove(row, col, cell);
+        });
+      });
+
+      function makeMove(row, col, cellElement) {
+        if (gameOver || board[row][col] !== '') {
+          return;
+        }
+
+        board[row][col] = currentPlayer;
+        cellElement.textContent = currentPlayer;
+
+        if (checkWin(currentPlayer)) {
+          messageElement.textContent = currentPlayer + ' Wins!';
+          gameOver = true;
+          scoreboard.recordWin(currentPlayer);
+        } else if (checkDraw()) {
+          messageElement.textContent = "It's a draw!";
+          gameOver = true;
+          scoreboard.recordDraw();
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          messageElement.textContent = currentPlayer + "'s turn";
+        }
+      }
+
+      function checkWin(player) {
+        for (var i = 0; i < 3; i++) {
+          if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
+            return true;
+          }
+          if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
+            return true;
+          }
+        }
+
+        if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
+          return true;
+        }
+        if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
+          return true;
+        }
+
+        return false;
+      }
+
+      function checkDraw() {
+        for (var i = 0; i < 3; i++) {
+          for (var j = 0; j < 3; j++) {
+            if (board[i][j] === '') {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+    });
+  </script>
+</body>
+</html>
