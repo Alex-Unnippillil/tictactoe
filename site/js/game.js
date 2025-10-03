@@ -163,6 +163,26 @@
     const resetScoresButton = document.getElementById('resetScoresButton');
     const newRoundButton = document.getElementById('newRoundButton');
 
+    const reduceMotionQuery =
+      typeof global.matchMedia === 'function'
+        ? global.matchMedia('(prefers-reduced-motion: reduce)')
+        : null;
+    const prefersReducedMotion = () => Boolean(reduceMotionQuery?.matches);
+
+    const runOnNextFrame =
+      typeof global.requestAnimationFrame === 'function'
+        ? global.requestAnimationFrame.bind(global)
+        : (callback) => global.setTimeout(callback, 16);
+    const delay = (callback, ms) =>
+      typeof global.setTimeout === 'function'
+        ? global.setTimeout(callback, ms)
+        : setTimeout(callback, ms);
+
+    const BOARD_RESET_ANIMATION_DURATION = 300;
+
+    let boardResetPromise = null;
+    let isStartingNewRound = false;
+
     let scores = readStoredScores();
     let board = Array(9).fill(null);
     let currentPlayer = PLAYER_X;
@@ -202,7 +222,7 @@
 
     const clearCell = (cell) => {
       cell.textContent = '';
-      cell.classList.remove('cell--x', 'cell--o', 'cell--winner');
+      cell.classList.remove('cell--x', 'cell--o', 'cell--winner', 'cell--resetting');
       setCellDisabled(cell, false);
     };
 
@@ -331,11 +351,51 @@
       nextStartingPlayer = currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
     };
 
-    const clearBoard = () => {
-      board = Array(9).fill(null);
-      isRoundOver = false;
-      winningLine = null;
-      cells.forEach((cell) => clearCell(cell));
+    const clearBoard = ({ withAnimation = true } = {}) => {
+      if (boardResetPromise) {
+        return boardResetPromise;
+      }
+
+      const shouldAnimate = withAnimation && !prefersReducedMotion();
+
+      boardResetPromise = new Promise((resolve) => {
+        const resetState = () => {
+          board = Array(9).fill(null);
+          isRoundOver = false;
+          winningLine = null;
+          cells.forEach((cell) => {
+            clearCell(cell);
+          });
+        };
+
+        const finish = () => {
+          runOnNextFrame(() => {
+            boardElement.classList.remove('board--transitioning');
+            boardResetPromise = null;
+            resolve();
+          });
+        };
+
+        if (!shouldAnimate) {
+          resetState();
+          finish();
+          return;
+        }
+
+        boardElement.classList.add('board--transitioning');
+        cells.forEach((cell) => {
+          cell.classList.add('cell--resetting');
+        });
+
+        runOnNextFrame(() => {
+          delay(() => {
+            resetState();
+            finish();
+          }, BOARD_RESET_ANIMATION_DURATION);
+        });
+      });
+
+      return boardResetPromise;
     };
 
     const startNewRound = ({ resetStarter = false } = {}) => {
@@ -343,16 +403,53 @@
         nextStartingPlayer = PLAYER_X;
       }
 
-      clearBoard();
-      currentPlayer = nextStartingPlayer;
-      nextStartingPlayer = currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
-      refreshBoardUi();
-      announceTurn(currentPlayer);
-      persistGameState();
-      dispatchEvent('round-started', {
-        board: cloneBoard(board),
-        currentPlayer,
-      });
+      if (isStartingNewRound) {
+        return boardResetPromise || Promise.resolve();
+      }
+
+      isStartingNewRound = true;
+
+      const previouslyFocusedElement = document.activeElement;
+      const previouslyFocusedIndex = cells.indexOf(previouslyFocusedElement);
+      const shouldAnimateReset = board.some((value) => value !== null) || isRoundOver;
+
+      const finalizeRoundStart = () => {
+        try {
+          currentPlayer = nextStartingPlayer;
+          nextStartingPlayer = currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
+          refreshBoardUi();
+
+          if (
+            previouslyFocusedIndex >= 0 &&
+            document.activeElement === previouslyFocusedElement
+          ) {
+            const targetCell = cells[previouslyFocusedIndex];
+            if (targetCell && typeof targetCell.focus === 'function') {
+              targetCell.focus();
+            }
+          }
+
+          announceTurn(currentPlayer);
+          persistGameState();
+          dispatchEvent('round-started', {
+            board: cloneBoard(board),
+            currentPlayer,
+          });
+        } finally {
+          isStartingNewRound = false;
+        }
+      };
+
+      const result = clearBoard({ withAnimation: shouldAnimateReset });
+
+      return result
+        .then(() => {
+          finalizeRoundStart();
+        })
+        .catch((error) => {
+          isStartingNewRound = false;
+          throw error;
+        });
     };
 
     const handleWin = (player, line) => {
