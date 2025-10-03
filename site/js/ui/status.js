@@ -6,6 +6,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("statusMessage");
+    const players = /** @type {const} */ (["X", "O"]);
     const nameElements = {
       X: document.querySelector('[data-role="name"][data-player="X"]'),
       O: document.querySelector('[data-role="name"][data-player="O"]'),
@@ -30,6 +31,26 @@
     ) {
       throw new Error("Unable to initialise status UI; required elements are missing.");
     }
+
+    players
+      .map((player) => scoreElements[player])
+      .filter((element) => element)
+      .forEach((element) => {
+        element.addEventListener("animationend", (event) => {
+          if (event.target === element) {
+            element.classList.remove("scoreboard__value--updating");
+          }
+        });
+        element.addEventListener("transitionend", (event) => {
+          if (
+            event.target === element &&
+            (event.propertyName === "background-color" ||
+              event.propertyName === "color")
+          ) {
+            element.classList.remove("scoreboard__value--updating");
+          }
+        });
+      });
 
     let playerNames = { ...DEFAULT_NAMES };
     let scores = { X: 0, O: 0 };
@@ -74,12 +95,27 @@
     };
 
     const updateScoreDisplay = () => {
-      scoreElements.X.textContent = String(scores.X);
-      scoreElements.O.textContent = String(scores.O);
+      players.forEach((player) => {
+        const element = scoreElements[player];
+        if (!element) {
+          return;
+        }
+
+        const nextValue = String(scores[player]);
+        if (element.textContent === nextValue) {
+          return;
+        }
+
+        element.textContent = nextValue;
+        element.classList.remove("scoreboard__value--updating");
+        // eslint-disable-next-line no-unused-expressions -- Force reflow to restart animation
+        void element.offsetWidth;
+        element.classList.add("scoreboard__value--updating");
+      });
     };
 
     const setActivePlayerCard = (player) => {
-      (/** @type {("X"|"O")[]} */ (["X", "O"]))
+      players
         .filter((id) => playerCards[id])
         .forEach((id) => {
           playerCards[id].classList.toggle("scoreboard__player--active", id === player);
