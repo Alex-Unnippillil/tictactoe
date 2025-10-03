@@ -8,7 +8,7 @@
   </head>
   <body class="page page--game">
     <h1>Tic Tac Toe</h1>
-    <main class="app-shell">
+    <main class="app-shell" role="application" aria-label="Tic Tac Toe">
       <header class="toolbar">
         <p class="toolbar__title">Friendly match</p>
         <div class="toolbar__actions">
@@ -62,15 +62,69 @@
         aria-label="Tic Tac Toe board"
         aria-live="polite"
       >
-        <button type="button" class="cell" data-cell data-index="0" aria-label="Row 1 column 1"></button>
-        <button type="button" class="cell" data-cell data-index="1" aria-label="Row 1 column 2"></button>
-        <button type="button" class="cell" data-cell data-index="2" aria-label="Row 1 column 3"></button>
-        <button type="button" class="cell" data-cell data-index="3" aria-label="Row 2 column 1"></button>
-        <button type="button" class="cell" data-cell data-index="4" aria-label="Row 2 column 2"></button>
-        <button type="button" class="cell" data-cell data-index="5" aria-label="Row 2 column 3"></button>
-        <button type="button" class="cell" data-cell data-index="6" aria-label="Row 3 column 1"></button>
-        <button type="button" class="cell" data-cell data-index="7" aria-label="Row 3 column 2"></button>
-        <button type="button" class="cell" data-cell data-index="8" aria-label="Row 3 column 3"></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="0"
+          aria-label="Row 1 column 1, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="1"
+          aria-label="Row 1 column 2, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="2"
+          aria-label="Row 1 column 3, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="3"
+          aria-label="Row 2 column 1, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="4"
+          aria-label="Row 2 column 2, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="5"
+          aria-label="Row 2 column 3, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="6"
+          aria-label="Row 3 column 1, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="7"
+          aria-label="Row 3 column 2, empty"
+        ></button>
+        <button
+          type="button"
+          class="cell"
+          data-cell
+          data-index="8"
+          aria-label="Row 3 column 3, empty"
+        ></button>
       </section>
 
       <footer class="controls">
@@ -143,11 +197,13 @@
       </form>
     </dialog>
 
+    <script src="js/ui/status.js" defer></script>
+    <script src="js/app.js" defer></script>
     <script src="js/core/constants.js" defer></script>
     <script src="js/core/history.js" defer></script>
     <script src="js/state/core.js" defer></script>
     <script src="js/state/history.js" defer></script>
-    <script src="js/ui/status.js" defer></script>
+    <script src="js/ai/minimax.js" defer></script>
     <script src="js/game.js" defer></script>
     <script src="js/ui/settings.js" defer></script>
   </body>
