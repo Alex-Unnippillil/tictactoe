@@ -681,7 +681,8 @@ button:focus-visible {
   flex-direction: column;
   gap: clamp(1.25rem, 1.5vw + 1rem, 2.5rem);
   margin-inline: auto;
-  width: min(100%, clamp(22rem, 85vw, 56rem));
+  width: 100%;
+  max-width: clamp(22rem, 85vw, 56rem);
   background: var(--glass-surface-fallback);
   border: 1px solid var(--glass-border);
   border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
@@ -1124,6 +1125,7 @@ button:focus-visible {
   gap: 16px;
   border-radius: 999px;
   padding: 18px 28px 18px 24px;
+  flex-wrap: wrap;
   background: linear-gradient(
     140deg,
     var(--glass-surface),
@@ -1190,10 +1192,11 @@ button:focus-visible {
 .board {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(6px, 1.4vw, 10px);
   padding: clamp(12px, 2.5vw, 18px);
-  max-width: clamp(280px, 70vw, 420px);
+  width: 100%;
+  max-width: 420px;
   margin-inline: auto;
   border-radius: 22px;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.45), rgba(148, 163, 184, 0.25))
