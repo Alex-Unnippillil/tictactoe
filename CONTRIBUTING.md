@@ -68,17 +68,24 @@ npx prettier --write "**/*.{html,css,js}"
 Feel free to add a `.prettierrc` file in a separate pull request if you need custom rules.
 
 ### Tests and end-to-end checks
-There is no automated unit test suite yet. Please perform the manual checks below to ensure quality:
 
-1. Open the site in the latest versions of Chrome, Firefox, and Safari (or an equivalent cross-browser testing tool) and verify game play, win detection, and reset logic.
-2. Test on a narrow viewport (~320px) to confirm mobile responsiveness and touch support.
-3. Use browser dev tools to confirm there are no console errors or 404 network requests.
+The repository ships with automated coverage that you are expected to keep green:
 
-If you add automated tests or E2E coverage in your change, document how to run them in your pull request description.
+- **Unit tests (`tests/unit/`)** – These run with Node's built-in test runner via Jest-style specs. The current suite covers the AI decision tree (`ai.spec.js`), move history helpers (`history.test.js`), and the opening move heuristics (`minimax-first-move.test.js`). Execute all unit tests locally with:
+
+  ```bash
+  npm run test
+  ```
+
+  Run the suite whenever you touch the game engine, history persistence, or add new logic that should be regression-proof. Add new `.test.js`/`.spec.js` files alongside the existing ones in `tests/unit/` so CI picks them up automatically.
+
+- **Playwright E2E scaffolding (`tests/e2e/`)** – There is a starter spec, `keyboard.spec.ts`, that exercises keyboard navigation and announcements. It expects the static site to be served locally (for example with `npm run serve`). When you introduce new interaction flows, extend this directory with additional Playwright specs and wire up the `npm run e2e`/`npm run e2e:ci` scripts as needed so contributors and CI can execute them consistently.
+
+If you add new automated checks, update this section with instructions and ensure they are runnable without extra secrets or services.
 
 ## Continuous integration & deployment
 
-- Pull requests are validated by GitHub Actions CI. Ensure the Prettier check and any future lint/test workflows pass before requesting review. You can view the workflow status directly on the PR.
+- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm test`, and expects an `npm run e2e:ci` command to exercise the Playwright specs. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
 - Merges to `main` automatically trigger the GitHub Pages deployment pipeline. To keep deployments healthy, confirm that `index.html` and any assets you add load correctly when served from the repository root, and avoid introducing references to private or server-side resources.
 - If a deployment fails, investigate the CI logs and open a follow-up PR with a fix or revert.
 
