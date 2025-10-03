@@ -39,6 +39,29 @@
         aria-label="Player scoreboard"
       >
         <article class="scoreboard__player scoreboard__player--x" data-player="X">
+          <span
+            class="scoreboard__avatar"
+            data-role="avatar"
+            data-player="X"
+            aria-hidden="true"
+          >
+            <span
+              class="scoreboard__avatar-fallback"
+              data-role="avatar-fallback"
+              data-player="X"
+            >
+              PX
+            </span>
+            <img
+              class="scoreboard__avatar-image"
+              data-role="avatar-image"
+              data-player="X"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              hidden
+            />
+          </span>
           <span class="scoreboard__mark" aria-hidden="true">X</span>
           <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
           <span class="scoreboard__score" data-player="X">
@@ -54,6 +77,29 @@
           </span>
         </article>
         <article class="scoreboard__player scoreboard__player--o" data-player="O">
+          <span
+            class="scoreboard__avatar"
+            data-role="avatar"
+            data-player="O"
+            aria-hidden="true"
+          >
+            <span
+              class="scoreboard__avatar-fallback"
+              data-role="avatar-fallback"
+              data-player="O"
+            >
+              PO
+            </span>
+            <img
+              class="scoreboard__avatar-image"
+              data-role="avatar-image"
+              data-player="O"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              hidden
+            />
+          </span>
           <span class="scoreboard__mark" aria-hidden="true">O</span>
           <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
           <span class="scoreboard__score" data-player="O">
