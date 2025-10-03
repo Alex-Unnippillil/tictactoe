@@ -848,29 +848,72 @@ button:focus-visible {
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(80px, 1fr));
-  gap: 8px;
+  gap: clamp(6px, 1.4vw, 10px);
+  padding: clamp(12px, 2.5vw, 18px);
+  max-width: clamp(280px, 70vw, 420px);
+  margin-inline: auto;
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.45), rgba(148, 163, 184, 0.25))
+      padding-box,
+    linear-gradient(160deg, rgba(37, 99, 235, 0.35), rgba(59, 130, 246, 0.05)) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25), 0 6px 18px rgba(15, 23, 42, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(18px) saturate(140%);
 }
 
 .cell {
+  --cell-mark-color: var(--surface-strong);
+  --cell-glow-color: rgba(37, 99, 235, 0.2);
+  --cell-reflection-opacity: 0.55;
+  position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  font-size: clamp(2.75rem, 9vw, 3.75rem);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: clamp(2.75rem, 9vw, 3.9rem);
   font-weight: 600;
-  background: var(--surface-muted);
-  color: var(--surface-strong);
+  background: linear-gradient(160deg, rgba(17, 24, 39, 0.06), rgba(255, 255, 255, 0.08)),
+    linear-gradient(320deg, rgba(255, 255, 255, 0.12), rgba(148, 163, 184, 0.08));
+  color: var(--cell-mark-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease,
-    color 150ms ease;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 4px rgba(15, 23, 42, 0.15);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease,
+    color 180ms ease, box-shadow 220ms ease;
+}
+
+.cell::before,
+.cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.cell::before {
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0));
+  mix-blend-mode: screen;
+  opacity: var(--cell-reflection-opacity);
+}
+
+.cell::after {
+  background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.45), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(148, 163, 184, 0));
+  opacity: calc(var(--cell-reflection-opacity) * 0.75);
 }
 
 .cell:hover {
-  transform: translateY(-1px);
-  border-color: var(--accent);
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.65);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 6px rgba(15, 23, 42, 0.2), 0 8px 16px rgba(15, 23, 42, 0.12);
 }
 
 .cell[aria-disabled="true"] {
@@ -879,16 +922,99 @@ button:focus-visible {
 }
 
 .cell--x {
-  color: var(--accent);
+  --cell-mark-color: var(--cell-x-color);
+  --cell-glow-color: color-mix(in srgb, var(--cell-x-color) 50%, transparent);
+  animation: cell-place 260ms cubic-bezier(0.2, 0.7, 0.35, 1.2);
 }
 
 .cell--o {
-  color: var(--danger);
+  --cell-mark-color: var(--cell-o-color);
+  --cell-glow-color: color-mix(in srgb, var(--cell-o-color) 55%, transparent);
+  animation: cell-place 260ms cubic-bezier(0.2, 0.7, 0.35, 1.2);
 }
 
 .cell--winner {
-  background: rgba(59, 130, 246, 0.16);
-  border-color: var(--accent);
+  --cell-reflection-opacity: 0.75;
+  border-color: rgba(59, 130, 246, 0.65);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45), 0 0 24px rgba(59, 130, 246, 0.35),
+    inset 0 0 12px rgba(59, 130, 246, 0.2);
+  animation: cell-winner-pulse 1.8s ease-in-out infinite;
+}
+
+.cell--winner::after {
+  background: conic-gradient(
+      from 0deg,
+      rgba(59, 130, 246, 0.0) 0deg,
+      rgba(59, 130, 246, 0.35) 120deg,
+      rgba(59, 130, 246, 0.6) 180deg,
+      rgba(59, 130, 246, 0.0) 300deg
+    ),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.35), transparent 65%);
+  animation: cell-winner-sheen 2.6s linear infinite;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+}
+
+.cell--x,
+.cell--o {
+  text-shadow: 0 0 14px var(--cell-glow-color), 0 0 28px color-mix(in srgb, var(--cell-glow-color) 70%, transparent);
+}
+
+@keyframes cell-place {
+  0% {
+    transform: scale(0.75);
+    filter: blur(6px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.05);
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes cell-winner-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45), 0 0 24px rgba(59, 130, 246, 0.35),
+      inset 0 0 12px rgba(59, 130, 246, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.65), 0 0 36px rgba(59, 130, 246, 0.45),
+      inset 0 0 18px rgba(59, 130, 246, 0.32);
+  }
+}
+
+@keyframes cell-winner-sheen {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell,
+  .cell::before,
+  .cell::after {
+    transition-duration: 0.01ms !important;
+  }
+
+  .cell--x,
+  .cell--o,
+  .cell--winner {
+    animation: none !important;
+  }
 }
 
 .play-area {
