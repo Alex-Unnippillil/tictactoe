@@ -86,7 +86,7 @@
     }, duration);
   };
 
-  const playConfetti = ({ duration = 1800, particleCount = 140, tone = 'x' } = {}) => {
+  const playConfetti = ({ duration = 3200, particleCount = 140, tone = 'x' } = {}) => {
     if (shouldReduceMotion()) {
       return Promise.resolve();
     }
