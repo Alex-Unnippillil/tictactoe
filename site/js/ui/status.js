@@ -13,10 +13,12 @@
     const scoreElements = {
       X: document.querySelector('[data-role="score"][data-player="X"]'),
       O: document.querySelector('[data-role="score"][data-player="O"]'),
+      draw: document.querySelector('[data-role="score"][data-player="draw"]'),
     };
     const playerCards = {
       X: document.querySelector('.scoreboard__player[data-player="X"]'),
       O: document.querySelector('.scoreboard__player[data-player="O"]'),
+      draw: document.querySelector('.scoreboard__player[data-player="draw"]'),
     };
 
     if (
@@ -25,14 +27,16 @@
       !nameElements.O ||
       !scoreElements.X ||
       !scoreElements.O ||
+      !scoreElements.draw ||
       !playerCards.X ||
-      !playerCards.O
+      !playerCards.O ||
+      !playerCards.draw
     ) {
       throw new Error("Unable to initialise status UI; required elements are missing.");
     }
 
     let playerNames = { ...DEFAULT_NAMES };
-    let scores = { X: 0, O: 0 };
+    let scores = { X: 0, O: 0, draw: 0 };
     let currentPlayer = "X";
     let statusState = "turn"; // "turn" | "win" | "draw"
 
@@ -76,13 +80,17 @@
     const updateScoreDisplay = () => {
       scoreElements.X.textContent = String(scores.X);
       scoreElements.O.textContent = String(scores.O);
+      scoreElements.draw.textContent = String(scores.draw);
     };
 
     const setActivePlayerCard = (player) => {
-      (/** @type {("X"|"O")[]} */ (["X", "O"]))
+      (/** @type {("X"|"O"|"draw")[]} */ (["X", "O", "draw"]))
         .filter((id) => playerCards[id])
         .forEach((id) => {
-          playerCards[id].classList.toggle("scoreboard__player--active", id === player);
+          playerCards[id].classList.toggle(
+            "scoreboard__player--active",
+            player === id
+          );
         });
     };
 
@@ -102,15 +110,18 @@
       announceDraw() {
         statusState = "draw";
         refreshStatus();
-        setActivePlayerCard(null);
+        setActivePlayerCard("draw");
       },
       incrementScore(player) {
+        if (typeof scores[player] !== "number") {
+          scores[player] = 0;
+        }
         scores[player] += 1;
         updateScoreDisplay();
         return scores[player];
       },
       resetScores() {
-        scores = { X: 0, O: 0 };
+        scores = { X: 0, O: 0, draw: 0 };
         updateScoreDisplay();
       },
       getScores() {
@@ -118,6 +129,11 @@
       },
       setScores(nextScores) {
         scores = { ...scores, ...nextScores };
+        ["X", "O", "draw"].forEach((key) => {
+          if (typeof scores[key] !== "number" || Number.isNaN(scores[key])) {
+            scores[key] = 0;
+          }
+        });
         updateScoreDisplay();
       },
       getNames() {
