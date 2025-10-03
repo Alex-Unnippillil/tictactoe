@@ -28,17 +28,10 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
 
       - name: Install dependencies
-        run: echo "No dependencies to install"
+        run: npm ci
 
-      - name: Run tests
-        run: echo "No tests to run"
-
-      - name: Build site artifact
-        run: |
-          set -euo pipefail
-          rm -rf dist
-          mkdir -p dist
-          cp -R site/. dist/
+      - name: Run build
+        run: npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
