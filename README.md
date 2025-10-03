@@ -4,12 +4,11 @@
 [![Pages Deployment](https://img.shields.io/github/actions/workflow/status/Alex-Unnippillil/tictactoe/pages.yml?branch=main&label=Pages)](https://github.com/Alex-Unnippillil/tictactoe/actions/workflows/pages.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-![image](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
+## Live Demo
 
-SPDX-License-Identifier: MIT
+Visit the published site on GitHub Pages: **https://alex-unnippillil.github.io/tictactoe/**
 
-![image](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
-https://alex-unnippillil.github.io/tictactoe/
+![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
 
 ## Static site assets
 
@@ -68,12 +67,6 @@ The project is a static HTML application comprised of:
 - `index.html` containing the markup, inline styles, and JavaScript that power the entire game experience.
 - No external build system is required; however, npm scripts provide scaffolding for future enhancements such as bundling or testing frameworks.
 
-## GitHub Pages URL
-
-> Placeholder: Update this section with the final published GitHub Pages link when available.
-
 ## License
 
 SPDX-License-Identifier: MIT
-
-A dedicated `LICENSE` file will be added to outline the full MIT license terms.
