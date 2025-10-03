@@ -92,6 +92,8 @@ select {
   --glow-accent: rgba(14, 165, 233, 0.26);
   --glow-ambient: rgba(15, 118, 110, 0.18);
   --glow-strong: rgba(79, 70, 229, 0.24);
+  --status-transition-duration: 420ms;
+  --status-transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -916,6 +918,108 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(18px);
   isolation: isolate;
   text-wrap: balance;
+  overflow: hidden;
+}
+
+.status__text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5em;
+  will-change: transform, opacity;
+}
+
+.status__text::after {
+  content: "";
+  position: absolute;
+  inset: -0.2em -0.5em;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.status--transition .status__text {
+  animation: status-text-fade-slide var(--status-transition-duration)
+    var(--status-transition-ease) both;
+}
+
+.status--transition--win .status__text::after {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(59, 130, 246, 0.4),
+    transparent 70%
+  );
+  animation: status-text-glow 620ms ease-out forwards;
+}
+
+.status--transition--draw .status__text::after {
+  background: linear-gradient(
+    120deg,
+    rgba(139, 92, 246, 0),
+    rgba(139, 92, 246, 0.45),
+    rgba(96, 165, 250, 0),
+    rgba(139, 92, 246, 0.45),
+    rgba(139, 92, 246, 0)
+  );
+  transform: translateX(-65%);
+  animation: status-text-shimmer 780ms ease-out forwards;
+}
+
+@keyframes status-text-fade-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes status-text-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  40% {
+    opacity: 0.45;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes status-text-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-65%);
+  }
+
+  35% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(65%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status--transition .status__text,
+  .status--transition--win .status__text::after,
+  .status--transition--draw .status__text::after {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 .status::before {

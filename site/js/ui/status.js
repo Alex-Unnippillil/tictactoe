@@ -6,6 +6,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("statusMessage");
+    const statusText = statusMessage?.querySelector(".status__text");
     const nameElements = {
       X: document.querySelector('[data-role="name"][data-player="X"]'),
       O: document.querySelector('[data-role="name"][data-player="O"]'),
@@ -21,6 +22,7 @@
 
     if (
       !statusMessage ||
+      !statusText ||
       !nameElements.X ||
       !nameElements.O ||
       !scoreElements.X ||
@@ -41,6 +43,57 @@
     const formatWinMessage = (player) =>
       `${playerNames[player]} (${player}) wins this round!`;
 
+    const BASE_TRANSITION_CLASS = "status--transition";
+    const TRANSITION_VARIANTS = {
+      turn: "status--transition--turn",
+      win: "status--transition--win",
+      draw: "status--transition--draw",
+    };
+    const ALL_TRANSITION_CLASSES = [
+      BASE_TRANSITION_CLASS,
+      ...Object.values(TRANSITION_VARIANTS),
+    ];
+
+    let transitionFallbackTimeout = null;
+    let hasRenderedInitialStatus = false;
+
+    const clearTransitionClasses = () => {
+      if (transitionFallbackTimeout) {
+        clearTimeout(transitionFallbackTimeout);
+        transitionFallbackTimeout = null;
+      }
+      statusMessage.classList.remove(...ALL_TRANSITION_CLASSES);
+    };
+
+    const scheduleTransitionCleanup = () => {
+      if (transitionFallbackTimeout) {
+        clearTimeout(transitionFallbackTimeout);
+      }
+      transitionFallbackTimeout = window.setTimeout(() => {
+        clearTransitionClasses();
+      }, 800);
+    };
+
+    const triggerTransition = (state) => {
+      clearTransitionClasses();
+      // Force reflow so animations retrigger reliably across browsers.
+      void statusMessage.offsetWidth;
+      statusMessage.classList.add(BASE_TRANSITION_CLASS);
+      const variantClass = TRANSITION_VARIANTS[state] || TRANSITION_VARIANTS.turn;
+      statusMessage.classList.add(variantClass);
+      scheduleTransitionCleanup();
+    };
+
+    const handleAnimationEnd = (event) => {
+      if (event.target !== statusText) {
+        return;
+      }
+      clearTransitionClasses();
+    };
+
+    statusMessage.addEventListener("animationend", handleAnimationEnd);
+    statusMessage.addEventListener("animationcancel", handleAnimationEnd);
+
     const applyVisualState = () => {
       statusMessage.dataset.state = statusState;
       if (statusState === "draw") {
@@ -51,19 +104,27 @@
     };
 
     const refreshStatus = () => {
+      let nextMessage;
       switch (statusState) {
         case "win":
-          statusMessage.textContent = formatWinMessage(currentPlayer);
+          nextMessage = formatWinMessage(currentPlayer);
           break;
         case "draw":
-          statusMessage.textContent = "It's a draw!";
+          nextMessage = "It's a draw!";
           break;
         case "turn":
         default:
-          statusMessage.textContent = formatTurnMessage(currentPlayer);
+          nextMessage = formatTurnMessage(currentPlayer);
           break;
       }
+
+      const hasChanged = statusText.textContent !== nextMessage;
+      statusText.textContent = nextMessage;
       applyVisualState();
+      if (hasRenderedInitialStatus && hasChanged) {
+        triggerTransition(statusState);
+      }
+      hasRenderedInitialStatus = true;
     };
 
     const applyNames = (names) => {
