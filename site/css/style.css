@@ -92,6 +92,28 @@ select {
   --glow-accent: rgba(14, 165, 233, 0.26);
   --glow-ambient: rgba(15, 118, 110, 0.18);
   --glow-strong: rgba(79, 70, 229, 0.24);
+  --safe-area-top: 0px;
+  --safe-area-right: 0px;
+  --safe-area-bottom: 0px;
+  --safe-area-left: 0px;
+}
+
+@supports (padding: calc(1px + env(safe-area-inset-top))) {
+  :root {
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-right: env(safe-area-inset-right);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+    --safe-area-left: env(safe-area-inset-left);
+  }
+}
+
+@supports (padding: calc(1px + constant(safe-area-inset-top))) {
+  :root {
+    --safe-area-top: constant(safe-area-inset-top);
+    --safe-area-right: constant(safe-area-inset-right);
+    --safe-area-bottom: constant(safe-area-inset-bottom);
+    --safe-area-left: constant(safe-area-inset-left);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -131,6 +153,9 @@ select {
 }
 
 body.page--game {
+  --page-padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  --page-padding-inline: clamp(1.5rem, 5vw, 3.5rem);
+  --page-padding-bottom: clamp(3.5rem, 8vw, 5.5rem);
   background-color: var(--surface-muted);
   background-image: var(--page-gradient-overlay), var(--page-gradient-base);
   background-attachment: fixed;
@@ -139,8 +164,12 @@ body.page--game {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
-    clamp(3.5rem, 8vw, 5.5rem);
+  padding: var(--page-padding-top) var(--page-padding-inline)
+    var(--page-padding-bottom);
+  padding-top: calc(var(--page-padding-top) + var(--safe-area-top));
+  padding-right: calc(var(--page-padding-inline) + var(--safe-area-right));
+  padding-bottom: calc(var(--page-padding-bottom) + var(--safe-area-bottom));
+  padding-left: calc(var(--page-padding-inline) + var(--safe-area-left));
   box-sizing: border-box;
   gap: clamp(1.75rem, 4vw, 3rem);
   min-height: 100%;
@@ -339,6 +368,8 @@ button:focus-visible {
 }
 
 .app-shell {
+  --shell-padding-block: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
+  --shell-padding-inline: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -348,7 +379,11 @@ button:focus-visible {
   background: var(--glass-surface-fallback);
   border: 1px solid var(--glass-border);
   border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
-  padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
+  padding: var(--shell-padding-block) var(--shell-padding-inline);
+  padding-top: calc(var(--shell-padding-block) + var(--safe-area-top));
+  padding-right: calc(var(--shell-padding-inline) + var(--safe-area-right));
+  padding-bottom: calc(var(--shell-padding-block) + var(--safe-area-bottom));
+  padding-left: calc(var(--shell-padding-inline) + var(--safe-area-left));
   box-shadow: var(--glass-shadow);
   overflow: hidden;
   z-index: 0;
