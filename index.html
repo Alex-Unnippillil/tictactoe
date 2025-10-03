@@ -1,119 +1,175 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="site/css/modal.css" />
   <style>
+    :root {
+      color-scheme: light dark;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at top, #f8f9ff, #f1f3f9);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
     }
-    .board {
-      display: inline-block;
-      border-collapse: collapse;
+
+    header {
+      display: flex;
+      width: min(90vw, 640px);
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
     }
-    .board td {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #ccc;
-      font-size: 48px;
-      text-align: center;
-      vertical-align: middle;
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+      color: #0d1b2a;
+    }
+
+    .settings-button {
+      border: none;
+      background-color: #0d6efd;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 600;
       cursor: pointer;
+      transition: background-color 0.2s ease;
     }
-    
-    .board td:hover {
-      background-color: #f2f2f2;
+
+    .settings-button:hover,
+    .settings-button:focus {
+      background-color: #0b5ed7;
     }
-    
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .board {
+      border-collapse: collapse;
+      border-spacing: 0;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+    }
+
+    .board td {
+      border: 2px solid #d7dde9;
+      padding: 0;
+    }
+
+    .board button {
+      width: 110px;
+      height: 110px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      display: grid;
+      place-items: center;
+    }
+
+    .board button:hover:not(:disabled),
+    .board button:focus-visible:not(:disabled) {
+      background-color: rgba(13, 110, 253, 0.12);
+      transform: scale(1.02);
+    }
+
+    .board button:disabled {
+      cursor: default;
+      color: #0d1b2a;
+    }
+
+    .board button.cell--winning {
+      background-color: rgba(25, 135, 84, 0.2);
+      color: #198754;
+    }
+
     .message {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #0d1b2a;
+      min-height: 1.4rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      .board button {
+        width: 90px;
+        height: 90px;
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
-  </table>
-  <div class="message"></div>
+  <header>
+    <h1>Tic Tac Toe</h1>
+    <button type="button" class="settings-button" data-modal-trigger="settings-modal">Settings</button>
+  </header>
 
-  <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
-        return;
-      }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-    }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
-        }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
-        }
-      }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
-      }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
-    }
-    
-    function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
-          }
-        }
-      }
-      
-      return true;
-    }
-  </script>
+  <main>
+    <table class="board" role="grid" aria-label="Tic Tac Toe board">
+      <tbody>
+        <tr>
+          <td><button type="button" data-cell="0-0" aria-label="Row 1 column 1"></button></td>
+          <td><button type="button" data-cell="0-1" aria-label="Row 1 column 2"></button></td>
+          <td><button type="button" data-cell="0-2" aria-label="Row 1 column 3"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button" data-cell="1-0" aria-label="Row 2 column 1"></button></td>
+          <td><button type="button" data-cell="1-1" aria-label="Row 2 column 2"></button></td>
+          <td><button type="button" data-cell="1-2" aria-label="Row 2 column 3"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button" data-cell="2-0" aria-label="Row 3 column 1"></button></td>
+          <td><button type="button" data-cell="2-1" aria-label="Row 3 column 2"></button></td>
+          <td><button type="button" data-cell="2-2" aria-label="Row 3 column 3"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="message" aria-live="polite"></div>
+  </main>
+
+  <div class="modal" id="settings-modal" data-modal aria-hidden="true">
+    <div class="modal__backdrop" data-modal-overlay></div>
+    <div class="modal__dialog" data-modal-dialog aria-labelledby="settings-title">
+      <button type="button" class="modal__close" aria-label="Close settings" data-modal-close>&times;</button>
+      <h2 class="modal__title" id="settings-title">Game Settings</h2>
+      <form id="settings-form" class="modal__form">
+        <label class="modal__label" for="starting-player">
+          Starting player
+          <select id="starting-player" class="modal__select">
+            <option value="X">Player X</option>
+            <option value="O">Player O</option>
+          </select>
+        </label>
+        <button type="submit" class="modal__primary">Start new game</button>
+        <button type="button" id="reset-button" class="modal__secondary">Reset board</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="site/js/main.js"></script>
 </body>
 </html>
