@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <h1 class="page__title">Tic Tac Toe</h1>
+        <section class="settings" aria-label="Game settings">
+          <h2 class="settings__title">Game Mode</h2>
+          <p class="settings__hint">
+            Choose how player O should behave. Human vs Human lets two people
+            share the board.
+          </p>
+          <div class="settings__options" role="radiogroup" aria-label="Game mode">
+            <label class="settings__option">
+              <input type="radio" name="mode" value="human" checked />
+              Human vs Human
+            </label>
+            <label class="settings__option">
+              <input type="radio" name="mode" value="easy" />
+              Easy AI
+            </label>
+            <label class="settings__option">
+              <input type="radio" name="mode" value="medium" />
+              Medium AI
+            </label>
+            <label class="settings__option">
+              <input type="radio" name="mode" value="hard" />
+              Hard AI
+            </label>
+          </div>
+          <button type="button" class="settings__reset" data-reset>
+            New Game
+          </button>
+        </section>
+      </header>
+
+      <section class="board" aria-label="Tic Tac Toe board">
+        <div class="board__grid" role="grid">
+          <button class="board__cell" role="gridcell" data-cell="0" aria-label="Cell 1"></button>
+          <button class="board__cell" role="gridcell" data-cell="1" aria-label="Cell 2"></button>
+          <button class="board__cell" role="gridcell" data-cell="2" aria-label="Cell 3"></button>
+          <button class="board__cell" role="gridcell" data-cell="3" aria-label="Cell 4"></button>
+          <button class="board__cell" role="gridcell" data-cell="4" aria-label="Cell 5"></button>
+          <button class="board__cell" role="gridcell" data-cell="5" aria-label="Cell 6"></button>
+          <button class="board__cell" role="gridcell" data-cell="6" aria-label="Cell 7"></button>
+          <button class="board__cell" role="gridcell" data-cell="7" aria-label="Cell 8"></button>
+          <button class="board__cell" role="gridcell" data-cell="8" aria-label="Cell 9"></button>
+        </div>
+        <p class="board__status" data-status>Player X's turn</p>
+      </section>
+    </main>
+
+    <script type="module" src="./js/ui/uiController.js"></script>
+  </body>
+</html>
