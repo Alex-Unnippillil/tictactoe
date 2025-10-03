@@ -4,45 +4,403 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tic Tac Toe</title>
-    <meta http-equiv="refresh" content="0; url=site/" />
-    <link rel="canonical" href="site/" />
-    <style>
-      :root {
-        color-scheme: light dark;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: Canvas;
-        color: CanvasText;
-        text-align: center;
-        padding: 2rem;
-      }
-      a {
-        color: inherit;
-        font-weight: 600;
-      }
-    </style>
+    <base href="site/" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <main>
-      <h1>Redirecting to Tic Tac Toe…</h1>
-      <p>
-        If you are not redirected automatically, follow this
-        <a href="site/">link to the game</a>.
-      </p>
+  <body class="page page--game">
+    <h1 class="page-title" aria-describedby="pageTitleSubtitle">
+      <span class="page-title__badge" aria-hidden="true">
+        <img src="assets/icon-handshake.svg" alt="" />
+      </span>
+      <span class="page-title__text">
+        <span class="page-title__eyebrow">Interactive match center</span>
+        <span class="page-title__headline">Tic Tac Toe Showdown</span>
+      </span>
+      <span id="pageTitleSubtitle" class="page-title__subhead">
+        Challenge friends, monitor live scoreboards, and personalize every round
+        from one polished control hub.
+      </span>
+    </h1>
+    <main class="app-shell" role="application" aria-label="Tic Tac Toe">
+      <header class="toolbar">
+        <p class="toolbar__title">
+          <span class="toolbar__title-icon" aria-hidden="true">
+            <img src="assets/icon-handshake.svg" alt="" />
+          </span>
+          <span class="toolbar__title-label">Friendly match</span>
+        </p>
+        <div class="toolbar__actions">
+          <button type="button" id="newRoundButton" class="button button--ghost">
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-refresh.svg" alt="" />
+            </span>
+            <span class="button__label">New round</span>
+          </button>
+          <button type="button" id="settingsButton" class="button button--ghost">
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-settings.svg" alt="" />
+            </span>
+            <span class="button__label">Settings</span>
+          </button>
+        </div>
+      </header>
+
+      <section
+        class="scoreboard"
+        id="scoreboard"
+        role="region"
+        aria-label="Player scoreboard"
+      >
+        <article class="scoreboard__player scoreboard__player--x" data-player="X">
+          <span class="scoreboard__mark" aria-hidden="true">X</span>
+          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <span class="scoreboard__score" data-player="X">
+            <span id="score-label-x" class="visually-hidden">Wins for player X</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="X"
+              aria-labelledby="score-label-x"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
+        </article>
+        <article class="scoreboard__player scoreboard__player--o" data-player="O">
+          <span class="scoreboard__mark" aria-hidden="true">O</span>
+          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <span class="scoreboard__score" data-player="O">
+            <span id="score-label-o" class="visually-hidden">Wins for player O</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="O"
+              aria-labelledby="score-label-o"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
+        </article>
+      </section>
+
+      <section
+        class="status"
+        id="statusMessage"
+        aria-live="polite"
+        data-state="turn"
+        data-player="X"
+      >
+        Player X (X) to move
+      </section>
+
+      <div class="play-area">
+        <section
+          class="board"
+          id="board"
+          role="grid"
+          aria-label="Tic Tac Toe board"
+          aria-live="polite"
+        >
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="0"
+            aria-label="Row 1 column 1, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="1"
+            aria-label="Row 1 column 2, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="2"
+            aria-label="Row 1 column 3, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="3"
+            aria-label="Row 2 column 1, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="4"
+            aria-label="Row 2 column 2, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="5"
+            aria-label="Row 2 column 3, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="6"
+            aria-label="Row 3 column 1, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="7"
+            aria-label="Row 3 column 2, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="cell"
+            data-cell
+            data-index="8"
+            aria-label="Row 3 column 3, empty"
+          >
+            <span class="cell__glyph" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <footer class="controls">
+          <div class="controls__group">
+            <button
+              type="button"
+              id="resetScoresButton"
+              class="button button--ghost"
+            >
+              Reset scores
+            </button>
+          </div>
+          <div class="controls__group">
+            <button type="button" id="resetGameButton" class="button">
+              Reset game
+            </button>
+          </div>
+        </footer>
+      </div>
     </main>
-    <script>
-      window.requestAnimationFrame(function () {
-        try {
-          window.location.replace('site/');
-        } catch (error) {
-          window.location.href = 'site/';
-        }
-      });
-    </script>
+
+    <dialog id="settingsModal" aria-labelledby="settingsTitle">
+      <form method="dialog" id="settingsForm" class="modal" novalidate>
+        <header class="modal__header">
+          <h2 id="settingsTitle" class="modal__title">Game settings</h2>
+        </header>
+        <section class="modal__body">
+          <p class="field__hint">
+            Update each player's display name. Leave a field blank to use the default
+            name.
+          </p>
+          <div class="field">
+            <label for="playerXName">Player X name</label>
+            <div class="field__control">
+              <input
+                type="text"
+                id="playerXName"
+                name="playerX"
+                inputmode="text"
+                autocomplete="name"
+                maxlength="24"
+                placeholder="Player X"
+                aria-describedby="playerXHelp playerXError"
+              />
+              <span class="field__status" aria-hidden="true"></span>
+            </div>
+            <p id="playerXHelp" class="field__hint">
+              Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
+              characters).
+            </p>
+            <p id="playerXError" class="field__error" data-error-for="playerX" hidden></p>
+          </div>
+          <div class="field">
+            <label for="playerOName">Player O name</label>
+            <div class="field__control">
+              <input
+                type="text"
+                id="playerOName"
+                name="playerO"
+                inputmode="text"
+                autocomplete="name"
+                maxlength="24"
+                placeholder="Player O"
+                aria-describedby="playerOHelp playerOError"
+              />
+              <span class="field__status" aria-hidden="true"></span>
+            </div>
+            <p id="playerOHelp" class="field__hint">
+              Letters, numbers, spaces, hyphens, apostrophes and periods only (max 24
+              characters).
+            </p>
+            <p id="playerOError" class="field__error" data-error-for="playerO" hidden></p>
+          </div>
+          <fieldset class="field field--segmented">
+            <legend class="field__legend">Theme</legend>
+            <p id="themeHint" class="field__hint">
+              Choose whether the interface follows your system preference or locks to
+              light or dark mode.
+            </p>
+            <div class="segmented-control">
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="system"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">System</span>
+                  <span class="segmented-control__description">
+                    Follow device appearance
+                  </span>
+                </span>
+              </label>
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">Light</span>
+                  <span class="segmented-control__description">
+                    Bright background and glass highlights
+                  </span>
+                </span>
+              </label>
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">Dark</span>
+                  <span class="segmented-control__description">
+                    Deep surfaces with luminous accents
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset class="field field--swatches">
+            <legend class="field__legend">Accent color</legend>
+            <p id="accentHint" class="field__hint">
+              Pick the hue used for focus rings, score glows and interface highlights.
+            </p>
+            <div class="swatch-group">
+              <label class="swatch" data-accent-option="sky">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="sky"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Sky</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="violet">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="violet"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Violet</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="emerald">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="emerald"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Emerald</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="amber">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="amber"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Amber</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="rose">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="rose"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Rose</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+        </section>
+        <footer class="modal__footer">
+          <button type="button" value="cancel" class="button button--ghost" id="settingsCancelButton">
+            Cancel
+          </button>
+          <button type="submit" class="button">Save</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="js/ui/status.js" defer></script>
+    <script src="js/ui/effects.js" defer></script>
+    <script src="js/app.js" defer></script>
+    <script src="js/core/constants.js" defer></script>
+    <script src="js/core/history.js" defer></script>
+    <script src="js/state/core.js" defer></script>
+    <script src="js/state/history.js" defer></script>
+    <script src="js/ai/minimax.js" defer></script>
+    <script src="js/game.js" defer></script>
+    <script src="js/ui/settings.js" defer></script>
   </body>
 </html>
