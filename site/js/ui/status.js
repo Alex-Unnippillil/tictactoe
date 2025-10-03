@@ -94,6 +94,23 @@
 
     window.uiStatus = api;
 
+    const loadPwaInstallModule = () => {
+      const existingScript = document.querySelector(
+        'script[data-module="pwa-install"]'
+      );
+      if (existingScript) {
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "js/pwa/install.js";
+      script.async = true;
+      script.dataset.module = "pwa-install";
+      document.head.appendChild(script);
+    };
+
+    loadPwaInstallModule();
+
     document.addEventListener("settings:players-updated", (event) => {
       const detail = event?.detail;
       if (!detail || !detail.names) {
