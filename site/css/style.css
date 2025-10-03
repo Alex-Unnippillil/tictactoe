@@ -964,6 +964,85 @@ button:focus-visible {
   background: radial-gradient(120% 120% at 20% 20%, var(--glow-neutral), transparent);
 }
 
+.board-indicator {
+  --board-ring-color: rgba(37, 99, 235, 0.45);
+  --board-ring-sheen: rgba(191, 219, 254, 0.65);
+  --board-ring-shadow: rgba(59, 130, 246, 0.35);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 34px);
+  margin-inline: auto;
+}
+
+.board-indicator::before,
+.board-indicator::after {
+  content: "";
+  position: absolute;
+  inset: clamp(-34px, -6vw, -22px);
+  border-radius: clamp(48px, 12vw, 72px);
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity 280ms ease, filter 280ms ease;
+}
+
+.board-indicator::before {
+  background: radial-gradient(60% 60% at 50% 50%, var(--board-ring-sheen), transparent 70%);
+  filter: blur(12px);
+  animation: board-ring-pulse 3.4s ease-in-out infinite;
+}
+
+.board-indicator::after {
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--board-ring-color) 55%, transparent) 0deg,
+    transparent 120deg,
+    color-mix(in srgb, var(--board-ring-color) 35%, transparent) 240deg,
+    transparent 360deg
+  );
+  filter: blur(22px);
+  opacity: 0.75;
+}
+
+.board-indicator.is-turn-x {
+  --board-ring-color: rgba(37, 99, 235, 0.58);
+  --board-ring-sheen: rgba(191, 219, 254, 0.82);
+  --board-ring-shadow: rgba(59, 130, 246, 0.45);
+}
+
+.board-indicator.is-turn-o {
+  --board-ring-color: rgba(220, 38, 38, 0.6);
+  --board-ring-sheen: rgba(254, 202, 202, 0.8);
+  --board-ring-shadow: rgba(248, 113, 113, 0.42);
+}
+
+.board-indicator.is-turn-x::before,
+.board-indicator.is-turn-o::before {
+  animation-duration: 2.6s;
+}
+
+.board-indicator.is-turn-x::after,
+.board-indicator.is-turn-o::after {
+  opacity: 0.85;
+  filter: blur(18px);
+}
+
+@keyframes board-ring-pulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  45% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(0.96);
+  }
+}
+
 .board {
   position: relative;
   display: grid;
@@ -978,7 +1057,7 @@ button:focus-visible {
     linear-gradient(160deg, rgba(37, 99, 235, 0.35), rgba(59, 130, 246, 0.05)) border-box;
   border: 1px solid transparent;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25), 0 6px 18px rgba(15, 23, 42, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 0 1px var(--board-ring-shadow);
   backdrop-filter: blur(18px) saturate(140%);
 }
 
