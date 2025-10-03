@@ -1,119 +1,244 @@
-
-
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Tic Tac Toe</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    .board {
-      display: inline-block;
-      border-collapse: collapse;
-    }
-    .board td {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #ccc;
-      font-size: 48px;
-      text-align: center;
-      vertical-align: middle;
-      cursor: pointer;
-    }
-    
-    .board td:hover {
-      background-color: #f2f2f2;
-    }
-    
-    .message {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
-  </table>
-  <div class="message"></div>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accessible Tic Tac Toe</title>
+    <link rel="stylesheet" href="site/css/theme.css" />
+  </head>
+  <body>
+    <h1>Tic Tac Toe</h1>
+    <p id="board-instructions" class="board__instructions">
+      Use the arrow keys to move around the grid and press Enter or Space to place your mark.
+    </p>
+    <div
+      class="board"
+      role="grid"
+      aria-label="Tic tac toe board"
+      aria-describedby="board-instructions"
+    >
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="0"
+        data-col="0"
+        aria-rowindex="1"
+        aria-colindex="1"
+        aria-label="Row 1 column 1"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="0"
+        data-col="1"
+        aria-rowindex="1"
+        aria-colindex="2"
+        aria-label="Row 1 column 2"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="0"
+        data-col="2"
+        aria-rowindex="1"
+        aria-colindex="3"
+        aria-label="Row 1 column 3"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="1"
+        data-col="0"
+        aria-rowindex="2"
+        aria-colindex="1"
+        aria-label="Row 2 column 1"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="1"
+        data-col="1"
+        aria-rowindex="2"
+        aria-colindex="2"
+        aria-label="Row 2 column 2"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="1"
+        data-col="2"
+        aria-rowindex="2"
+        aria-colindex="3"
+        aria-label="Row 2 column 3"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="2"
+        data-col="0"
+        aria-rowindex="3"
+        aria-colindex="1"
+        aria-label="Row 3 column 1"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="2"
+        data-col="1"
+        aria-rowindex="3"
+        aria-colindex="2"
+        aria-label="Row 3 column 2"
+        aria-pressed="false"
+      ></button>
+      <button
+        type="button"
+        class="cell"
+        role="gridcell"
+        data-row="2"
+        data-col="2"
+        aria-rowindex="3"
+        aria-colindex="3"
+        aria-label="Row 3 column 3"
+        aria-pressed="false"
+      ></button>
+    </div>
+    <div class="message" role="status" aria-live="polite" aria-atomic="true"></div>
+    <script>
+      const SIZE = 3;
+      const board = Array.from({ length: SIZE }, () => Array(SIZE).fill(""));
+      let currentPlayer = "X";
+      let gameOver = false;
 
-  <script>
-    var currentPlayer = 'X';
-    var board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    var gameOver = false;
-    
-    function makeMove(row, col) {
-      if (gameOver || board[row][col] !== '') {
-        return;
-      }
-      
-      board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
-      if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
-        gameOver = true;
-      } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
-        gameOver = true;
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      }
-    }
-    
-    function checkWin(player) {
-      for (var i = 0; i < 3; i++) {
-        if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
-          return true; // Horizontal
+      const messageEl = document.querySelector(".message");
+      const cells = Array.from(document.querySelectorAll(".cell"));
+
+      const boardElement = document.querySelector(".board");
+      boardElement.addEventListener("keydown", (event) => {
+        const target = event.target;
+        if (!target.classList.contains("cell")) {
+          return;
         }
-        if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
-          return true; // Vertical
+        const row = Number(target.dataset.row);
+        const col = Number(target.dataset.col);
+
+        let nextRow = row;
+        let nextCol = col;
+
+        switch (event.key) {
+          case "ArrowUp":
+            nextRow = (row + SIZE - 1) % SIZE;
+            break;
+          case "ArrowDown":
+            nextRow = (row + 1) % SIZE;
+            break;
+          case "ArrowLeft":
+            nextCol = (col + SIZE - 1) % SIZE;
+            break;
+          case "ArrowRight":
+            nextCol = (col + 1) % SIZE;
+            break;
+          default:
+            return;
         }
+
+        const nextButton = cells.find(
+          (button) => Number(button.dataset.row) === nextRow && Number(button.dataset.col) === nextCol
+        );
+
+        if (nextButton) {
+          nextButton.focus();
+          event.preventDefault();
+        }
+      });
+
+      function updateMessage(text) {
+        messageEl.textContent = text;
       }
-      
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true; // Diagonal
-      }
-      if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
-        return true; // Diagonal
-      }
-      
-      return false;
-    }
-    
-    function checkDraw() {
-      for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            return false;
+
+      function checkWin(player) {
+        for (let i = 0; i < SIZE; i += 1) {
+          if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
+            return true;
+          }
+          if (board[0][i] === player && board[1][i] === player && board[2][i] === player) {
+            return true;
           }
         }
+
+        if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
+          return true;
+        }
+        if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
+          return true;
+        }
+
+        return false;
       }
-      
-      return true;
-    }
-  </script>
-</body>
+
+      function checkDraw() {
+        return board.every((row) => row.every((cell) => cell !== ""));
+      }
+
+      function handleMove(button) {
+        if (gameOver) {
+          return;
+        }
+
+        const row = Number(button.dataset.row);
+        const col = Number(button.dataset.col);
+
+        if (board[row][col] !== "") {
+          return;
+        }
+
+        board[row][col] = currentPlayer;
+        button.textContent = currentPlayer;
+        button.setAttribute("aria-pressed", "true");
+        button.disabled = true;
+
+        if (checkWin(currentPlayer)) {
+          updateMessage(`Player ${currentPlayer} wins!`);
+          gameOver = true;
+          return;
+        }
+
+        if (checkDraw()) {
+          updateMessage("It's a draw!");
+          gameOver = true;
+          return;
+        }
+
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        updateMessage(`Player ${currentPlayer}'s turn`);
+      }
+
+      cells.forEach((button) => {
+        button.addEventListener("click", () => handleMove(button));
+        button.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleMove(button);
+          }
+        });
+      });
+
+      updateMessage(`Player ${currentPlayer}'s turn`);
+      cells[0].focus();
+    </script>
+  </body>
 </html>

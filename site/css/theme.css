@@ -1,0 +1,157 @@
+:root {
+  color-scheme: light dark;
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-surface-alt: #e3e9f7;
+  --color-border: #274060;
+  --color-text: #111827;
+  --color-muted: #3b475c;
+  --color-accent: #0b57d0;
+  --color-on-accent: #ffffff;
+  --color-focus: #1f6feb;
+  --shadow-focus: rgba(31, 111, 235, 0.35);
+  --spacing-unit: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --transition-base: 150ms ease;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0b1120;
+  --color-surface: #161f3c;
+  --color-surface-alt: #1d2747;
+  --color-border: #5b7fcc;
+  --color-text: #f5f7fa;
+  --color-muted: #d8e0ff;
+  --color-accent: #7aa2ff;
+  --color-on-accent: #0b1120;
+  --shadow-focus: rgba(31, 111, 235, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #0b1120;
+    --color-surface: #161f3c;
+    --color-surface-alt: #1d2747;
+    --color-border: #5b7fcc;
+    --color-text: #f5f7fa;
+    --color-muted: #d8e0ff;
+    --color-accent: #7aa2ff;
+    --color-on-accent: #0b1120;
+    --shadow-focus: rgba(31, 111, 235, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 3);
+  gap: calc(var(--spacing-unit) * 4);
+}
+
+h1 {
+  font-size: clamp(2rem, 2.5vw + 1.5rem, 3rem);
+  margin: 0;
+}
+
+.message {
+  font-size: 1.5rem;
+  font-weight: 600;
+  min-height: 2rem;
+  color: var(--color-accent);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, clamp(5rem, 22vw, 7rem));
+  gap: calc(var(--spacing-unit) / 2);
+  padding: calc(var(--spacing-unit) / 2);
+  border-radius: var(--radius-lg);
+  background: var(--color-border);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.16);
+}
+
+.board__instructions {
+  margin: 0;
+  max-width: 28rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.board button {
+  width: clamp(5rem, 22vw, 7rem);
+  height: clamp(5rem, 22vw, 7rem);
+  border: none;
+  border-radius: calc(var(--radius-md) / 2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base), transform var(--transition-base);
+}
+
+.board button:hover {
+  background: var(--color-surface-alt);
+}
+
+.board button:active {
+  transform: scale(0.97);
+}
+
+.board button[disabled] {
+  cursor: not-allowed;
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+
+.board button[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex="0"], [role="button"]) {
+  outline: none;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex="0"], [role="button"]):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--shadow-focus);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex="0"], [role="button"]):not(:focus-visible) {
+  box-shadow: none;
+}
+
+button {
+  font: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
