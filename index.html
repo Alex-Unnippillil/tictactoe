@@ -1,59 +1,122 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="site/css/theme.css">
   <style>
     body {
+      background-color: var(--background-color);
+      color: var(--text-color);
       font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
+    .site-header {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .site-title {
+      font-size: 32px;
+      margin: 0;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--toggle-border-color);
+      background-color: var(--toggle-background-color);
+      color: var(--toggle-text-color);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+    }
+
+    .site-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
     .board {
       display: inline-block;
       border-collapse: collapse;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
     }
+
     .board td {
       width: 100px;
       height: 100px;
-      border: 2px solid #ccc;
+      border: 2px solid var(--board-border-color);
       font-size: 48px;
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+      color: var(--text-color);
     }
-    
+
     .board td:hover {
-      background-color: #f2f2f2;
+      background-color: var(--cell-hover-bg);
     }
-    
+
     .message {
-      margin-top: 20px;
       font-size: 24px;
       font-weight: bold;
+      min-height: 1.5em;
     }
   </style>
+  <script defer src="site/js/ui/theme.js"></script>
 </head>
 <body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
-  </table>
-  <div class="message"></div>
+  <header class="site-header">
+    <h1 class="site-title">Tic Tac Toe</h1>
+    <button type="button" class="theme-toggle" data-role="theme-toggle" aria-pressed="false">
+      <span class="theme-toggle__label">Switch to dark theme</span>
+    </button>
+  </header>
+  <main class="site-main">
+    <table class="board">
+      <tr>
+        <td onclick="makeMove(0, 0)"></td>
+        <td onclick="makeMove(0, 1)"></td>
+        <td onclick="makeMove(0, 2)"></td>
+      </tr>
+      <tr>
+        <td onclick="makeMove(1, 0)"></td>
+        <td onclick="makeMove(1, 1)"></td>
+        <td onclick="makeMove(1, 2)"></td>
+      </tr>
+      <tr>
+        <td onclick="makeMove(2, 0)"></td>
+        <td onclick="makeMove(2, 1)"></td>
+        <td onclick="makeMove(2, 2)"></td>
+      </tr>
+    </table>
+    <div class="message"></div>
+  </main>
 
   <script>
     var currentPlayer = 'X';
@@ -63,26 +126,26 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
+
     function makeMove(row, col) {
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
       document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
+
       if (checkWin(currentPlayer)) {
         document.querySelector('.message').textContent = currentPlayer + ' Wins!';
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        document.querySelector('.message').textContent = 'It\'s a draw!';
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       }
     }
-    
+
     function checkWin(player) {
       for (var i = 0; i < 3; i++) {
         if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
@@ -92,17 +155,17 @@
           return true; // Vertical
         }
       }
-      
+
       if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
         return true; // Diagonal
       }
       if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
         return true; // Diagonal
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,7 +174,7 @@
           }
         }
       }
-      
+
       return true;
     }
   </script>
