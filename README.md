@@ -6,7 +6,8 @@
 
 A polished, framework-free implementation of the classic Tic Tac Toe game. The project highlights how to run a maintainable static site on GitHub Pages while keeping the experience accessible, performant, and easy to extend.
 
-![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
+![Screenshot of the Tic Tac Toe board](<img width="1119" height="1188" alt="image" src="https://github.com/user-attachments/assets/23d9dfb9-ce26-4dc5-b9af-997d7f7c9abb" />
+)
 
 ## Table of contents
 - [Live demo](#live-demo)
