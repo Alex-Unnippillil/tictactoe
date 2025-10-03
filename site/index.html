@@ -10,13 +10,24 @@
     <h1>Tic Tac Toe</h1>
     <main class="app-shell" role="application" aria-label="Tic Tac Toe">
       <header class="toolbar">
-        <p class="toolbar__title">Friendly match</p>
+        <p class="toolbar__title">
+          <span class="toolbar__title-icon" aria-hidden="true">
+            <img src="assets/icon-handshake.svg" alt="" />
+          </span>
+          <span class="toolbar__title-label">Friendly match</span>
+        </p>
         <div class="toolbar__actions">
           <button type="button" id="newRoundButton" class="button button--ghost">
-            New round
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-refresh.svg" alt="" />
+            </span>
+            <span class="button__label">New round</span>
           </button>
           <button type="button" id="settingsButton" class="button button--ghost">
-            Settings
+            <span class="button__icon" aria-hidden="true">
+              <img src="assets/icon-settings.svg" alt="" />
+            </span>
+            <span class="button__label">Settings</span>
           </button>
         </div>
       </header>
