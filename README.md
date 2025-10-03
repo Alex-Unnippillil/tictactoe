@@ -49,6 +49,13 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 - **Run linters while developing:** `npm run lint`
 - **Format and lint before committing:** `npm run lint && npm run test`
 
+## Theme preferences
+
+- Use the toolbar theme toggle to switch between light and dark appearances.
+- On first visit the interface follows your system `prefers-color-scheme` setting.
+- After you toggle the theme, the preference is stored in `localStorage` and
+  continues to override the system default on subsequent visits until cleared.
+
 ## Testing
 
 - **Unit tests:** `npm run test`
