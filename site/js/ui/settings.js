@@ -1,5 +1,44 @@
 (function () {
   const STORAGE_KEY = "tictactoe:player-names";
+  const storage =
+    window.appStorage && typeof window.appStorage === "object"
+      ? window.appStorage
+      : {
+          readJson(key, validator) {
+            try {
+              const raw = window.localStorage.getItem(key);
+              if (raw === null) {
+                return null;
+              }
+              const parsed = JSON.parse(raw);
+              if (validator && !validator(parsed)) {
+                return null;
+              }
+              return parsed;
+            } catch (error) {
+              console.warn("Unable to load saved player names", error);
+              return null;
+            }
+          },
+          writeJson(key, value) {
+            try {
+              window.localStorage.setItem(key, JSON.stringify(value));
+              return true;
+            } catch (error) {
+              console.warn("Unable to persist player names", error);
+              return false;
+            }
+          },
+          remove(key) {
+            try {
+              window.localStorage.removeItem(key);
+              return true;
+            } catch (error) {
+              console.warn("Unable to remove saved player names", error);
+              return false;
+            }
+          },
+        };
   const DEFAULT_NAMES = {
     X: "Player X",
     O: "Player O",
@@ -16,29 +55,16 @@
     O: sanitiseName(names?.O ?? "", DEFAULT_NAMES.O),
   });
 
-  const readPersistedNames = () => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object") {
-        return null;
-      }
-      return normaliseNames(parsed);
-    } catch (error) {
-      console.warn("Unable to load saved player names", error);
-      return null;
-    }
-  };
+  const readPersistedNames = () =>
+    normaliseNames(
+      storage.readJson(
+        STORAGE_KEY,
+        (value) => value && typeof value === "object" && !Array.isArray(value)
+      ) ?? DEFAULT_NAMES
+    );
 
   const writePersistedNames = (names) => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(names));
-    } catch (error) {
-      console.warn("Unable to persist player names", error);
-    }
+    storage.writeJson(STORAGE_KEY, names);
   };
 
   const dispatchNameUpdate = (names) => {
@@ -115,7 +141,7 @@
     attachValidation(fields.X);
     attachValidation(fields.O);
 
-    let currentNames = normaliseNames(readPersistedNames() ?? DEFAULT_NAMES);
+    let currentNames = readPersistedNames();
 
     const populateForm = () => {
       if (fields.X.input) {
