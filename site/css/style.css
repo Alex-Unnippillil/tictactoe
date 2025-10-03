@@ -360,7 +360,7 @@ body.page--game {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem)
     clamp(4.5rem, 10vw, 6.75rem);
   box-sizing: border-box;
   gap: clamp(1.75rem, 4vw, 3rem);
