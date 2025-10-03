@@ -27,27 +27,35 @@
         role="region"
         aria-label="Player scoreboard"
       >
-        <article class="scoreboard__player scoreboard__player--x">
+        <article class="scoreboard__player scoreboard__player--x" data-player="X">
           <span class="scoreboard__mark" aria-hidden="true">X</span>
           <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
-          <span
-            class="scoreboard__score"
-            data-role="score"
-            data-player="X"
-            aria-label="Wins for player X"
-            >0</span
-          >
+          <span class="scoreboard__score" data-player="X">
+            <span id="score-label-x" class="visually-hidden">Wins for player X</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="X"
+              aria-labelledby="score-label-x"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
         </article>
-        <article class="scoreboard__player scoreboard__player--o">
+        <article class="scoreboard__player scoreboard__player--o" data-player="O">
           <span class="scoreboard__mark" aria-hidden="true">O</span>
           <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
-          <span
-            class="scoreboard__score"
-            data-role="score"
-            data-player="O"
-            aria-label="Wins for player O"
-            >0</span
-          >
+          <span class="scoreboard__score" data-player="O">
+            <span id="score-label-o" class="visually-hidden">Wins for player O</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="O"
+              aria-labelledby="score-label-o"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
         </article>
       </section>
 
