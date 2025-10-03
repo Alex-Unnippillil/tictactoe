@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <main class="layout">
+    <header class="page-header">
+      <h1 class="page-header__title">Tic Tac Toe</h1>
+      <p class="page-header__subtitle">Play a quick game with custom symbols and starting turns.</p>
+    </header>
+
+    <div class="layout__grid">
+      <section class="settings" aria-labelledby="settings-title">
+        <h2 id="settings-title" class="settings__title">Game settings</h2>
+        <form id="settings-form" class="settings__form" autocomplete="off">
+          <fieldset class="settings__fieldset" aria-describedby="settings-hint">
+            <legend class="settings__legend">Player symbols</legend>
+            <div class="settings__field">
+              <label class="settings__label" for="settings-player1-symbol">Player 1</label>
+              <select id="settings-player1-symbol" name="player1Symbol" class="settings__select"></select>
+            </div>
+            <div class="settings__field">
+              <label class="settings__label" for="settings-player2-symbol">Player 2</label>
+              <select id="settings-player2-symbol" name="player2Symbol" class="settings__select"></select>
+            </div>
+          </fieldset>
+
+          <fieldset class="settings__fieldset settings__fieldset--inline">
+            <legend class="settings__legend">Starting player</legend>
+            <label class="settings__choice">
+              <input type="radio" name="settings-start" value="player1" checked>
+              <span>Player 1</span>
+            </label>
+            <label class="settings__choice">
+              <input type="radio" name="settings-start" value="player2">
+              <span>Player 2</span>
+            </label>
+          </fieldset>
+
+          <p id="settings-error" class="settings__error" role="alert" hidden></p>
+          <p id="settings-hint" class="settings__hint">Changes apply the next time you restart the game.</p>
+        </form>
+      </section>
+
+      <section class="game" aria-labelledby="game-title">
+        <div class="game__header">
+          <h2 id="game-title" class="game__title">Current game</h2>
+          <button type="button" class="game__restart" data-restart>Restart game</button>
+        </div>
+
+        <div class="players">
+          <article class="player" data-player="player1">
+            <h3 class="player__name">Player 1</h3>
+            <p class="player__info">
+              <span class="player__label">Symbol:</span>
+              <span class="player__symbol" data-player-symbol="player1">X</span>
+            </p>
+          </article>
+          <article class="player" data-player="player2">
+            <h3 class="player__name">Player 2</h3>
+            <p class="player__info">
+              <span class="player__label">Symbol:</span>
+              <span class="player__symbol" data-player-symbol="player2">O</span>
+            </p>
+          </article>
+        </div>
+
+        <div class="board" role="grid" aria-label="Tic Tac Toe board" data-board>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 1 Column 1" data-cell data-index="0"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 1 Column 2" data-cell data-index="1"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 1 Column 3" data-cell data-index="2"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 2 Column 1" data-cell data-index="3"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 2 Column 2" data-cell data-index="4"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 2 Column 3" data-cell data-index="5"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 3 Column 1" data-cell data-index="6"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 3 Column 2" data-cell data-index="7"></button>
+          <button type="button" class="cell" role="gridcell" aria-label="Row 3 Column 3" data-cell data-index="8"></button>
+        </div>
+
+        <p class="game__status" aria-live="polite" data-status>Player 1's turn (X)</p>
+        <p class="game__pending" data-settings-pending hidden>Settings changes have been saved for the next game.</p>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
