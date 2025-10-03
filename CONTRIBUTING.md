@@ -2,6 +2,8 @@
 
 Thank you for your interest in improving this project! This document explains the expectations for contributors, from coding standards to local validation and deployment awareness. Please read it carefully before opening a pull request.
 
+All participants are expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Project overview
 
 This repository hosts a lightweight, static Tic Tac Toe implementation that is published through GitHub Pages. The default branch is `main` and serves as both the source of truth for development and the deployment branch for the public site.

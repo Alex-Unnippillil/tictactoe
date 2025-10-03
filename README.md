@@ -32,6 +32,13 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 
 > **Prerequisites:** Node.js 18+ and npm 9+.
 
+## Community guidelines
+
+We are committed to fostering a welcoming and inclusive environment. Please
+review our [Code of Conduct](CODE_OF_CONDUCT.md) for expectations on community
+behavior and reporting. For details on how to get involved, see the
+[contribution guide](CONTRIBUTING.md).
+
 ## Scripts
 
 | Command | Description |
