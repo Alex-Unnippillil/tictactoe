@@ -1247,6 +1247,9 @@ button:focus-visible {
   --cell-mark-color: var(--surface-strong);
   --cell-glow-color: rgba(37, 99, 235, 0.2);
   --cell-reflection-opacity: 0.55;
+  --cell-press-scale: 0.97;
+  --cell-press-opacity: 0.92;
+  --cell-focus-ring-color: color-mix(in srgb, var(--accent) 78%, rgba(255, 255, 255, 0.18));
   position: relative;
   aspect-ratio: 1 / 1;
   border-radius: 18px;
@@ -1262,8 +1265,12 @@ button:focus-visible {
   overflow: hidden;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4),
     inset 0 -1px 4px rgba(15, 23, 42, 0.15);
+  opacity: var(--cell-opacity, 1);
+  transform: translateY(var(--cell-translate, 0)) scale(var(--cell-scale, 1));
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: transform 180ms ease, background 180ms ease, border-color 180ms ease,
-    color 180ms ease, box-shadow 220ms ease;
+    color 180ms ease, box-shadow 220ms ease, opacity 150ms ease;
 }
 
 .cell::before,
@@ -1348,10 +1355,23 @@ button:focus-visible {
 }
 
 .cell:hover {
-  transform: translateY(-2px);
+  --cell-translate: -2px;
   border-color: rgba(59, 130, 246, 0.65);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5),
     inset 0 -1px 6px rgba(15, 23, 42, 0.2), 0 8px 16px rgba(15, 23, 42, 0.12);
+}
+
+.cell:active {
+  --cell-scale: var(--cell-press-scale);
+  --cell-opacity: var(--cell-press-opacity);
+}
+
+.cell:focus-visible {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.75);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 6px rgba(15, 23, 42, 0.24), 0 0 0 3px rgba(255, 255, 255, 0.65),
+    0 0 0 6px var(--cell-focus-ring-color);
 }
 
 .cell[aria-disabled="true"] {
