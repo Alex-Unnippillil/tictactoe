@@ -40,7 +40,23 @@
       >
         <article class="scoreboard__player scoreboard__player--x" data-player="X">
           <span class="scoreboard__mark" aria-hidden="true">X</span>
-          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <button
+            type="button"
+            class="scoreboard__name"
+            data-role="name"
+            data-player="X"
+            aria-controls="scoreboard-inline-editor-x"
+            aria-expanded="false"
+          >
+            <span class="scoreboard__name-icon" aria-hidden="true">✎</span>
+            <span class="scoreboard__name-text" data-role="name-label"
+              >Player X</span
+            >
+            <span class="scoreboard__name-hint" aria-hidden="true">Edit</span>
+            <span class="visually-hidden scoreboard__name-sr-hint"
+              >Activate to edit Player X's display name.</span
+            >
+          </button>
           <span class="scoreboard__score" data-player="X">
             <span id="score-label-x" class="visually-hidden">Wins for player X</span>
             <span
@@ -55,7 +71,23 @@
         </article>
         <article class="scoreboard__player scoreboard__player--o" data-player="O">
           <span class="scoreboard__mark" aria-hidden="true">O</span>
-          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <button
+            type="button"
+            class="scoreboard__name"
+            data-role="name"
+            data-player="O"
+            aria-controls="scoreboard-inline-editor-o"
+            aria-expanded="false"
+          >
+            <span class="scoreboard__name-icon" aria-hidden="true">✎</span>
+            <span class="scoreboard__name-text" data-role="name-label"
+              >Player O</span
+            >
+            <span class="scoreboard__name-hint" aria-hidden="true">Edit</span>
+            <span class="visually-hidden scoreboard__name-sr-hint"
+              >Activate to edit Player O's display name.</span
+            >
+          </button>
           <span class="scoreboard__score" data-player="O">
             <span id="score-label-o" class="visually-hidden">Wins for player O</span>
             <span
