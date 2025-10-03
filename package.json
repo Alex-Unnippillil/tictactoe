@@ -1,0 +1,29 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe project setup",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"No lint script configured\"",
+    "test": "jest --coverage",
+    "e2e": "echo \"No end-to-end tests configured\"",
+    "serve": "npx http-server site"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "site/js/core/**/*.js"
+    ],
+    "coverageThreshold": {
+      "site/js/core/**/*.js": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }
+}
