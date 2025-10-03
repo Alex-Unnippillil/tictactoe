@@ -1,6 +1,14 @@
 'use strict';
 
 (function (global) {
+  const constants =
+    typeof module !== 'undefined' && module.exports
+      ? require('../core/constants')
+      : (global.tictactoeCore && global.tictactoeCore.constants) || {};
+
+  const PLAYER_X = constants.PLAYER_X || 'X';
+  const PLAYER_O = constants.PLAYER_O || 'O';
+
   const LOG_PREFIX = '[minimax]';
 
   const stateCache = new Map();
@@ -27,6 +35,60 @@
 
   function cloneBoard(board) {
     return board.map((row) => row.slice());
+  }
+
+  function countSymbol(board, symbol) {
+    let count = 0;
+    for (let r = 0; r < board.length; r += 1) {
+      for (let c = 0; c < board[r].length; c += 1) {
+        if (board[r][c] === symbol) {
+          count += 1;
+        }
+      }
+    }
+    return count;
+  }
+
+  function isFirstMoveForSymbol(board, symbol) {
+    return countSymbol(board, symbol) === 0;
+  }
+
+  function findCenterMove(board) {
+    const size = board.length;
+    if (!size || size % 2 === 0) {
+      return null;
+    }
+
+    const centerIndex = Math.floor(size / 2);
+    if (!board[centerIndex][centerIndex]) {
+      return { row: centerIndex, col: centerIndex };
+    }
+
+    return null;
+  }
+
+  function findCornerMove(board) {
+    const size = board.length;
+    if (!size) {
+      return null;
+    }
+
+    const lastIndex = size - 1;
+    const corners = [
+      { row: 0, col: 0 },
+      { row: 0, col: lastIndex },
+      { row: lastIndex, col: 0 },
+      { row: lastIndex, col: lastIndex }
+    ];
+
+    for (let i = 0; i < corners.length; i += 1) {
+      const corner = corners[i];
+      if (!board[corner.row][corner.col]) {
+        return corner;
+      }
+    }
+
+    return null;
   }
 
   function isBoardFull(board) {
@@ -182,9 +244,25 @@
     }
   }
 
-  function chooseMove(board, playerSymbol = 'X', opponentSymbol = 'O') {
+  function chooseMove(board, playerSymbol = PLAYER_X, opponentSymbol = PLAYER_O) {
     let bestScore = Number.NEGATIVE_INFINITY;
     let bestMove = null;
+
+    if (isFirstMoveForSymbol(board, playerSymbol)) {
+      const centerMove = findCenterMove(board);
+      if (centerMove) {
+        const move = { ...centerMove, score: 0 };
+        logCacheStats('after chooseMove (heuristic center)');
+        return move;
+      }
+
+      const cornerMove = findCornerMove(board);
+      if (cornerMove) {
+        const move = { ...cornerMove, score: 0 };
+        logCacheStats('after chooseMove (heuristic corner)');
+        return move;
+      }
+    }
 
     for (let r = 0; r < board.length; r += 1) {
       for (let c = 0; c < board[r].length; c += 1) {

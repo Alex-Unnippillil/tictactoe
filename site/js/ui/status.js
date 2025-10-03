@@ -94,6 +94,23 @@
 
     window.uiStatus = api;
 
+    const loadPwaInstallModule = () => {
+      const existingScript = document.querySelector(
+        'script[data-module="pwa-install"]'
+      );
+      if (existingScript) {
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "js/pwa/install.js";
+      script.async = true;
+      script.dataset.module = "pwa-install";
+      document.head.appendChild(script);
+    };
+
+    loadPwaInstallModule();
+
     document.addEventListener("settings:players-updated", (event) => {
       const detail = event?.detail;
       if (!detail || !detail.names) {
@@ -102,8 +119,39 @@
       applyNames(detail.names);
     });
 
+    document.addEventListener("state:players-changed", (event) => {
+      const detail = event?.detail;
+      if (!detail || !detail.names) {
+        return;
+      }
+      applyNames(detail.names);
+    });
+
+    document.addEventListener("history:players-changed", (event) => {
+      const detail = event?.detail;
+      if (!detail || !detail.names) {
+        return;
+      }
+      if (detail.source && detail.source !== "history") {
+        return;
+      }
+      applyNames(detail.names);
+    });
+
     applyNames(DEFAULT_NAMES);
     updateScoreDisplay();
     refreshStatus();
+
+    const core = window.coreState;
+    if (core && typeof core.getPlayerNames === "function") {
+      try {
+        const names = core.getPlayerNames();
+        if (names) {
+          applyNames(names);
+        }
+      } catch (error) {
+        console.warn("Unable to read player names from core state", error);
+      }
+    }
   });
 })();

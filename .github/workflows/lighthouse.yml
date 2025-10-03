@@ -1,0 +1,34 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Run Lighthouse against GitHub Pages
+    runs-on: ubuntu-latest
+    env:
+      PAGES_URL: https://alex-unnippillil.github.io/tictactoe/
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Lighthouse CI
+        run: npx lhci autorun --collect.url="$PAGES_URL" --upload.target=filesystem --upload.outputDir=./lighthouse-report
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse-report
+          if-no-files-found: error
