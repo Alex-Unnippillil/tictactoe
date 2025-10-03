@@ -102,8 +102,39 @@
       applyNames(detail.names);
     });
 
+    document.addEventListener("state:players-changed", (event) => {
+      const detail = event?.detail;
+      if (!detail || !detail.names) {
+        return;
+      }
+      applyNames(detail.names);
+    });
+
+    document.addEventListener("history:players-changed", (event) => {
+      const detail = event?.detail;
+      if (!detail || !detail.names) {
+        return;
+      }
+      if (detail.source && detail.source !== "history") {
+        return;
+      }
+      applyNames(detail.names);
+    });
+
     applyNames(DEFAULT_NAMES);
     updateScoreDisplay();
     refreshStatus();
+
+    const core = window.coreState;
+    if (core && typeof core.getPlayerNames === "function") {
+      try {
+        const names = core.getPlayerNames();
+        if (names) {
+          applyNames(names);
+        }
+      } catch (error) {
+        console.warn("Unable to read player names from core state", error);
+      }
+    }
   });
 })();
