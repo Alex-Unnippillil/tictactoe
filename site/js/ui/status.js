@@ -6,6 +6,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("statusMessage");
+    const statusLiveRegion = document.getElementById("statusLiveRegion");
     const nameElements = {
       X: document.querySelector('[data-role="name"][data-player="X"]'),
       O: document.querySelector('[data-role="name"][data-player="O"]'),
@@ -29,17 +30,34 @@
     const formatWinMessage = (player) =>
       `${playerNames[player]} (${player}) wins this round!`;
 
+    const schedule =
+      typeof window.requestAnimationFrame === "function"
+        ? window.requestAnimationFrame.bind(window)
+        : (callback) => window.setTimeout(callback, 16);
+
+    const announce = (message) => {
+      if (statusMessage) {
+        statusMessage.textContent = message;
+      }
+      if (statusLiveRegion) {
+        statusLiveRegion.textContent = "";
+        schedule(() => {
+          statusLiveRegion.textContent = message;
+        });
+      }
+    };
+
     const refreshStatus = () => {
       switch (statusState) {
         case "win":
-          statusMessage.textContent = formatWinMessage(currentPlayer);
+          announce(formatWinMessage(currentPlayer));
           break;
         case "draw":
-          statusMessage.textContent = "It's a draw!";
+          announce("It's a draw!");
           break;
         case "turn":
         default:
-          statusMessage.textContent = formatTurnMessage(currentPlayer);
+          announce(formatTurnMessage(currentPlayer));
           break;
       }
     };

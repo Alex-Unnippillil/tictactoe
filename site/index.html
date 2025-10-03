@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <main class="game" aria-labelledby="gameTitle">
+      <header class="game__header">
+        <h1 id="gameTitle">Tic Tac Toe</h1>
+        <p id="statusMessage" class="message" role="status" aria-live="polite"></p>
+        <div id="statusLiveRegion" class="sr-only" aria-live="polite"></div>
+      </header>
+
+      <section class="scoreboard" aria-label="Scoreboard">
+        <div class="scoreboard__player" data-player="X">
+          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <span class="scoreboard__score" data-role="score" data-player="X">0</span>
+        </div>
+        <div class="scoreboard__player" data-player="O">
+          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <span class="scoreboard__score" data-role="score" data-player="O">0</span>
+        </div>
+      </section>
+
+      <section class="board-wrapper">
+        <div
+          id="board"
+          class="board"
+          role="grid"
+          aria-label="Tic Tac Toe board"
+        >
+          <button type="button" class="cell" data-cell-index="0" data-row="0" data-col="0" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="1" data-row="0" data-col="1" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="2" data-row="0" data-col="2" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="3" data-row="1" data-col="0" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="4" data-row="1" data-col="1" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="5" data-row="1" data-col="2" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="6" data-row="2" data-col="0" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="7" data-row="2" data-col="1" role="gridcell"></button>
+          <button type="button" class="cell" data-cell-index="8" data-row="2" data-col="2" role="gridcell"></button>
+        </div>
+      </section>
+
+      <div class="game__actions">
+        <button type="button" id="resetButton" class="button button--reset">Reset board</button>
+        <button type="button" id="settingsButton" class="button button--settings">Player settings</button>
+      </div>
+    </main>
+
+    <dialog id="settingsModal" aria-labelledby="settingsTitle">
+      <form id="settingsForm" method="dialog" class="settings-form">
+        <h2 id="settingsTitle">Player names</h2>
+        <p class="settings-form__description">
+          Update the names announced for each player. Names can include letters, numbers,
+          spaces, apostrophes, periods, or hyphens.
+        </p>
+
+        <div class="settings-form__field">
+          <label for="playerX">Player X name</label>
+          <input id="playerX" name="playerX" type="text" maxlength="24" autocomplete="off" />
+          <p class="settings-form__error" data-error-for="playerX" hidden></p>
+        </div>
+
+        <div class="settings-form__field">
+          <label for="playerO">Player O name</label>
+          <input id="playerO" name="playerO" type="text" maxlength="24" autocomplete="off" />
+          <p class="settings-form__error" data-error-for="playerO" hidden></p>
+        </div>
+
+        <menu class="settings-form__actions">
+          <button type="button" id="settingsCancelButton" class="button button--secondary">Cancel</button>
+          <button type="submit" class="button button--primary">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="./js/ui/status.js" defer></script>
+    <script src="./js/ui/settings.js" defer></script>
+    <script src="./js/ui/game.js" defer></script>
+  </body>
+</html>
