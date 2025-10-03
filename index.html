@@ -1,59 +1,24 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac Toe</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    .board {
-      display: inline-block;
-      border-collapse: collapse;
-    }
-    .board td {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #ccc;
-      font-size: 48px;
-      text-align: center;
-      vertical-align: middle;
-      cursor: pointer;
-    }
-    
-    .board td:hover {
-      background-color: #f2f2f2;
-    }
-    
-    .message {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="site/css/style.css">
 </head>
 <body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
-  </table>
-  <div class="message"></div>
+  <div class="board" role="grid" aria-label="Tic Tac Toe board">
+    <button class="board__cell" role="gridcell" data-cell data-row="0" data-col="0" aria-label="Row 1, Column 1"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="0" data-col="1" aria-label="Row 1, Column 2"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="0" data-col="2" aria-label="Row 1, Column 3"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="1" data-col="0" aria-label="Row 2, Column 1"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="1" data-col="1" aria-label="Row 2, Column 2"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="1" data-col="2" aria-label="Row 2, Column 3"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="2" data-col="0" aria-label="Row 3, Column 1"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="2" data-col="1" aria-label="Row 3, Column 2"></button>
+    <button class="board__cell" role="gridcell" data-cell data-row="2" data-col="2" aria-label="Row 3, Column 3"></button>
+  </div>
+  <div class="message" aria-live="polite"></div>
 
   <script>
     var currentPlayer = 'X';
@@ -63,26 +28,49 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
-    function makeMove(row, col) {
+
+    var boardElement = document.querySelector('.board');
+    var messageElement = document.querySelector('.message');
+    var cells = Array.from(boardElement.querySelectorAll('[data-cell]'));
+
+    cells.forEach(function (cell) {
+      cell.addEventListener('click', handleCellClick);
+    });
+
+    function handleCellClick(event) {
+      var cell = event.currentTarget;
+      var row = Number(cell.dataset.row);
+      var col = Number(cell.dataset.col);
+
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
-      document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
+      cell.textContent = currentPlayer;
+      cell.classList.add(currentPlayer === 'X' ? 'cell--x' : 'cell--o');
+      cell.disabled = true;
+      cell.setAttribute('aria-label', 'Row ' + (row + 1) + ', Column ' + (col + 1) + ', ' + currentPlayer);
+
       if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
+        messageElement.textContent = currentPlayer + ' wins!';
         gameOver = true;
+        finalizeBoard();
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        messageElement.textContent = "It's a draw!";
         gameOver = true;
+        finalizeBoard();
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
       }
     }
-    
+
+    function finalizeBoard() {
+      cells.forEach(function (cell) {
+        cell.disabled = true;
+      });
+    }
+
     function checkWin(player) {
       for (var i = 0; i < 3; i++) {
         if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
@@ -92,17 +80,17 @@
           return true; // Vertical
         }
       }
-      
+
       if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
         return true; // Diagonal
       }
       if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
         return true; // Diagonal
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,7 +99,7 @@
           }
         }
       }
-      
+
       return true;
     }
   </script>

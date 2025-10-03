@@ -1,0 +1,95 @@
+:root {
+  --color-background: #ffffff;
+  --color-border: #cccccc;
+  --color-text: #222222;
+  --color-x: #d6336c;
+  --color-o: #1c7ed6;
+  --color-hover: #f2f2f2;
+  --color-hover-x: #f8d2df;
+  --color-hover-o: #d7e9fb;
+  --gap-size: clamp(0.5rem, 2vw, 1rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: 2rem 1rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap-size);
+  width: min(90vmin, 24rem);
+}
+
+.board__cell {
+  aspect-ratio: 1;
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-size: clamp(2.5rem, 12vmin, 4.5rem);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.board__cell:hover,
+.board__cell:focus-visible {
+  background-color: var(--color-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  outline: none;
+}
+
+.board__cell.cell--x {
+  color: var(--color-x);
+}
+
+.board__cell.cell--o {
+  color: var(--color-o);
+}
+
+.board__cell.cell--x:hover,
+.board__cell.cell--x:focus-visible {
+  background-color: var(--color-hover-x);
+}
+
+.board__cell.cell--o:hover,
+.board__cell.cell--o:focus-visible {
+  background-color: var(--color-hover-o);
+}
+
+.board__cell:disabled {
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.board__cell:disabled:hover,
+.board__cell:disabled:focus-visible {
+  background-color: var(--color-background);
+  box-shadow: none;
+}
+
+.message {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+}
