@@ -126,6 +126,8 @@ Tic Tac Toe is a static web application that showcases a polished, accessible ta
 
 We are committed to fostering a welcoming and inclusive environment. Please review our [Code of Conduct](CODE_OF_CONDUCT.md) for expectations on community behavior and reporting. For details on how to get involved, see the [contribution guide](CONTRIBUTING.md).
 
+See [docs/architecture/overview.md](docs/architecture/overview.md) for the latest module diagram, event flow, and deployment notes that explain how the browser scripts cooperate.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
