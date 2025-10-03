@@ -1,59 +1,108 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Tic Tac Toe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="site/css/style.css">
   <style>
+    :root {
+      color-scheme: light dark;
+    }
+
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      background-color: #f5f5f5;
     }
+
+    main {
+      max-width: 420px;
+      width: 100%;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .instructions {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      color: #555555;
+    }
+
     .board {
-      display: inline-block;
+      margin: 0 auto;
       border-collapse: collapse;
+      display: inline-block;
+      background-color: #ffffff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
+
     .board td {
       width: 100px;
       height: 100px;
-      border: 2px solid #ccc;
+      border: 2px solid #cccccc;
       font-size: 48px;
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
     }
-    
+
     .board td:hover {
       background-color: #f2f2f2;
     }
-    
+
     .message {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
+      min-height: 1.5em;
     }
   </style>
+  <script src="site/js/pwa/offline.js" defer></script>
 </head>
 <body>
-  <table class="board">
-    <tr>
-      <td onclick="makeMove(0, 0)"></td>
-      <td onclick="makeMove(0, 1)"></td>
-      <td onclick="makeMove(0, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(1, 0)"></td>
-      <td onclick="makeMove(1, 1)"></td>
-      <td onclick="makeMove(1, 2)"></td>
-    </tr>
-    <tr>
-      <td onclick="makeMove(2, 0)"></td>
-      <td onclick="makeMove(2, 1)"></td>
-      <td onclick="makeMove(2, 2)"></td>
-    </tr>
-  </table>
-  <div class="message"></div>
+  <div
+    id="offline-banner"
+    class="offline-banner"
+    role="status"
+    aria-live="polite"
+    data-offline-message="You're offline. Gameplay continues locally until the connection returns."
+    data-online-message="Connection restored."
+  ></div>
+  <main>
+    <h1>Tic Tac Toe</h1>
+    <p class="instructions">Challenge a friend from anywhere. The board stays responsive even without an internet connection.</p>
+    <table class="board" aria-label="Tic Tac Toe board">
+      <tr>
+        <td onclick="makeMove(0, 0)" role="button" aria-label="Row 1, Column 1"></td>
+        <td onclick="makeMove(0, 1)" role="button" aria-label="Row 1, Column 2"></td>
+        <td onclick="makeMove(0, 2)" role="button" aria-label="Row 1, Column 3"></td>
+      </tr>
+      <tr>
+        <td onclick="makeMove(1, 0)" role="button" aria-label="Row 2, Column 1"></td>
+        <td onclick="makeMove(1, 1)" role="button" aria-label="Row 2, Column 2"></td>
+        <td onclick="makeMove(1, 2)" role="button" aria-label="Row 2, Column 3"></td>
+      </tr>
+      <tr>
+        <td onclick="makeMove(2, 0)" role="button" aria-label="Row 3, Column 1"></td>
+        <td onclick="makeMove(2, 1)" role="button" aria-label="Row 3, Column 2"></td>
+        <td onclick="makeMove(2, 2)" role="button" aria-label="Row 3, Column 3"></td>
+      </tr>
+    </table>
+    <div class="message" role="status" aria-live="polite"></div>
+  </main>
 
   <script>
     var currentPlayer = 'X';
@@ -63,26 +112,34 @@
       ['', '', '']
     ];
     var gameOver = false;
-    
+    var messageElement = document.querySelector('.message');
+
+    function updateTurnMessage() {
+      if (!gameOver) {
+        messageElement.textContent = 'Current player: ' + currentPlayer;
+      }
+    }
+
     function makeMove(row, col) {
       if (gameOver || board[row][col] !== '') {
         return;
       }
-      
+
       board[row][col] = currentPlayer;
       document.querySelector('.board').rows[row].cells[col].textContent = currentPlayer;
-      
+
       if (checkWin(currentPlayer)) {
-        document.querySelector('.message').textContent = currentPlayer + ' Wins!';
+        messageElement.textContent = currentPlayer + ' wins!';
         gameOver = true;
       } else if (checkDraw()) {
-        document.querySelector('.message').textContent = 'It's a draw!';
+        messageElement.textContent = "It's a draw!";
         gameOver = true;
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        updateTurnMessage();
       }
     }
-    
+
     function checkWin(player) {
       for (var i = 0; i < 3; i++) {
         if (board[i][0] === player && board[i][1] === player && board[i][2] === player) {
@@ -92,17 +149,17 @@
           return true; // Vertical
         }
       }
-      
+
       if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
         return true; // Diagonal
       }
       if (board[0][2] === player && board[1][1] === player && board[2][0] === player) {
         return true; // Diagonal
       }
-      
+
       return false;
     }
-    
+
     function checkDraw() {
       for (var i = 0; i < 3; i++) {
         for (var j = 0; j < 3; j++) {
@@ -111,9 +168,11 @@
           }
         }
       }
-      
+
       return true;
     }
+
+    updateTurnMessage();
   </script>
 </body>
 </html>
