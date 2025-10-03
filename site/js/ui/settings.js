@@ -1,5 +1,6 @@
 (function () {
   const STORAGE_KEY = "tictactoe:player-names";
+  const LEGACY_NAME_STORAGE_KEYS = ["tictactoe:names"];
   const coreDefaults = window.coreState?.DEFAULT_NAMES;
   const DEFAULT_NAMES = {
     X: coreDefaults?.X ?? "Player X",
@@ -111,9 +112,9 @@
     O: sanitiseName(names?.O ?? "", DEFAULT_NAMES.O),
   });
 
-  const readPersistedNames = () => {
+  const readNamesFromStorage = (key, errorMessage) => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw = window.localStorage.getItem(key);
       if (!raw) {
         return null;
       }
@@ -123,7 +124,11 @@
       }
       return normaliseNames(parsed);
     } catch (error) {
-      console.warn("Unable to load saved player names", error);
+      const message =
+        typeof errorMessage === "string"
+          ? errorMessage
+          : `Unable to load player names from storage key \"${key}\"`;
+      console.warn(message, error);
       return null;
     }
   };
@@ -134,6 +139,40 @@
     } catch (error) {
       console.warn("Unable to persist player names", error);
     }
+  };
+
+  const readPersistedNames = () => {
+    const stored = readNamesFromStorage(
+      STORAGE_KEY,
+      "Unable to load saved player names"
+    );
+    if (stored) {
+      return stored;
+    }
+
+    for (const legacyKey of LEGACY_NAME_STORAGE_KEYS) {
+      const legacy = readNamesFromStorage(
+        legacyKey,
+        "Unable to load legacy player names"
+      );
+      if (!legacy) {
+        continue;
+      }
+
+      try {
+        window.localStorage.removeItem(legacyKey);
+      } catch (error) {
+        console.warn(
+          `Unable to remove legacy player names from storage key \"${legacyKey}\"`,
+          error
+        );
+      }
+
+      writePersistedNames(legacy);
+      return legacy;
+    }
+
+    return null;
   };
 
   const dispatchNameUpdate = (names) => {
