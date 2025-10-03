@@ -361,7 +361,7 @@ body.page--game {
   flex-direction: column;
   align-items: center;
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem)
-    clamp(4.75rem, 9vw, 7.5rem);
+    clamp(4.5rem, 10vw, 6.75rem);
   box-sizing: border-box;
   gap: clamp(1.75rem, 4vw, 3rem);
   min-height: 100vh;
@@ -686,7 +686,7 @@ button:focus-visible {
   border: 1px solid var(--glass-border);
   border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
   padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
-  padding-block-end: clamp(3.25rem, 3vw + 2.25rem, 4.75rem);
+  padding-block-end: clamp(3rem, 3vw + 2.25rem, 4.75rem);
   box-shadow: var(--glass-shadow);
   overflow: hidden;
   z-index: 0;
@@ -1494,9 +1494,9 @@ button:focus-visible {
 .play-area {
   display: grid;
   gap: 24px;
-  align-content: space-between;
+  align-content: start;
   min-height: clamp(360px, 52vh, 520px);
-  padding-block-end: clamp(2.25rem, 3vw, 3.5rem);
+  padding-block-end: clamp(2rem, 3vw, 3.25rem);
 }
 
 .controls {
@@ -1573,7 +1573,7 @@ button:focus-visible {
 }
 
 .play-area .board {
-  margin-bottom: 0;
+  margin-block-end: clamp(1.25rem, 2vw, 2.25rem);
 }
 
 dialog {
@@ -2143,7 +2143,7 @@ dialog.is-closing::backdrop {
 
 @media (max-width: 600px) {
   .app-shell {
-    padding: 20px 16px;
+    padding: 20px 16px 36px;
   }
 
   .controls {
