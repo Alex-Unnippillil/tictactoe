@@ -909,6 +909,40 @@ button:focus-visible {
   opacity: calc(var(--cell-reflection-opacity) * 0.75);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .board {
+    transition: opacity 240ms ease, transform 240ms ease, filter 280ms ease;
+    will-change: transform, opacity, filter;
+  }
+
+  .board--transitioning {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(14px);
+  }
+
+  .board--transitioning .cell {
+    pointer-events: none;
+  }
+
+  .cell {
+    transition: transform 180ms ease, background 180ms ease, border-color 180ms ease,
+      color 180ms ease, box-shadow 220ms ease, opacity 220ms ease, filter 260ms ease;
+  }
+
+  .cell--resetting {
+    opacity: 0;
+    transform: scale(0.88);
+    filter: blur(6px);
+    will-change: transform, opacity, filter;
+  }
+
+  .cell--resetting::before,
+  .cell--resetting::after {
+    opacity: 0;
+  }
+}
+
 .cell:hover {
   transform: translateY(-2px);
   border-color: rgba(59, 130, 246, 0.65);
