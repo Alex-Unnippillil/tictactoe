@@ -1,0 +1,12 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe project setup",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"No lint script configured\"",
+    "test": "echo \"No unit tests configured\"",
+    "e2e": "echo \"No end-to-end tests configured\"",
+    "serve": "npx http-server site"
+  }
+}
