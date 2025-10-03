@@ -6,7 +6,11 @@
   "scripts": {
     "lint": "echo \"No lint script configured\"",
     "test": "echo \"No unit tests configured\"",
-    "e2e": "echo \"No end-to-end tests configured\"",
+    "e2e": "npx playwright test",
+    "e2e:ci": "npx playwright test --reporter=line",
     "serve": "npx http-server site"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.1"
   }
 }
