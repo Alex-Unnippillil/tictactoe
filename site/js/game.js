@@ -512,6 +512,7 @@
     const controller = createGameController();
     if (controller) {
       global.tictactoeGame = controller;
+      global.GameController = controller;
     }
   });
 })(typeof window !== 'undefined' ? window : globalThis);
