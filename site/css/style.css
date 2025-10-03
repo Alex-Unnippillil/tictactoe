@@ -92,6 +92,13 @@ select {
   --glow-accent: rgba(14, 165, 233, 0.26);
   --glow-ambient: rgba(15, 118, 110, 0.18);
   --glow-strong: rgba(79, 70, 229, 0.24);
+  --space-3xs: clamp(0.25rem, 0.15vw + 0.22rem, 0.4rem);
+  --space-2xs: clamp(0.4rem, 0.3vw + 0.26rem, 0.6rem);
+  --space-xs: clamp(0.55rem, 0.45vw + 0.35rem, 0.85rem);
+  --space-sm: clamp(0.75rem, 0.6vw + 0.45rem, 1.15rem);
+  --space-md: clamp(1rem, 0.9vw + 0.6rem, 1.7rem);
+  --space-lg: clamp(1.5rem, 1.4vw + 0.9rem, 2.6rem);
+  --space-xl: clamp(2rem, 2vw + 1.2rem, 3.4rem);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -342,13 +349,13 @@ button:focus-visible {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.25rem, 1.5vw + 1rem, 2.5rem);
+  gap: var(--space-lg);
   margin-inline: auto;
-  width: min(100%, clamp(22rem, 85vw, 56rem));
+  width: min(100%, clamp(24rem, 92vw, 74rem));
   background: var(--glass-surface-fallback);
   border: 1px solid var(--glass-border);
-  border-radius: clamp(1.25rem, 1.5vw + 1rem, 2rem);
-  padding: clamp(1.75rem, 2.2vw + 1.5rem, 3.5rem);
+  border-radius: clamp(1.25rem, 1.2vw + 1rem, 2.5rem);
+  padding: clamp(1.75rem, 1.4vw + 1.4rem, 3.75rem);
   box-shadow: var(--glass-shadow);
   overflow: hidden;
   z-index: 0;
@@ -397,6 +404,42 @@ button:focus-visible {
 @supports not ((backdrop-filter: blur(0.5px)) or (-webkit-backdrop-filter: blur(0.5px))) {
   .app-shell {
     background: var(--glass-surface-fallback);
+  }
+}
+
+@media (min-width: 960px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1fr);
+    grid-template-areas:
+      "toolbar toolbar"
+      "scoreboard play"
+      "status play";
+    column-gap: clamp(2.5rem, 4vw, 4.5rem);
+    row-gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .toolbar {
+    grid-area: toolbar;
+  }
+
+  .scoreboard {
+    grid-area: scoreboard;
+    max-width: none;
+    align-self: start;
+  }
+
+  .status {
+    grid-area: status;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .play-area {
+    grid-area: play;
+    align-self: stretch;
+    min-height: clamp(440px, 48vh, 580px);
   }
 }
 
@@ -549,8 +592,8 @@ button:focus-visible {
 
 @media (min-width: 560px) {
   .scoreboard {
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-    gap: clamp(18px, 4vw, 28px);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: clamp(1rem, 1.4vw + 0.75rem, 1.75rem);
     justify-content: center;
     align-content: center;
   }
@@ -850,10 +893,10 @@ button:focus-visible {
 .board {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(80px, 1fr));
-  gap: clamp(6px, 1.4vw, 10px);
-  padding: clamp(12px, 2.5vw, 18px);
-  max-width: clamp(280px, 70vw, 420px);
+  grid-template-columns: repeat(3, minmax(96px, 1fr));
+  gap: clamp(0.55rem, 0.8vw + 0.25rem, 1.25rem);
+  padding: clamp(1rem, 1.2vw + 0.85rem, 2rem);
+  max-width: min(100%, clamp(320px, 40vw, 560px));
   margin-inline: auto;
   border-radius: 22px;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.45), rgba(148, 163, 184, 0.25))
@@ -1019,8 +1062,9 @@ button:focus-visible {
 
 .play-area {
   display: grid;
-  gap: 24px;
-  align-content: space-between;
+  gap: var(--space-md);
+  align-content: start;
+  justify-items: stretch;
   min-height: clamp(360px, 52vh, 520px);
 }
 
