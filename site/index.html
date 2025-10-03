@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="game">
+      <header class="game__header">
+        <h1>Tic Tac Toe</h1>
+        <button id="settingsButton" type="button">Player settings</button>
+      </header>
+
+      <section
+        class="scoreboard"
+        aria-label="Player scores"
+      >
+        <div class="scoreboard__player" data-player="X">
+          <span data-role="name" data-player="X">Player X</span>
+          <span data-role="score" data-player="X">0</span>
+        </div>
+        <div class="scoreboard__player" data-player="O">
+          <span data-role="name" data-player="O">Player O</span>
+          <span data-role="score" data-player="O">0</span>
+        </div>
+      </section>
+
+      <p id="statusMessage" role="status" aria-live="polite"></p>
+
+      <table
+        class="board"
+        role="grid"
+        data-testid="board"
+        aria-label="Tic Tac Toe board"
+      >
+        <tbody>
+          <tr>
+            <td data-testid="cell" data-index="0"></td>
+            <td data-testid="cell" data-index="1"></td>
+            <td data-testid="cell" data-index="2"></td>
+          </tr>
+          <tr>
+            <td data-testid="cell" data-index="3"></td>
+            <td data-testid="cell" data-index="4"></td>
+            <td data-testid="cell" data-index="5"></td>
+          </tr>
+          <tr>
+            <td data-testid="cell" data-index="6"></td>
+            <td data-testid="cell" data-index="7"></td>
+            <td data-testid="cell" data-index="8"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <dialog id="settingsModal" aria-labelledby="settingsTitle">
+        <form id="settingsForm" method="dialog">
+          <h2 id="settingsTitle">Player names</h2>
+          <div class="form-control">
+            <label for="playerX">Player X</label>
+            <input id="playerX" name="playerX" maxlength="24" required />
+            <p class="form-error" data-error-for="playerX" hidden></p>
+          </div>
+          <div class="form-control">
+            <label for="playerO">Player O</label>
+            <input id="playerO" name="playerO" maxlength="24" required />
+            <p class="form-error" data-error-for="playerO" hidden></p>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Save</button>
+            <button id="settingsCancelButton" type="button">Cancel</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script src="js/core/state.js" defer></script>
+    <script src="js/ui/board.js" defer></script>
+    <script src="js/ui/status.js" defer></script>
+    <script src="js/ui/settings.js" defer></script>
+  </body>
+</html>

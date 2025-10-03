@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "lint": "echo \"No lint script configured\"",
-    "test": "echo \"No unit tests configured\"",
+    "test": "node --test tests/unit",
     "e2e": "echo \"No end-to-end tests configured\"",
+    "e2e:ci": "npm run e2e",
     "serve": "npx http-server site"
   }
 }
