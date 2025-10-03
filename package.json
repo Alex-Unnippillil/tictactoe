@@ -1,0 +1,21 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe game with automated coverage reporting",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "coverage:badge": "npm run test:coverage && node scripts/updateCoverageBadge.js"
+  },
+  "keywords": [
+    "tictactoe",
+    "jest",
+    "coverage"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "badge-maker": "^3.3.1",
+    "jest": "^29.7.0"
+  }
+}
