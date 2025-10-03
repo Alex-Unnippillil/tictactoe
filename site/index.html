@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #1e293b, #0f172a 60%);
+      color: #e2e8f0;
+    }
+
+    .app {
+      width: min(90vw, 420px);
+      padding: 2.5rem 2rem;
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 40px 60px rgba(15, 15, 36, 0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .status {
+      margin: 0;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      min-height: 1.5em;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .cell {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 18px;
+      border: none;
+      background: linear-gradient(160deg, rgba(248, 250, 252, 0.05), rgba(15, 23, 42, 0.75));
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
+      color: #f8fafc;
+      font-size: 2.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+
+    .cell:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.5), 0 10px 18px rgba(15, 23, 42, 0.45);
+      background: linear-gradient(160deg, rgba(94, 234, 212, 0.25), rgba(56, 189, 248, 0.15));
+    }
+
+    .cell:focus-visible {
+      outline: 3px solid rgba(94, 234, 212, 0.75);
+      outline-offset: 4px;
+    }
+
+    .cell:disabled {
+      cursor: default;
+      opacity: 0.5;
+      transform: none;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.6);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+    }
+
+    .controls__group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1 1 auto;
+      min-width: 180px;
+    }
+
+    .controls__label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .controls__select {
+      flex: 1;
+      padding: 0.45rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(15, 23, 42, 0.85);
+      color: inherit;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .controls__button {
+      padding: 0.55rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(120deg, rgba(14, 165, 233, 0.85), rgba(129, 140, 248, 0.95));
+      color: #0f172a;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 12px 25px rgba(14, 165, 233, 0.35);
+      flex-shrink: 0;
+    }
+
+    .controls__button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 28px rgba(129, 140, 248, 0.45);
+    }
+
+    .controls__button:focus-visible {
+      outline: 3px solid rgba(129, 140, 248, 0.8);
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        padding: 2rem 1.5rem;
+        gap: 1.25rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .controls__group {
+        width: 100%;
+      }
+
+      .controls__button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-labelledby="title">
+    <h1 id="title">Tic Tac Toe</h1>
+    <p class="status" data-status aria-live="polite">Player X's turn</p>
+    <div class="controls" aria-label="Game controls">
+      <div class="controls__group">
+        <label class="controls__label" for="starting-player">Starting player</label>
+        <select id="starting-player" class="controls__select" data-starting-player>
+          <option value="X" selected>Player X</option>
+          <option value="O">Player O</option>
+        </select>
+      </div>
+      <button type="button" class="controls__button" data-action="new-game">New Game</button>
+    </div>
+    <div class="board" data-board role="grid" aria-label="Tic Tac Toe board">
+      <button type="button" class="cell" data-cell="0" role="gridcell" aria-label="Cell 1"></button>
+      <button type="button" class="cell" data-cell="1" role="gridcell" aria-label="Cell 2"></button>
+      <button type="button" class="cell" data-cell="2" role="gridcell" aria-label="Cell 3"></button>
+      <button type="button" class="cell" data-cell="3" role="gridcell" aria-label="Cell 4"></button>
+      <button type="button" class="cell" data-cell="4" role="gridcell" aria-label="Cell 5"></button>
+      <button type="button" class="cell" data-cell="5" role="gridcell" aria-label="Cell 6"></button>
+      <button type="button" class="cell" data-cell="6" role="gridcell" aria-label="Cell 7"></button>
+      <button type="button" class="cell" data-cell="7" role="gridcell" aria-label="Cell 8"></button>
+      <button type="button" class="cell" data-cell="8" role="gridcell" aria-label="Cell 9"></button>
+    </div>
+  </main>
+  <script src="scripts/gameController.js"></script>
+  <script src="scripts/uiController.js"></script>
+</body>
+</html>
