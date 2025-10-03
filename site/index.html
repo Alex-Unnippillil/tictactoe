@@ -254,6 +254,133 @@
             </p>
             <p id="playerOError" class="field__error" data-error-for="playerO" hidden></p>
           </div>
+          <fieldset class="field field--segmented">
+            <legend class="field__legend">Theme</legend>
+            <p id="themeHint" class="field__hint">
+              Choose whether the interface follows your system preference or locks to
+              light or dark mode.
+            </p>
+            <div class="segmented-control">
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="system"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">System</span>
+                  <span class="segmented-control__description">
+                    Follow device appearance
+                  </span>
+                </span>
+              </label>
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">Light</span>
+                  <span class="segmented-control__description">
+                    Bright background and glass highlights
+                  </span>
+                </span>
+              </label>
+              <label class="segmented-control__option">
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  class="segmented-control__input"
+                  aria-describedby="themeHint"
+                />
+                <span class="segmented-control__label">
+                  <span class="segmented-control__title">Dark</span>
+                  <span class="segmented-control__description">
+                    Deep surfaces with luminous accents
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset class="field field--swatches">
+            <legend class="field__legend">Accent color</legend>
+            <p id="accentHint" class="field__hint">
+              Pick the hue used for focus rings, score glows and interface highlights.
+            </p>
+            <div class="swatch-group">
+              <label class="swatch" data-accent-option="sky">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="sky"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Sky</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="violet">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="violet"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Violet</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="emerald">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="emerald"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Emerald</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="amber">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="amber"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Amber</span>
+                </span>
+              </label>
+              <label class="swatch" data-accent-option="rose">
+                <input
+                  type="radio"
+                  name="accent"
+                  value="rose"
+                  class="swatch__input"
+                  aria-describedby="accentHint"
+                />
+                <span class="swatch__content">
+                  <span class="swatch__visual" aria-hidden="true"></span>
+                  <span class="swatch__label">Rose</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
         </section>
         <footer class="modal__footer">
           <button type="button" value="cancel" class="button button--ghost" id="settingsCancelButton">
