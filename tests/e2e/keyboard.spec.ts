@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Keyboard play', () => {
-  test('allows navigating the grid with arrow keys and announces moves', async ({ page }) => {
+  test('supports winning a round using only the keyboard and announces invalid moves', async ({ page }) => {
     await page.goto('/');
 
     const board = page.locator('[role="grid"], [data-testid="board"]').first();
@@ -20,6 +20,11 @@ test.describe('Keyboard play', () => {
 
     await expect(cells).toHaveCount(9);
 
+    const statusRegion = page.locator('#statusMessage');
+    const invalidRegion = page.locator('#invalidMoveMessage');
+    const readStatus = async () => (await statusRegion.textContent())?.trim() ?? '';
+    const readInvalid = async () => (await invalidRegion.textContent())?.trim() ?? '';
+
     await page.locator('body').click();
     for (let i = 0; i < 10; i++) {
       if (await cells.first().evaluate((element) => element === document.activeElement)) {
@@ -29,35 +34,53 @@ test.describe('Keyboard play', () => {
     }
     await expect(cells.first()).toBeFocused();
 
-    await page.keyboard.press('ArrowRight');
-    await expect(cells.nth(1)).toBeFocused();
+    const initialStatus = await readStatus();
 
-    await page.keyboard.press('ArrowDown');
-    await expect(cells.nth(4)).toBeFocused();
-
-    const liveRegion = page.locator('[aria-live], [role="status"]').first();
-    await expect(liveRegion).toBeVisible();
-
-    const readLiveRegion = async () => (await liveRegion.textContent())?.trim() ?? '';
-    const initialStatus = await readLiveRegion();
-
+    // Player X marks the top-left cell.
     await page.keyboard.press('Enter');
-    await expect.poll(readLiveRegion).not.toBe(initialStatus);
+    await expect(cells.first()).toContainText(/x/i);
+    await expect.poll(readStatus).not.toBe(initialStatus);
 
-    await expect(cells.nth(4)).toContainText(/x/i);
-    const statusAfterFirstMove = await readLiveRegion();
-    expect(statusAfterFirstMove).not.toBe('');
-    expect(statusAfterFirstMove.toLowerCase()).toContain('o');
+    // Attempting to play the same cell should trigger an invalid move announcement.
+    await page.keyboard.press('Enter');
+    await expect.poll(readInvalid).not.toBe('');
+    const invalidForOccupied = await readInvalid();
+    expect(invalidForOccupied.toLowerCase()).toContain('already');
 
-    await page.keyboard.press('ArrowLeft');
+    // Move focus to an available space for player O and ensure the invalid message clears.
+    await page.keyboard.press('ArrowDown');
     await expect(cells.nth(3)).toBeFocused();
-
     await page.keyboard.press('Enter');
     await expect(cells.nth(3)).toContainText(/o/i);
+    await expect.poll(readInvalid).toBe('');
 
-    await expect.poll(readLiveRegion).not.toBe(statusAfterFirstMove);
-    const statusAfterSecondMove = await readLiveRegion();
-    expect(statusAfterSecondMove).not.toBe('');
-    expect(statusAfterSecondMove.toLowerCase()).toContain('x');
+    // Player X moves to the centre.
+    await page.keyboard.press('ArrowRight');
+    await expect(cells.nth(4)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(cells.nth(4)).toContainText(/x/i);
+
+    // Player O moves to the top-right.
+    await page.keyboard.press('ArrowLeft');
+    await expect(cells.nth(2)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(cells.nth(2)).toContainText(/o/i);
+
+    // Player X finishes the diagonal for the win.
+    await page.keyboard.press('ArrowDown');
+    await expect(cells.nth(5)).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(cells.nth(8)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(cells.nth(8)).toContainText(/x/i);
+
+    await expect.poll(readStatus).toContain('wins');
+    await expect(page.locator('[data-role="score"][data-player="X"]')).toHaveText('1');
+
+    // Additional invalid move once the round is over should announce the polite message.
+    await page.keyboard.press('Enter');
+    await expect.poll(readInvalid).not.toBe('');
+    const invalidAfterWin = await readInvalid();
+    expect(invalidAfterWin.toLowerCase()).toContain('round');
   });
 });
