@@ -4,9 +4,16 @@
   "description": "Tic Tac Toe project setup",
   "private": true,
   "scripts": {
-    "lint": "echo \"No lint script configured\"",
-    "test": "echo \"No unit tests configured\"",
-    "e2e": "echo \"No end-to-end tests configured\"",
-    "serve": "npx http-server site"
+    "dev": "npm run serve",
+    "serve": "http-server site -p 4173 -c-1",
+    "lint": "prettier --check \"**/*.{css,html,js,json,md}\"",
+    "lint:fix": "prettier --write \"**/*.{css,html,js,json,md}\"",
+    "test": "echo \"No unit tests configured yet\"",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.1",
+    "http-server": "^14.1.1",
+    "prettier": "^3.2.5"
   }
 }

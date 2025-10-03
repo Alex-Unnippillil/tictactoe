@@ -14,9 +14,11 @@ https://alex-unnippillil.github.io/tictactoe/
 ## Static site assets
 
 The `site/` directory contains supplemental static files such as `robots.txt` and `sitemap.xml`. Include this folder when publishing or deploying the site so search engines can access these resources.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
 # Tic Tac Toe
 
 ![Screenshot of the Tic Tac Toe board](https://github.com/Alex-Unnippillil/tictactoe/assets/24538548/15b4eda8-43c2-4f28-8fd5-593098a90799)
@@ -35,24 +37,29 @@ Tic Tac Toe is a tiny web project that demonstrates the full lifecycle of buildi
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Starts the local development server for iterative work.
-| `npm run build` | Produces the production-ready static assets.
-| `npm run test` | Executes the automated test suite.
-| `npm run lint` | Runs linting to ensure code quality and consistency.
-| `npm run deploy` | Publishes the `dist/` output to GitHub Pages.
+| Command            | Description                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| `npm run dev`      | Starts the local development server (aliases `npm run serve`).              |
+| `npm run serve`    | Serves the static assets from `site/` at `http://localhost:4173`.           |
+| `npm run lint`     | Runs Prettier in check mode across HTML, CSS, JS, JSON, and Markdown files. |
+| `npm run lint:fix` | Formats files using Prettier.                                               |
+| `npm run test`     | Placeholder script for future unit tests.                                   |
+| `npm run e2e`      | Executes the Playwright end-to-end suite.                                   |
+| `npm run deploy`   | Publishes the `dist/` output to GitHub Pages.                               |
 
 ## Local Development
 
-- **Start a hot-reloading server:** `npm run dev`
-- **Run linters while developing:** `npm run lint`
-- **Format and lint before committing:** `npm run lint && npm run test`
+- **Install dependencies:** `npm install`
+- **Start the local server:** `npm run dev` (or `npm run serve` for additional flags)
+- **Run lint checks while developing:** `npm run lint`
+- **Format files when needed:** `npm run lint:fix`
+- **Smoke-test end-to-end flows:** `npm run e2e` (with `npm run dev` running in another terminal)
 
 ## Testing
 
-- **Unit tests:** `npm run test`
-- **Continuous integration:** See the workflows in `.github/workflows/` for Pages deployment.
+- **Unit tests:** `npm run test` (currently a placeholder until the unit suite is implemented).
+- **Playwright end-to-end tests:** `npm run e2e` while `npm run dev` is serving the site locally. Install browsers with `npx playwright install` if prompted; HTML reports are generated in `playwright-report/` after each run.
+- **Continuous integration:** See the workflows in `.github/workflows/` for CI and Pages deployment. Match failing jobs locally by running the same npm scripts reported in the workflow logs.
 
 ## Deployment Overview
 

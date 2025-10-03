@@ -9,16 +9,19 @@ This repository hosts a lightweight, static Tic Tac Toe implementation that is p
 ## How we work
 
 ### Branching strategy
-- Create a topic branch from the latest `main` for every change. Use short, descriptive names such as `feature/add-scoreboard`, `bugfix/fix-mobile-layout`, or `docs/update-readme`.
-- Keep branches focused on a single logical change. Avoid combining unrelated updates in the same branch.
+
+- Create a topic branch from the latest `main` for every change. Follow the naming pattern `agent/<role>/<task-id>-short-title` described in [`AGENTS.md`](AGENTS.md) so that asynchronous contributors can see ownership at a glance. Examples: `agent/frontend-dev/14-highlight-win` or `agent/docs/30-export-settings-guide`.
+- Keep branches focused on a single logical change and avoid combining unrelated updates in the same branch.
 - Rebase your branch on top of `main` before opening or updating a pull request to reduce merge conflicts.
 
 ### Commit style
-- Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages (`feat: add responsive board layout`, `fix: correct hover styling`, etc.).
+
+- Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages (`feat: add responsive board layout`, `fix: correct hover styling`, etc.), matching the expectations documented in `AGENTS.md`.
 - Write atomic commits that capture a coherent piece of work. Avoid “WIP” commits; squash locally when necessary.
 - Include context in the body when the subject line alone is insufficient. Reference related issues using `Fixes #123` when appropriate.
 
 ### Pull requests
+
 - Provide a concise summary of the change, screenshots or GIFs for UI updates, and testing notes describing how you validated the change locally.
 - Ensure your branch is up to date with `main` and that all required checks are passing before requesting review.
 - Draft pull requests are welcome while work is in progress—convert to “Ready for review” once you have completed the checklist.
@@ -36,47 +39,64 @@ This project is built with vanilla HTML, CSS, and JavaScript. Please adhere to t
 ## Local development workflow
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/) 18 or newer (for linting/formatting commands).
 - A modern web browser for manual testing.
 
 ### Running the site locally
-Because this is a static site, the simplest approach is to open `index.html` directly in your browser. If you prefer a local server (recommended for accurate GitHub Pages parity), you can run:
+
+Install dependencies once with:
 
 ```bash
-npx serve .
+npm install
 ```
 
-Then visit `http://localhost:3000`.
+Start a local development server from the project root:
+
+```bash
+npm run dev
+```
+
+This command proxies to `npm run serve`, which uses [`http-server`](https://www.npmjs.com/package/http-server) to serve the static assets from the `site/` directory. The server defaults to `http://localhost:4173` with caching disabled so changes are reflected immediately. You can pass additional flags to `npm run serve` if you need to tweak the behavior (for example, a different port).
 
 ### Linting and formatting
-Run the following commands from the project root before committing:
+
+Use the provided npm scripts to keep the codebase consistent:
 
 ```bash
-npx prettier --check "**/*.{html,css,js}"
+npm run lint      # Prettier check across HTML, CSS, JS, JSON, and Markdown files
+npm run lint:fix  # Automatically format files when the check fails
 ```
 
-If the check fails, format the files automatically:
-
-```bash
-npx prettier --write "**/*.{html,css,js}"
-```
-
-Feel free to add a `.prettierrc` file in a separate pull request if you need custom rules.
+These commands use the locally installed Prettier binary, so no global installation is required.
 
 ### Tests and end-to-end checks
-There is no automated unit test suite yet. Please perform the manual checks below to ensure quality:
 
-1. Open the site in the latest versions of Chrome, Firefox, and Safari (or an equivalent cross-browser testing tool) and verify game play, win detection, and reset logic.
-2. Test on a narrow viewport (~320px) to confirm mobile responsiveness and touch support.
-3. Use browser dev tools to confirm there are no console errors or 404 network requests.
+Run automated checks before pushing to reduce CI churn:
 
-If you add automated tests or E2E coverage in your change, document how to run them in your pull request description.
+```bash
+npm run test  # Placeholder until unit tests are added
+```
+
+#### Playwright end-to-end tests
+
+Keyboard accessibility and other flows are covered by Playwright specs under `tests/e2e/`. To execute them locally:
+
+```bash
+npm run e2e           # Run all Playwright specs
+npx playwright install  # (one-time) install the browser binaries if prompted
+```
+
+By default the tests expect the site to be served at `http://localhost:4173`. Ensure `npm run dev` is running in another terminal before starting `npm run e2e`. Review the HTML reports generated in `playwright-report/` for detailed traces when failures occur.
+
+Continue performing targeted manual checks—especially for new UI or accessibility work—while the unit test suite is being built out.
 
 ## Continuous integration & deployment
 
-- Pull requests are validated by GitHub Actions CI. Ensure the Prettier check and any future lint/test workflows pass before requesting review. You can view the workflow status directly on the PR.
-- Merges to `main` automatically trigger the GitHub Pages deployment pipeline. To keep deployments healthy, confirm that `index.html` and any assets you add load correctly when served from the repository root, and avoid introducing references to private or server-side resources.
-- If a deployment fails, investigate the CI logs and open a follow-up PR with a fix or revert.
+- Every pull request runs the `ci.yml` workflow, which in turn calls the lint, test, and Playwright commands. Wait for a green check mark before requesting review. A red ❌ indicates the failing job—expand the logs to identify the command that needs attention.
+- The Pages badge in the README and the `pages.yml` workflow track the status of the `gh-pages` deployment. If `pages.yml` fails on `main`, prioritize a fix or revert so the public site stays healthy.
+- When CI fails, reproduce the failing command locally (for example `npm run lint` or `npm run e2e`) before pushing additional commits. Capture insights or follow-up tasks in the pull request description.
+- Merges to `main` automatically trigger the GitHub Pages deployment pipeline. Confirm that assets referenced in the site are relative URLs compatible with static hosting—no private APIs or server-side dependencies.
 
 ## Getting help
 
