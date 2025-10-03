@@ -15,5 +15,6 @@ List the tests you ran and their outcomes.
 ## Checklist
 - [ ] I have added tests that prove my fix is effective or that my feature works (if applicable).
 - [ ] I have updated documentation as needed.
+- [ ] I have added or updated the relevant entry in `CHANGELOG.md`.
 - [ ] I have verified that the CI pipeline passes locally or understand existing failures.
 - [ ] I am ready for this change to be reviewed and merged.
