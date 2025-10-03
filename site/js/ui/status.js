@@ -14,8 +14,20 @@
       X: document.querySelector('[data-role="score"][data-player="X"]'),
       O: document.querySelector('[data-role="score"][data-player="O"]'),
     };
+    const playerCards = {
+      X: document.querySelector('.scoreboard__player[data-player="X"]'),
+      O: document.querySelector('.scoreboard__player[data-player="O"]'),
+    };
 
-    if (!statusMessage || !nameElements.X || !nameElements.O) {
+    if (
+      !statusMessage ||
+      !nameElements.X ||
+      !nameElements.O ||
+      !scoreElements.X ||
+      !scoreElements.O ||
+      !playerCards.X ||
+      !playerCards.O
+    ) {
       throw new Error("Unable to initialise status UI; required elements are missing.");
     }
 
@@ -66,20 +78,31 @@
       scoreElements.O.textContent = String(scores.O);
     };
 
+    const setActivePlayerCard = (player) => {
+      (/** @type {("X"|"O")[]} */ (["X", "O"]))
+        .filter((id) => playerCards[id])
+        .forEach((id) => {
+          playerCards[id].classList.toggle("scoreboard__player--active", id === player);
+        });
+    };
+
     const api = {
       setTurn(player) {
         currentPlayer = player;
         statusState = "turn";
         refreshStatus();
+        setActivePlayerCard(player);
       },
       announceWin(player) {
         currentPlayer = player;
         statusState = "win";
         refreshStatus();
+        setActivePlayerCard(player);
       },
       announceDraw() {
         statusState = "draw";
         refreshStatus();
+        setActivePlayerCard(null);
       },
       incrementScore(player) {
         scores[player] += 1;
@@ -151,6 +174,7 @@
     applyNames(DEFAULT_NAMES);
     updateScoreDisplay();
     refreshStatus();
+    setActivePlayerCard(currentPlayer);
 
     const core = window.coreState;
     if (core && typeof core.getPlayerNames === "function") {
