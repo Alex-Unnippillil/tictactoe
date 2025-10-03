@@ -3,6 +3,107 @@
     X: "Player X",
     O: "Player O",
   };
+  const DEFAULT_SCORES = { X: 0, O: 0 };
+  const SCORES_STORAGE_KEY = "tictactoe:scores";
+  const NAMES_STORAGE_KEY = "tictactoe:player-names";
+  const storage =
+    window.appStorage && typeof window.appStorage === "object"
+      ? window.appStorage
+      : {
+          readJson(key, validator) {
+            try {
+              const raw = window.localStorage.getItem(key);
+              if (raw === null) {
+                return null;
+              }
+              const parsed = JSON.parse(raw);
+              if (validator && !validator(parsed)) {
+                return null;
+              }
+              return parsed;
+            } catch (error) {
+              console.warn(`Unable to read persisted data for ${key}`, error);
+              return null;
+            }
+          },
+          writeJson(key, value) {
+            try {
+              window.localStorage.setItem(key, JSON.stringify(value));
+              return true;
+            } catch (error) {
+              console.warn(`Unable to persist data for ${key}`, error);
+              return false;
+            }
+          },
+          remove(key) {
+            try {
+              window.localStorage.removeItem(key);
+              return true;
+            } catch (error) {
+              console.warn(`Unable to remove persisted data for ${key}`, error);
+              return false;
+            }
+          },
+        };
+
+  const isPlainObject = (value) =>
+    Boolean(value) && typeof value === "object" && !Array.isArray(value);
+
+  const sanitiseStoredName = (value, fallback) => {
+    if (typeof value !== "string") {
+      return fallback;
+    }
+    const trimmed = value.trim();
+    return trimmed.length ? trimmed : fallback;
+  };
+
+  const normaliseStoredNames = (value) => ({
+    X: sanitiseStoredName(value?.X, DEFAULT_NAMES.X),
+    O: sanitiseStoredName(value?.O, DEFAULT_NAMES.O),
+  });
+
+  const readPersistedNames = () => {
+    const stored = storage.readJson(NAMES_STORAGE_KEY, isPlainObject);
+    if (!stored) {
+      return null;
+    }
+    return normaliseStoredNames(stored);
+  };
+
+  const normaliseScoreValue = (value) => {
+    if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+      return Math.floor(value);
+    }
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed.length) {
+        const parsed = Number(trimmed);
+        if (Number.isFinite(parsed) && parsed >= 0) {
+          return Math.floor(parsed);
+        }
+      }
+    }
+    return 0;
+  };
+
+  const normaliseScores = (value) => ({
+    X: normaliseScoreValue(value?.X),
+    O: normaliseScoreValue(value?.O),
+  });
+
+  const readPersistedScores = () => {
+    const stored = storage.readJson(SCORES_STORAGE_KEY, isPlainObject);
+    if (!stored) {
+      return null;
+    }
+    return normaliseScores(stored);
+  };
+
+  const writePersistedScores = (value) => {
+    const normalised = normaliseScores(value);
+    storage.writeJson(SCORES_STORAGE_KEY, normalised);
+    return normalised;
+  };
 
   document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("statusMessage");
@@ -20,7 +121,7 @@
     }
 
     let playerNames = { ...DEFAULT_NAMES };
-    let scores = { X: 0, O: 0 };
+    let scores = { ...DEFAULT_SCORES };
     let currentPlayer = "X";
     let statusState = "turn"; // "turn" | "win" | "draw"
 
@@ -72,19 +173,20 @@
         refreshStatus();
       },
       incrementScore(player) {
-        scores[player] += 1;
+        const updated = { ...scores, [player]: (scores[player] ?? 0) + 1 };
+        scores = writePersistedScores(updated);
         updateScoreDisplay();
         return scores[player];
       },
       resetScores() {
-        scores = { X: 0, O: 0 };
+        scores = writePersistedScores(DEFAULT_SCORES);
         updateScoreDisplay();
       },
       getScores() {
         return { ...scores };
       },
       setScores(nextScores) {
-        scores = { ...scores, ...nextScores };
+        scores = writePersistedScores({ ...scores, ...nextScores });
         updateScoreDisplay();
       },
       getNames() {
@@ -102,7 +204,13 @@
       applyNames(detail.names);
     });
 
-    applyNames(DEFAULT_NAMES);
+    const persistedNames = readPersistedNames();
+    applyNames(persistedNames ? persistedNames : DEFAULT_NAMES);
+
+    const persistedScores = readPersistedScores();
+    if (persistedScores) {
+      scores = persistedScores;
+    }
     updateScoreDisplay();
     refreshStatus();
   });
