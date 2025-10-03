@@ -23,6 +23,7 @@
     let scores = { X: 0, O: 0 };
     let currentPlayer = "X";
     let statusState = "turn"; // "turn" | "win" | "draw"
+    let temporaryMessage = null;
 
     const formatTurnMessage = (player) =>
       `${playerNames[player]} (${player}) to move`;
@@ -30,6 +31,11 @@
       `${playerNames[player]} (${player}) wins this round!`;
 
     const refreshStatus = () => {
+      if (temporaryMessage) {
+        statusMessage.textContent = temporaryMessage;
+        return;
+      }
+
       switch (statusState) {
         case "win":
           statusMessage.textContent = formatWinMessage(currentPlayer);
@@ -42,6 +48,14 @@
           statusMessage.textContent = formatTurnMessage(currentPlayer);
           break;
       }
+    };
+
+    const clearTemporaryMessage = () => {
+      if (!temporaryMessage) {
+        return;
+      }
+      temporaryMessage = null;
+      refreshStatus();
     };
 
     const applyNames = (names) => {
@@ -60,15 +74,18 @@
       setTurn(player) {
         currentPlayer = player;
         statusState = "turn";
+        clearTemporaryMessage();
         refreshStatus();
       },
       announceWin(player) {
         currentPlayer = player;
         statusState = "win";
+        clearTemporaryMessage();
         refreshStatus();
       },
       announceDraw() {
         statusState = "draw";
+        clearTemporaryMessage();
         refreshStatus();
       },
       incrementScore(player) {
@@ -90,6 +107,11 @@
       getNames() {
         return { ...playerNames };
       },
+      showThinking() {
+        temporaryMessage = "AI is thinking…";
+        statusMessage.textContent = temporaryMessage;
+      },
+      clearTemporaryMessage,
     };
 
     window.uiStatus = api;
