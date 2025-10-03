@@ -24,6 +24,7 @@
   const PLAYER_X = constants.PLAYER_X || 'X';
   const PLAYER_O = constants.PLAYER_O || 'O';
   const PLAYER_SYMBOLS = [PLAYER_X, PLAYER_O];
+  const SCORE_KEYS = [...PLAYER_SYMBOLS, 'draw'];
   const WINNING_LINES = constants.WINNING_LINES || fallbackConstants.WINNING_LINES;
 
   const cloneBoard = (board) => board.slice();
@@ -68,23 +69,25 @@
     return { winner: null, line: null, isDraw: false };
   }
 
+  const DEFAULT_SCORES = { [PLAYER_X]: 0, [PLAYER_O]: 0, draw: 0 };
+
   function readStoredScores() {
     const raw = safeLocalStorage.read(SCORE_STORAGE_KEY);
     if (!raw) {
-      return { [PLAYER_X]: 0, [PLAYER_O]: 0 };
+      return { ...DEFAULT_SCORES };
     }
 
     try {
       const parsed = JSON.parse(raw);
-      const next = { [PLAYER_X]: 0, [PLAYER_O]: 0 };
-      PLAYER_SYMBOLS.forEach((player) => {
-        const value = parsed?.[player];
-        next[player] = Number.isFinite(Number(value)) ? Number(value) : 0;
+      const next = { ...DEFAULT_SCORES };
+      SCORE_KEYS.forEach((key) => {
+        const value = parsed?.[key];
+        next[key] = Number.isFinite(Number(value)) ? Number(value) : 0;
       });
       return next;
     } catch (error) {
       console.warn('Unable to parse stored scores', error);
-      return { [PLAYER_X]: 0, [PLAYER_O]: 0 };
+      return { ...DEFAULT_SCORES };
     }
   }
 
@@ -212,12 +215,12 @@
         return;
       }
 
-      PLAYER_SYMBOLS.forEach((player) => {
+      SCORE_KEYS.forEach((key) => {
         const element = document.querySelector(
-          `[data-role="score"][data-player="${player}"]`
+          `[data-role="score"][data-player="${key}"]`
         );
         if (element) {
-          element.textContent = String(scores[player] ?? 0);
+          element.textContent = String(scores[key] ?? 0);
         }
       });
     };
@@ -372,6 +375,9 @@
     };
 
     const handleDraw = () => {
+      scores.draw = (scores.draw ?? 0) + 1;
+      renderScores();
+      persistScores();
       announceDraw();
       cells.forEach((cell) => setCellDisabled(cell, true));
       dispatchEvent('round-ended', {
@@ -420,7 +426,7 @@
     };
 
     const resetScores = () => {
-      scores = { [PLAYER_X]: 0, [PLAYER_O]: 0 };
+      scores = { ...DEFAULT_SCORES };
       renderScores();
       persistScores();
     };
@@ -459,7 +465,7 @@
 
       if (resetScoresButton) {
         resetScoresButton.addEventListener('click', () => {
-          if (!scores[PLAYER_X] && !scores[PLAYER_O]) {
+          if (!SCORE_KEYS.some((key) => scores[key])) {
             return;
           }
           if (typeof global.confirm === 'function') {
