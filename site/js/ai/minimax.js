@@ -245,9 +245,13 @@
     _cloneBoard: cloneBoard
   };
 
+  global.MinimaxAI = api;
+
+  if (typeof globalThis !== 'undefined') {
+    globalThis.MinimaxAI = api;
+  }
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
-  } else {
-    global.MinimaxAI = api;
   }
 })(typeof window !== 'undefined' ? window : globalThis);

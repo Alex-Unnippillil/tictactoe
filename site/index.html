@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="game" aria-labelledby="gameTitle">
+      <header class="game__header">
+        <h1 id="gameTitle">Tic Tac Toe</h1>
+        <p id="statusMessage" class="message" role="status" aria-live="polite">
+          Loading game state…
+        </p>
+      </header>
+
+      <section class="scoreboard" aria-label="Scoreboard">
+        <div class="scoreboard__entry" data-player="X">
+          <span class="scoreboard__name" data-role="name" data-player="X">Player X</span>
+          <span class="scoreboard__score" data-role="score" data-player="X">0</span>
+        </div>
+        <div class="scoreboard__entry" data-player="O">
+          <span class="scoreboard__name" data-role="name" data-player="O">Player O</span>
+          <span class="scoreboard__score" data-role="score" data-player="O">0</span>
+        </div>
+      </section>
+
+      <table class="board" role="grid" aria-label="Tic Tac Toe board">
+        <tbody>
+          <tr>
+            <td role="gridcell" data-index="0"></td>
+            <td role="gridcell" data-index="1"></td>
+            <td role="gridcell" data-index="2"></td>
+          </tr>
+          <tr>
+            <td role="gridcell" data-index="3"></td>
+            <td role="gridcell" data-index="4"></td>
+            <td role="gridcell" data-index="5"></td>
+          </tr>
+          <tr>
+            <td role="gridcell" data-index="6"></td>
+            <td role="gridcell" data-index="7"></td>
+            <td role="gridcell" data-index="8"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="game__actions">
+        <button type="button" id="settingsButton">Player settings</button>
+        <button type="button" id="resetButton">Reset game</button>
+      </div>
+    </main>
+
+    <dialog id="settingsModal" aria-labelledby="settingsTitle">
+      <form id="settingsForm" method="dialog">
+        <h2 id="settingsTitle">Player names</h2>
+        <p>Update the display names for each player.</p>
+
+        <label for="playerXInput">Player X</label>
+        <input id="playerXInput" name="playerX" maxlength="24" required />
+        <p class="form-error" data-error-for="playerX" hidden></p>
+
+        <label for="playerOInput">Player O</label>
+        <input id="playerOInput" name="playerO" maxlength="24" required />
+        <p class="form-error" data-error-for="playerO" hidden></p>
+
+        <menu>
+          <button type="reset" id="settingsCancelButton">Cancel</button>
+          <button type="submit" id="settingsSaveButton">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Keep AI engines before controllers to ensure MinimaxAI is ready for game.js. -->
+    <script src="js/ai/minimax.js" defer></script>
+    <script src="js/game.js" defer></script>
+    <script src="js/ui/status.js" defer></script>
+    <script src="js/ui/settings.js" defer></script>
+  </body>
+</html>

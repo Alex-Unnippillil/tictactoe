@@ -100,6 +100,82 @@ body {
   min-height: 1.5em;
 }
 
+.scoreboard {
+  width: 100%;
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.scoreboard__entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: rgba(37, 99, 235, 0.05);
+  border-radius: calc(var(--radius-md) / 2);
+}
+
+.scoreboard__name {
+  font-weight: 600;
+}
+
+.scoreboard__score {
+  font-variant-numeric: tabular-nums;
+}
+
+.game__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.game__actions button {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.game__actions button:hover,
+.game__actions button:focus-visible {
+  border-color: var(--color-accent);
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+dialog {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-soft);
+}
+
+dialog form {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+dialog menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  padding: 0;
+}
+
+dialog button {
+  padding: 0.4rem 1.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.form-error {
+  color: #b91c1c;
+  font-size: 0.875rem;
+}
+
 @media (min-width: 48rem) {
   body {
     padding: var(--spacing-lg);

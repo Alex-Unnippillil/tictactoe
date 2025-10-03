@@ -14,6 +14,10 @@ https://alex-unnippillil.github.io/tictactoe/
 ## Static site assets
 
 The `site/` directory contains supplemental static files such as `robots.txt` and `sitemap.xml`. Include this folder when publishing or deploying the site so search engines can access these resources.
+
+### Script loading order
+
+When editing `site/index.html` or introducing a bundler, keep AI engines ahead of controller scripts. The `js/ai/minimax.js` file must load before `js/game.js` (or any other controller) so the global `window.MinimaxAI` export is available when the game initialises.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
