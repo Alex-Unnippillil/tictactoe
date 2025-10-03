@@ -27,6 +27,20 @@
     O: sanitiseName(names?.O ?? "", DEFAULT_NAMES.O),
   });
 
+  const globalNamespace =
+    typeof window !== "undefined"
+      ? (window.playerNameValidation = window.playerNameValidation || {})
+      : null;
+
+  if (globalNamespace) {
+    globalNamespace.DEFAULT_NAMES = DEFAULT_NAMES;
+    globalNamespace.NAME_PATTERN = NAME_PATTERN;
+    globalNamespace.INVALID_MESSAGE = INVALID_MESSAGE;
+    globalNamespace.isNameValid = isNameValid;
+    globalNamespace.sanitiseName = sanitiseName;
+    globalNamespace.normaliseNames = normaliseNames;
+  }
+
   const readPersistedNames = () => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -265,6 +279,11 @@
 
       return finalNames;
     };
+
+    if (globalNamespace) {
+      globalNamespace.applyAndPersistNames = (names, options) =>
+        applyAndPersistNames(names, options);
+    }
 
     attachValidation(fields.X, { onDirty: markDirty });
     attachValidation(fields.O, { onDirty: markDirty });
