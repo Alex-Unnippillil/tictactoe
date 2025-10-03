@@ -1,6 +1,14 @@
 'use strict';
 
 (function (global) {
+  const constants =
+    typeof module !== 'undefined' && module.exports
+      ? require('../core/constants')
+      : (global.tictactoeCore && global.tictactoeCore.constants) || {};
+
+  const PLAYER_X = constants.PLAYER_X || 'X';
+  const PLAYER_O = constants.PLAYER_O || 'O';
+
   const LOG_PREFIX = '[minimax]';
 
   const stateCache = new Map();
@@ -236,7 +244,7 @@
     }
   }
 
-  function chooseMove(board, playerSymbol = 'X', opponentSymbol = 'O') {
+  function chooseMove(board, playerSymbol = PLAYER_X, opponentSymbol = PLAYER_O) {
     let bestScore = Number.NEGATIVE_INFINITY;
     let bestMove = null;
 
