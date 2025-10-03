@@ -60,6 +60,16 @@ behavior and reporting. For details on how to get involved, see the
 - **Unit tests:** `npm run test`
 - **Continuous integration:** See the workflows in `.github/workflows/` for Pages deployment.
 
+## Lighthouse audits
+
+A dedicated [Lighthouse CI workflow](.github/workflows/lighthouse.yml) runs `npx lhci autorun` against the deployed GitHub Pages site at `https://alex-unnippillil.github.io/tictactoe/`. The job uploads the HTML report as an artifact named **`lighthouse-report`** so you can review the latest accessibility, performance, best practices, and SEO scores for the production build.
+
+To inspect the results for any run:
+
+1. Open the workflow run in GitHub Actions.
+2. Scroll to the **Artifacts** section and download **`lighthouse-report`**.
+3. Extract the archive locally and open `report.html` in your browser to view the full Lighthouse dashboard.
+
 ## Deployment Overview
 
 1. Build the project locally with `npm run build` to generate optimized assets.
