@@ -8,7 +8,6 @@ A polished, framework-free implementation of the classic Tic Tac Toe game. The p
 
 <img width="1119" height="1188" alt="image" src="https://github.com/user-attachments/assets/319548fb-0e86-4e5f-a039-0b828accc099" />
 
-)
 
 ## Table of contents
 - [Live demo](#live-demo)
