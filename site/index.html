@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic Tac Toe</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #f9fafb, #dbeafe);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    main {
+      width: min(90vw, 26rem);
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 1.5rem 3rem rgba(15, 23, 42, 0.1);
+    }
+
+    h1 {
+      margin: 0 0 1.5rem;
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      text-align: center;
+      letter-spacing: 0.03em;
+      color: #0f172a;
+    }
+
+    .board {
+      width: 100%;
+      border-collapse: collapse;
+      border: 4px solid #1d4ed8;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.12);
+    }
+
+    .board td {
+      border: 2px solid rgba(30, 64, 175, 0.25);
+      padding: 0;
+    }
+
+    .board__cell {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: none;
+      background: transparent;
+      font-size: clamp(2.75rem, 8vw, 3.5rem);
+      font-weight: 700;
+      color: #1e3a8a;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .board__cell:hover,
+    .board__cell:focus-visible {
+      background-color: rgba(37, 99, 235, 0.12);
+    }
+
+    .board__cell:active {
+      transform: scale(0.97);
+    }
+
+    .message,
+    .message--error {
+      margin: 1.5rem 0 0;
+      text-align: center;
+      font-size: 1.1rem;
+      min-height: 1.4em;
+    }
+
+    .message {
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    .message--error {
+      color: #b91c1c;
+      font-weight: 500;
+    }
+
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .reset-button {
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .reset-button:hover,
+    .reset-button:focus-visible {
+      background: #1d4ed8;
+    }
+
+    .reset-button:active {
+      transform: translateY(1px);
+    }
+
+    .sr-only {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Tic Tac Toe</h1>
+    <div id="game-status-announcer" class="sr-only" aria-live="polite"></div>
+    <table class="board" aria-label="Tic Tac Toe board">
+      <tbody>
+        <tr>
+          <td><button type="button" class="board__cell" data-row="0" data-col="0" aria-label="Row 1 column 1, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="0" data-col="1" aria-label="Row 1 column 2, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="0" data-col="2" aria-label="Row 1 column 3, empty"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button" class="board__cell" data-row="1" data-col="0" aria-label="Row 2 column 1, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="1" data-col="1" aria-label="Row 2 column 2, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="1" data-col="2" aria-label="Row 2 column 3, empty"></button></td>
+        </tr>
+        <tr>
+          <td><button type="button" class="board__cell" data-row="2" data-col="0" aria-label="Row 3 column 1, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="2" data-col="1" aria-label="Row 3 column 2, empty"></button></td>
+          <td><button type="button" class="board__cell" data-row="2" data-col="2" aria-label="Row 3 column 3, empty"></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <p id="game-message" class="message"></p>
+    <p id="error-message" class="message--error"></p>
+    <div class="controls">
+      <button type="button" class="reset-button" id="reset-button">New Game</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import {
+      announceTurn,
+      announceError,
+      announceResult,
+      clearAnnouncement
+    } from './js/ui/announcer.js';
+
+    const boardElement = document.querySelector('.board');
+    const messageElement = document.getElementById('game-message');
+    const errorElement = document.getElementById('error-message');
+    const resetButton = document.getElementById('reset-button');
+    const cells = Array.from(document.querySelectorAll('.board__cell'));
+
+    let currentPlayer = 'X';
+    let gameOver = false;
+    let boardState = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', '']
+    ];
+
+    function resetBoardState() {
+      boardState = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+      ];
+      cells.forEach((cell) => {
+        cell.textContent = '';
+        const row = Number(cell.dataset.row) + 1;
+        const col = Number(cell.dataset.col) + 1;
+        cell.setAttribute('aria-label', `Row ${row} column ${col}, empty`);
+      });
+      gameOver = false;
+      currentPlayer = 'X';
+      clearError();
+      clearAnnouncement();
+      updateTurnMessage();
+    }
+
+    function updateTurnMessage() {
+      const turnMessage = `Player ${currentPlayer}'s turn.`;
+      messageElement.textContent = turnMessage;
+      announceTurn(currentPlayer);
+    }
+
+    function clearError() {
+      errorElement.textContent = '';
+    }
+
+    function showError(message) {
+      errorElement.textContent = message;
+      announceError(message);
+    }
+
+    function handleCellSelection(event) {
+      const button = event.target.closest('button.board__cell');
+      if (!button) {
+        return;
+      }
+
+      const row = Number(button.dataset.row);
+      const col = Number(button.dataset.col);
+
+      if (gameOver) {
+        showError('The game is already over. Start a new game to play again.');
+        return;
+      }
+
+      if (boardState[row][col] !== '') {
+        showError('That square is already taken. Try a different move.');
+        return;
+      }
+
+      clearError();
+
+      boardState[row][col] = currentPlayer;
+      button.textContent = currentPlayer;
+      const rowLabel = row + 1;
+      const colLabel = col + 1;
+      button.setAttribute('aria-label', `Row ${rowLabel} column ${colLabel}, ${currentPlayer}`);
+
+      if (checkWin(currentPlayer)) {
+        const winMessage = `Player ${currentPlayer} wins!`;
+        messageElement.textContent = winMessage;
+        announceResult(winMessage);
+        gameOver = true;
+        return;
+      }
+
+      if (checkDraw()) {
+        const drawMessage = `It's a draw!`;
+        messageElement.textContent = drawMessage;
+        announceResult(drawMessage);
+        gameOver = true;
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      updateTurnMessage();
+    }
+
+    function checkWin(player) {
+      // Rows and columns
+      for (let i = 0; i < 3; i += 1) {
+        if (
+          boardState[i][0] === player &&
+          boardState[i][1] === player &&
+          boardState[i][2] === player
+        ) {
+          return true;
+        }
+        if (
+          boardState[0][i] === player &&
+          boardState[1][i] === player &&
+          boardState[2][i] === player
+        ) {
+          return true;
+        }
+      }
+
+      // Diagonals
+      if (
+        boardState[0][0] === player &&
+        boardState[1][1] === player &&
+        boardState[2][2] === player
+      ) {
+        return true;
+      }
+
+      if (
+        boardState[0][2] === player &&
+        boardState[1][1] === player &&
+        boardState[2][0] === player
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function checkDraw() {
+      return boardState.every((row) => row.every((cell) => cell !== ''));
+    }
+
+    boardElement.addEventListener('click', handleCellSelection);
+    resetButton.addEventListener('click', resetBoardState);
+
+    updateTurnMessage();
+  </script>
+</body>
+</html>
