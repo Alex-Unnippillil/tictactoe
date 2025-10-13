@@ -1607,6 +1607,54 @@ button:focus-visible {
   margin-block-end: clamp(1.25rem, 2vw, 2.25rem);
 }
 
+@keyframes modal-fade-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.96);
+    filter: drop-shadow(0 18px 44px rgba(15, 23, 42, 0.32));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: drop-shadow(0 32px 60px var(--glass-shadow));
+  }
+}
+
+@keyframes modal-fade-out {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: drop-shadow(0 32px 60px var(--glass-shadow));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.96);
+    filter: drop-shadow(0 12px 32px rgba(15, 23, 42, 0.22));
+  }
+}
+
+@keyframes modal-backdrop-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-backdrop-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 dialog {
   border: none;
   border-radius: 20px;
@@ -1616,21 +1664,30 @@ dialog {
   color: inherit;
   opacity: 0;
   transform: translate3d(0, 28px, 0) scale(0.98);
-  transition:
-    opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 320ms cubic-bezier(0.16, 1, 0.3, 1);
   filter: drop-shadow(0 32px 60px var(--glass-shadow));
+  pointer-events: none;
 }
 
 dialog[open] {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
+  pointer-events: auto;
 }
 
+dialog.modal--entering {
+  animation: modal-fade-in 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+dialog.modal--open {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  pointer-events: auto;
+  filter: drop-shadow(0 32px 60px var(--glass-shadow));
+}
+
+dialog.modal--leaving,
 dialog.is-closing {
-  opacity: 0;
-  transform: translate3d(0, 24px, 0) scale(0.97);
+  animation: modal-fade-out 260ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
   pointer-events: none;
 }
 
@@ -1640,31 +1697,35 @@ dialog::backdrop {
     rgba(15, 23, 42, 0.48);
   backdrop-filter: blur(6px);
   opacity: 0;
-  transition: opacity 260ms ease;
 }
 
 dialog[open]::backdrop {
   opacity: 1;
 }
 
+dialog.modal--entering::backdrop {
+  animation: modal-backdrop-fade-in 260ms ease forwards;
+}
+
+dialog.modal--open::backdrop {
+  opacity: 1;
+}
+
+dialog.modal--leaving::backdrop,
 dialog.is-closing::backdrop {
-  opacity: 0;
+  animation: modal-backdrop-fade-out 220ms ease forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   dialog,
   dialog::backdrop {
+    animation: none !important;
     transition: none;
   }
 
   dialog {
     transform: none;
     opacity: 1;
-  }
-
-  dialog.is-closing {
-    transform: none;
-    opacity: 0;
   }
 }
 
