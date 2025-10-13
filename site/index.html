@@ -44,7 +44,7 @@
         class="scoreboard"
         id="scoreboard"
         role="region"
-        aria-label="Player scoreboard"
+        aria-label="Scoreboard with wins and draws"
       >
         <article class="scoreboard__player scoreboard__player--x" data-player="X">
           <span class="scoreboard__mark" aria-hidden="true">X</span>
@@ -71,6 +71,21 @@
               data-role="score"
               data-player="O"
               aria-labelledby="score-label-o"
+              aria-live="polite"
+              >0</span
+            >
+          </span>
+        </article>
+        <article class="scoreboard__player scoreboard__player--draw" data-player="draw">
+          <span class="scoreboard__mark" aria-hidden="true">=</span>
+          <span class="scoreboard__name">Draws</span>
+          <span class="scoreboard__score" data-player="draw">
+            <span id="score-label-draw" class="visually-hidden">Total drawn rounds</span>
+            <span
+              class="scoreboard__score-value"
+              data-role="score"
+              data-player="draw"
+              aria-labelledby="score-label-draw"
               aria-live="polite"
               >0</span
             >

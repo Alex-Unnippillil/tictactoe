@@ -1053,6 +1053,34 @@ button:focus-visible {
   --player-mark-glow: rgba(244, 63, 94, 0.62);
 }
 
+.scoreboard__player--draw {
+  --player-mark-color: #1f2937;
+  --player-highlight: rgba(148, 163, 184, 0.35);
+  --player-glow: rgba(148, 163, 184, 0.52);
+  --player-mark-glow: rgba(148, 163, 184, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(226, 232, 240, 0.2)
+  );
+  color: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scoreboard__player--draw {
+    --player-mark-color: #e2e8f0;
+    --player-highlight: rgba(148, 163, 184, 0.32);
+    --player-glow: rgba(148, 163, 184, 0.42);
+    --player-mark-glow: rgba(148, 163, 184, 0.45);
+    background: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.82),
+      rgba(148, 163, 184, 0.18)
+    );
+    color: var(--surface-strong);
+  }
+}
+
 .scoreboard__mark,
 .scoreboard__name,
 .scoreboard__score {
