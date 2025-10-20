@@ -770,8 +770,8 @@ button:focus-visible {
   justify-content: space-between;
   gap: var(--space-sm);
   flex-wrap: wrap;
-  padding: clamp(0.6375rem, 0.6vw + 0.4875rem, 0.9375rem)
-    clamp(0.825rem, 0.9vw + 0.6rem, 1.5rem);
+  padding: clamp(0.85rem, 0.8vw + 0.65rem, 1.25rem)
+    clamp(1.1rem, 1.2vw + 0.8rem, 2rem);
   border-radius: 24px;
   background: var(--glass-overlay);
   background: color-mix(in srgb, var(--surface) 78%, transparent);
@@ -788,7 +788,7 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2xs);
-  font-size: clamp(0.825rem, 1.5vw + 0.75rem, 1.3875rem);
+  font-size: clamp(1.1rem, 2vw + 1rem, 1.85rem);
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.015em;
