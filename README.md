@@ -119,3 +119,5 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+<img width="1000" height="1318" alt="image" src="https://github.com/user-attachments/assets/f83d8743-8b3a-4de9-b3e1-806dbd5bd142" />
+
