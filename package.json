@@ -12,10 +12,10 @@
     "build": "node scripts/build.mjs",
     "deploy": "npm run build",
     "start": "npm run serve",
-    "lint": "echo \"No lint script configured\"",
+    "lint": "eslint \"site/js/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\"",
     "test": "node --test tests/unit",
-    "e2e": "echo \"No end-to-end tests configured\"",
-    "e2e:ci": "npm run e2e"
+    "e2e": "playwright test tests/e2e/keyboard.spec.ts",
+    "e2e:ci": "start-server-and-test \"npm run serve -- --port 4173 --host 127.0.0.1\" http://127.0.0.1:4173 \"playwright test tests/e2e/keyboard.spec.ts --retries=2\""
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
