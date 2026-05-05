@@ -44,7 +44,7 @@ The live app is structured to make every round easy to follow:
 - **Settings integration:** Auxiliary UI modules (see `site/js/ui/`) listen for state changes to handle preferences such as player names and to broadcast announcements to the shared status area.
 
 ## Getting started
-> **Prerequisites:** Node.js 20+ and npm 9+ (aligned with the CI environment).
+> **Prerequisites:** Node.js 20 or newer (npm ships with Node and is used for all project scripts).
 
 1. Install dependencies:
    ```bash
@@ -54,7 +54,7 @@ The live app is structured to make every round easy to follow:
    ```bash
    npm run dev
    ```
-   Changes inside `site/` hot-reload instantly while you iterate.
+   This serves the `site/` directory—the same static assets deployed by GitHub Pages.
 3. When you are ready to publish locally, build the static bundle:
    ```bash
    npm run build
@@ -69,13 +69,15 @@ The live app is structured to make every round easy to follow:
 ## Project scripts
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Serves the contents of `site/` locally using `http-server`. |
-| `npm run build` | Copies `site/` into `dist/`, mirroring the GitHub Pages packaging step. |
-| `npm run test` | Executes the Node-based unit tests located in `tests/`. |
-| `npm run e2e` | Placeholder stub for end-to-end tests; currently prints a status message. |
-| `npm run e2e:ci` | CI alias that proxies to `npm run e2e` so the workflow succeeds until real tests ship. |
-| `npm run lint` | Reserved for future lint rules (no-op today). |
-| `npm run deploy` | Matches the Pages workflow for manual deployments when needed. |
+| `npm run dev` | Alias for `npm run serve`. |
+| `npm run serve` | Serves `site/` locally using `npx http-server site`. |
+| `npm run build` | Copies `site/` into `dist/` using `scripts/build.mjs`. |
+| `npm run deploy` | Alias for `npm run build`. |
+| `npm run start` | Alias for `npm run serve`. |
+| `npm run lint` | Prints `No lint script configured` (placeholder script). |
+| `npm run test` | Runs Node's built-in test runner against `tests/unit`. |
+| `npm run e2e` | Prints `No end-to-end tests configured` (placeholder script). |
+| `npm run e2e:ci` | CI alias for `npm run e2e`. |
 
 ## Repository layout
 | Path | Purpose |
@@ -102,10 +104,11 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 - **Reduced-risk persistence:** Storage reads and writes are wrapped in guards to avoid throwing in browsers where `localStorage` is unavailable, protecting the experience for privacy-focused users.
 
 ## Testing and quality
-- **Unit tests:** `npm run test` runs the Node-based suite under `tests/`.
-- **Continuous integration:** [`ci.yml`](.github/workflows/ci.yml) validates every push, and [`static.yml`](.github/workflows/static.yml) is reserved for additional static analysis.
-- **Lighthouse audits:** [`lighthouse.yml`](.github/workflows/lighthouse.yml) executes `npx lhci autorun` against the deployed site, publishing an artifact named **`lighthouse-report`** with the latest performance, accessibility, best-practices, and SEO scores.
-- **Manual smoke testing:** Validate local changes in `npm run dev` by playing through win, draw, and reset paths to ensure focus states, narration, and persistence continue to behave as documented.
+- **Core quality commands:** Run `npm run test`, `npm run lint`, and `npm run e2e` before opening a PR so your local checks match current package scripts.
+- **Current script behavior:** `npm run test` executes real unit tests, while `npm run lint` and `npm run e2e` are placeholders that currently print status messages.
+- **Continuous integration:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the same commands via `npm run test` and `npm run e2e:ci`, so CI currently enforces unit coverage and confirms the e2e hook remains callable.
+- **Lighthouse audits:** [`.github/workflows/lighthouse.yml`](.github/workflows/lighthouse.yml) executes `npx lhci autorun` against the deployed site, publishing an artifact named **`lighthouse-report`** with performance, accessibility, best-practices, and SEO scores.
+- **Manual smoke testing:** Use `npm run dev` (or `npm run serve`) and play through win, draw, reset, and settings update paths to verify focus, narration, and persistence remain stable.
 
 ## Deployment
 1. Build the distributable bundle with `npm run build` (or rely on the automated Pages workflow).
