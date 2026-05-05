@@ -38,7 +38,7 @@ This project is built with vanilla HTML, CSS, and JavaScript. Please adhere to t
 ## Local development workflow
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18 or newer (for linting/formatting commands).
+- [Node.js](https://nodejs.org/) 20 or newer (matches CI and local tooling expectations).
 - A modern web browser for manual testing.
 
 ### Running the site locally
@@ -79,13 +79,13 @@ The repository ships with automated coverage that you are expected to keep green
 
   Run the suite whenever you touch the game engine, history persistence, or add new logic that should be regression-proof. Add new `.test.js`/`.spec.js` files alongside the existing ones in `tests/unit/` so CI picks them up automatically.
 
-- **Playwright E2E scaffolding (`tests/e2e/`)** – There is a starter spec, `keyboard.spec.ts`, that exercises keyboard navigation and announcements. It expects the static site to be served locally (for example with `npm run serve`). When you introduce new interaction flows, extend this directory with additional Playwright specs and wire up the `npm run e2e`/`npm run e2e:ci` scripts as needed so contributors and CI can execute them consistently.
+- **Playwright E2E keyboard checks (`tests/e2e/`)** – `keyboard.spec.ts` exercises keyboard navigation and announcements. Run `npm run e2e` for local execution (Playwright starts the web server via `playwright.config.ts`) and `npm run e2e:ci` for the CI-safe server+test workflow.
 
 If you add new automated checks, update this section with instructions and ensure they are runnable without extra secrets or services.
 
 ## Continuous integration & deployment
 
-- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm test`, and expects an `npm run e2e:ci` command to exercise the Playwright specs. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
+- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm run lint`, `npm test`, and `npm run e2e:ci` to exercise Playwright headlessly. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
 - Merges to `main` automatically trigger the GitHub Pages deployment pipeline. To keep deployments healthy, confirm that `index.html` and any assets you add load correctly when served from the repository root, and avoid introducing references to private or server-side resources.
 - If a deployment fails, investigate the CI logs and open a follow-up PR with a fix or revert.
 

@@ -72,9 +72,9 @@ The live app is structured to make every round easy to follow:
 | `npm run dev` | Serves the contents of `site/` locally using `http-server`. |
 | `npm run build` | Copies `site/` into `dist/`, mirroring the GitHub Pages packaging step. |
 | `npm run test` | Executes the Node-based unit tests located in `tests/`. |
-| `npm run e2e` | Placeholder stub for end-to-end tests; currently prints a status message. |
-| `npm run e2e:ci` | CI alias that proxies to `npm run e2e` so the workflow succeeds until real tests ship. |
-| `npm run lint` | Reserved for future lint rules (no-op today). |
+| `npm run e2e` | Runs Playwright against `tests/e2e/keyboard.spec.ts` using the shared Playwright config. |
+| `npm run e2e:ci` | Starts the static server and runs the Playwright keyboard suite with CI-safe retries. |
+| `npm run lint` | Runs ESLint checks across browser scripts and build/test JavaScript files. |
 | `npm run deploy` | Matches the Pages workflow for manual deployments when needed. |
 
 ## Repository layout
@@ -103,6 +103,8 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 
 ## Testing and quality
 - **Unit tests:** `npm run test` runs the Node-based suite under `tests/`.
+- **Linting:** `npm run lint` validates JavaScript in `site/js/`, `scripts/`, and `tests/`.
+- **E2E keyboard regression:** `npm run e2e` runs `tests/e2e/keyboard.spec.ts` with Playwright, and `npm run e2e:ci` wraps the same suite with a server startup flow for CI.
 - **Continuous integration:** [`ci.yml`](.github/workflows/ci.yml) validates every push, and [`static.yml`](.github/workflows/static.yml) is reserved for additional static analysis.
 - **Lighthouse audits:** [`lighthouse.yml`](.github/workflows/lighthouse.yml) executes `npx lhci autorun` against the deployed site, publishing an artifact named **`lighthouse-report`** with the latest performance, accessibility, best-practices, and SEO scores.
 - **Manual smoke testing:** Validate local changes in `npm run dev` by playing through win, draw, and reset paths to ensure focus states, narration, and persistence continue to behave as documented.
@@ -120,4 +122,3 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 ## License
 This project is licensed under the [MIT License](LICENSE).
 <img width="1000" height="1318" alt="image" src="https://github.com/user-attachments/assets/f83d8743-8b3a-4de9-b3e1-806dbd5bd142" />
-
