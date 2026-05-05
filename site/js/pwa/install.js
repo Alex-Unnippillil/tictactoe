@@ -124,6 +124,9 @@
     }
   };
 
+  const getDeferredPromptEvent = () => deferredPromptEvent;
+  const getInstallButton = () => installButton;
+
   const monitorDisplayMode = () => {
     if (!window.matchMedia) {
       return;
@@ -157,4 +160,14 @@
     }
     updateButtonState();
   });
+
+  window.__tictactoePwaInstallTestHooks = {
+    ensureInstallButton,
+    updateButtonState,
+    handleBeforeInstallPrompt,
+    handleAppInstalled,
+    getDeferredPromptEvent,
+    getInstallButton,
+    isStandalone,
+  };
 })();
