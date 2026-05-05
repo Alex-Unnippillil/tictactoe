@@ -10,8 +10,11 @@ graph TD
   GameController["Game controller\\n(site/js/game.js)"]
   coreState["coreState\\n(site/js/state/core.js)"]
   gameHistory["gameHistory snapshot\\n(site/js/state/history.js)"]
+  gameDomain["gameDomain\\n(site/js/state/game-domain.js)"]
+  gameStorage["gameStorage\\n(site/js/state/game-storage.js)"]
   GameHistory["GameHistory utility\\n(site/js/core/history.js)"]
   uiStatus["ui/status\\n(site/js/ui/status.js)"]
+  cellRenderer["ui/cell-renderer\\n(site/js/ui/cell-renderer.js)"]
   uiSettings["ui/settings\\n(site/js/ui/settings.js)"]
 
   DOM --> GameController
@@ -19,6 +22,9 @@ graph TD
   DOM --> uiSettings
   GameController --> DOM
   GameController --> coreState
+  GameController --> gameDomain
+  GameController --> gameStorage
+  GameController --> cellRenderer
   GameController --> uiStatus
   uiSettings --> coreState
   uiSettings --> gameHistory
@@ -35,7 +41,10 @@ graph TD
 - **`GameHistory` utility** ([site/js/core/history.js](../../site/js/core/history.js)) – Provides the generic `createHistory` stack for undo/redo, capacity limits, and snapshot cloning. Other modules can import it when they need structured history management.
 - **`coreState`** ([site/js/state/core.js](../../site/js/state/core.js)) – Owns canonical player names, validates input, notifies listeners through `state:*` events, and exposes a subscription API. Any module that needs authoritative player identity should call into this layer.
 - **`gameHistory` snapshot** ([site/js/state/history.js](../../site/js/state/history.js)) – Mirrors player metadata for sharing, keeps a decoupled snapshot for undo/redo or export, relays `history:*` events, and listens for `coreState` updates.
-- **Game controller** ([site/js/game.js](../../site/js/game.js)) – Manages the board state, scoring, round transitions, persistence to `localStorage`, and DOM interactions. Dispatches `game:*` events for future observers such as AI or analytics.
+- **`gameDomain`** ([site/js/state/game-domain.js](../../site/js/state/game-domain.js)) – Encapsulates pure board logic: move application, board evaluation, and round transition helpers (including starter alternation).
+- **`gameStorage`** ([site/js/state/game-storage.js](../../site/js/state/game-storage.js)) – Owns `localStorage` read/write helpers, score defaults, and persisted game-state sanitisation.
+- **`cellRenderer`** ([site/js/ui/cell-renderer.js](../../site/js/ui/cell-renderer.js)) – Handles cell glyph rendering, `aria-label` updates, and per-cell enabled/disabled DOM state.
+- **Game controller** ([site/js/game.js](../../site/js/game.js)) – Orchestrates state and UI modules, wires event listeners, coordinates scoring and announcements, and dispatches `game:*` events for observers such as AI or analytics.
 - **Status UI** ([site/js/ui/status.js](../../site/js/ui/status.js)) – Reads status elements from the DOM, renders scores and announcements, subscribes to settings and state updates, and exposes an API used by the controller to avoid duplicating DOM logic.
 - **Settings UI** ([site/js/ui/settings.js](../../site/js/ui/settings.js)) – Validates name inputs, persists them, propagates changes to `coreState`, `gameHistory`, and sharing helpers, and emits `settings:players-updated` events for other widgets.
 - **DOM shell** ([site/index.html](../../site/index.html)) – Declares the scoreboard, game board, controls, and modal elements. Loads the modules above with `<script>` tags so they can attach listeners once `DOMContentLoaded` fires.
