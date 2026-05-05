@@ -38,17 +38,31 @@ This project is built with vanilla HTML, CSS, and JavaScript. Please adhere to t
 ## Local development workflow
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18 or newer (for linting/formatting commands).
+- [Node.js](https://nodejs.org/) 20 or newer.
 - A modern web browser for manual testing.
 
 ### Running the site locally
-Because this is a static site, the simplest approach is to open `index.html` directly in your browser. If you prefer a local server (recommended for accurate GitHub Pages parity), you can run:
+Serve the same `site/` directory that GitHub Pages deploys:
 
 ```bash
-npx serve .
+npm run dev
 ```
 
-Then visit `http://localhost:3000`.
+`npm run dev` is an alias for `npm run serve`, and `serve` runs `npx http-server site`.
+
+### Script reference (`package.json`)
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Alias for `npm run serve`. |
+| `npm run serve` | Serves `site/` using `npx http-server site`. |
+| `npm run build` | Copies `site/` into `dist/` via `scripts/build.mjs`. |
+| `npm run deploy` | Alias for `npm run build`. |
+| `npm run start` | Alias for `npm run serve`. |
+| `npm run lint` | Placeholder that prints `No lint script configured`. |
+| `npm run test` | Runs `node --test tests/unit`. |
+| `npm run e2e` | Placeholder that prints `No end-to-end tests configured`. |
+| `npm run e2e:ci` | Runs `npm run e2e`. |
 
 ### Linting and formatting
 Editor defaults are captured in the repository's [`.editorconfig`](./.editorconfig), which enforces UTF-8 encoding, LF line endings, final newlines, and two-space indentation for web assets and config files. Most modern editors detect this automatically.
@@ -69,23 +83,26 @@ Feel free to add a `.prettierrc` file in a separate pull request if you need cus
 
 ### Tests and end-to-end checks
 
-The repository ships with automated coverage that you are expected to keep green:
+Run the project quality commands from the repository root:
 
-- **Unit tests (`tests/unit/`)** – These run with Node's built-in test runner via Jest-style specs. The current suite covers the AI decision tree (`ai.spec.js`), move history helpers (`history.test.js`), and the opening move heuristics (`minimax-first-move.test.js`). Execute all unit tests locally with:
+```bash
+npm run test
+npm run lint
+npm run e2e
+```
 
-  ```bash
-  npm run test
-  ```
+Current behavior of those scripts:
 
-  Run the suite whenever you touch the game engine, history persistence, or add new logic that should be regression-proof. Add new `.test.js`/`.spec.js` files alongside the existing ones in `tests/unit/` so CI picks them up automatically.
+- `npm run test` runs the Node test runner on `tests/unit`.
+- `npm run lint` currently prints `No lint script configured` (placeholder).
+- `npm run e2e` currently prints `No end-to-end tests configured` (placeholder).
+- `npm run e2e:ci` is a CI alias that runs `npm run e2e`.
 
-- **Playwright E2E scaffolding (`tests/e2e/`)** – There is a starter spec, `keyboard.spec.ts`, that exercises keyboard navigation and announcements. It expects the static site to be served locally (for example with `npm run serve`). When you introduce new interaction flows, extend this directory with additional Playwright specs and wire up the `npm run e2e`/`npm run e2e:ci` scripts as needed so contributors and CI can execute them consistently.
-
-If you add new automated checks, update this section with instructions and ensure they are runnable without extra secrets or services.
+Even though lint and e2e are placeholders today, keep them runnable in local validation so CI and local workflows stay aligned.
 
 ## Continuous integration & deployment
 
-- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm test`, and expects an `npm run e2e:ci` command to exercise the Playwright specs. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
+- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm run lint`, `npm run test`, and `npm run e2e:ci` to mirror the package scripts defined in this repository. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
 - Merges to `main` automatically trigger the GitHub Pages deployment pipeline. To keep deployments healthy, confirm that `index.html` and any assets you add load correctly when served from the repository root, and avoid introducing references to private or server-side resources.
 - If a deployment fails, investigate the CI logs and open a follow-up PR with a fix or revert.
 

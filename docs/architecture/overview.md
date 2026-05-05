@@ -59,7 +59,7 @@ When names change inside the settings modal, the update propagates in this seque
 
 ## Deployment notes
 
-GitHub Pages serves the contents of `site/`, so every module above must keep working with static `<script>` tags and relative asset paths. The Pages workflow copies `site/` verbatim; no bundler rewrites the module graph. When adding new JavaScript, place it under `site/js/` and update `site/index.html` (or include inline module loaders) so the Pages build automatically picks it up.
+Local development and GitHub Pages both execute the same script-loaded asset tree from `site/`: `npm run dev`/`npm run serve` launches `http-server` for that directory, and the Pages workflow copies `site/` into `dist/` via `npm run build`. Because no bundler rewrites the graph, every module above must keep working with static `<script>` tags and relative asset paths. When adding new JavaScript, place it under `site/js/` and update `site/index.html` (or include inline module loaders) so the Pages build automatically picks it up.
 
 ## Maintenance checklist
 
