@@ -25,6 +25,9 @@ jobs:
       - name: Run linting
         run: npm run lint
 
+      - name: Verify root/site HTML sync
+        run: npm run verify:html-sync
+
       - name: Run unit tests
         run: npm test
 

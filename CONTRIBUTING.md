@@ -38,7 +38,7 @@ This project is built with vanilla HTML, CSS, and JavaScript. Please adhere to t
 ## Local development workflow
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) 18 or newer (for linting/formatting commands).
+- [Node.js](https://nodejs.org/) 20 or newer (aligned with CI and required scripts).
 - A modern web browser for manual testing.
 
 ### Running the site locally
@@ -57,6 +57,10 @@ Run the following commands from the project root before committing:
 
 ```bash
 npx prettier --check "**/*.{html,css,js}"
+```
+
+```bash
+npm run verify:html-sync
 ```
 
 If the check fails, format the files automatically:
@@ -85,8 +89,9 @@ If you add new automated checks, update this section with instructions and ensur
 
 ## Continuous integration & deployment
 
-- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs `npm test`, and expects an `npm run e2e:ci` command to exercise the Playwright specs. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
+- Pull requests are validated by [`.github/workflows/ci.yml`](.github/workflows/ci.yml). That workflow installs dependencies, runs linting, verifies root/site HTML sync (`npm run verify:html-sync`), runs `npm test`, and executes `npm run e2e:ci` for Playwright coverage. Keep your local workflow aligned with those steps so what passes locally mirrors CI.
 - Merges to `main` automatically trigger the GitHub Pages deployment pipeline. To keep deployments healthy, confirm that `index.html` and any assets you add load correctly when served from the repository root, and avoid introducing references to private or server-side resources.
+- If you touch either `site/index.html` or root `index.html`, run `npm run verify:html-sync` before committing. If it fails, sync root markup from `site/index.html` and preserve only `<base href="./site/" />` in the root file.
 - If a deployment fails, investigate the CI logs and open a follow-up PR with a fix or revert.
 
 ## Getting help
