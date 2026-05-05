@@ -72,6 +72,7 @@ The live app is structured to make every round easy to follow:
 | `npm run dev` | Serves the contents of `site/` locally using `http-server`. |
 | `npm run build` | Copies `site/` into `dist/`, mirroring the GitHub Pages packaging step. |
 | `npm run test` | Executes the Node-based unit tests located in `tests/`. |
+| `npm run verify:html-sync` | Verifies root `index.html` mirrors `site/index.html` (with only `<base href="./site/">` added) and checks required runtime anchors/assets. |
 | `npm run e2e` | Placeholder stub for end-to-end tests; currently prints a status message. |
 | `npm run e2e:ci` | CI alias that proxies to `npm run e2e` so the workflow succeeds until real tests ship. |
 | `npm run lint` | Reserved for future lint rules (no-op today). |
@@ -103,6 +104,7 @@ This modular structure keeps the board responsive, enables drop-in enhancements 
 
 ## Testing and quality
 - **Unit tests:** `npm run test` runs the Node-based suite under `tests/`.
+- **HTML sync guard:** `npm run verify:html-sync` ensures the root `index.html` stays in lockstep with `site/index.html` for GitHub Pages root serving. If it fails, copy changes from `site/index.html` into `index.html` and keep only the root `<base href="./site/" />` difference.
 - **Continuous integration:** [`ci.yml`](.github/workflows/ci.yml) validates every push, and [`static.yml`](.github/workflows/static.yml) is reserved for additional static analysis.
 - **Lighthouse audits:** [`lighthouse.yml`](.github/workflows/lighthouse.yml) executes `npx lhci autorun` against the deployed site, publishing an artifact named **`lighthouse-report`** with the latest performance, accessibility, best-practices, and SEO scores.
 - **Manual smoke testing:** Validate local changes in `npm run dev` by playing through win, draw, and reset paths to ensure focus states, narration, and persistence continue to behave as documented.
